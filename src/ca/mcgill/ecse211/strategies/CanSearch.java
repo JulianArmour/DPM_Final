@@ -9,7 +9,7 @@ import java.util.Queue;
 import ca.mcgill.ecse211.Main;
 import ca.mcgill.ecse211.navigators.MovementController;
 import ca.mcgill.ecse211.odometer.Odometer;
-import ca.mcgill.ecse211.sensors.UltrasonicMedianFilter;
+import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
 
 /*
  * This class contains the search algorithm used to find the cans in the search zone and approach them 
@@ -21,7 +21,7 @@ public class CanSearch {
 	
 	private Odometer odo;
 	private MovementController movCon;
-	private UltrasonicMedianFilter  USData;
+	private MedianDistanceSensor  USData;
 	private float[] PLL,PUR,PTUN, PISL_LL, PISL_UR;
 	private int startCorner;
 	private float TILE_LENGTH;
@@ -31,7 +31,7 @@ public class CanSearch {
 	
 	private LinkedList<float[]> scanningPoints = new LinkedList<float[]>();
 	
-	public CanSearch(Odometer odometer, MovementController movementController, UltrasonicMedianFilter USData,float[] PLL, float[] PUR, float[] PTUNEL, float[] PISLAND_LL,float [] PISLAND_UR, int startingCorner, float TILE_LENGTH) {
+	public CanSearch(Odometer odometer, MovementController movementController, MedianDistanceSensor USData,float[] PLL, float[] PUR, float[] PTUNEL, float[] PISLAND_LL,float [] PISLAND_UR, int startingCorner, float TILE_LENGTH) {
 		
 		this.odo = odometer;
 		this.movCon = movementController;
@@ -103,6 +103,11 @@ public class CanSearch {
 		}
 		
 		
+	}
+	
+	public List<Double[]> getCanLocations(double[] robotPos, double[] searchLL, double[] searchUR) {
+	    
+        return null;
 	}
 	
 	/*

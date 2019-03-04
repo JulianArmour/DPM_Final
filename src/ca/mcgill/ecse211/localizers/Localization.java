@@ -1,11 +1,11 @@
 package ca.mcgill.ecse211.localizers;
 
 import ca.mcgill.ecse.sensors.LightDifferentialFilter;
-import ca.mcgill.ecse.sensors.MedianDistanceSensor;
 import ca.mcgill.ecse211.Main;
 import ca.mcgill.ecse211.StartingCorner;
 import ca.mcgill.ecse211.navigators.MovementController;
 import ca.mcgill.ecse211.odometer.Odometer;
+import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
 
 /**
  * Provides the methods for the initial localization and localizing on the fly.
@@ -143,6 +143,16 @@ public class Localization {
         default:
             break;
         }
+    }
+    
+    /**
+     * performs two {@link #quickLocalization()} routines to completely update the odometer's position and angle.
+     */
+    public void completeQuickLocalization() {
+        quickLocalization();
+        movCon.driveDistance(-1 * Main.LT_SENSOR_TO_WHEELBASE, false);
+        movCon.rotateAngle(90, false, false);
+        quickLocalization();
     }
 
     /**
