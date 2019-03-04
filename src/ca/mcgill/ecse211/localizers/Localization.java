@@ -116,10 +116,38 @@ public class Localization {
 
         odo.setTheta(movCon.roundAngle());
     }
+    
+    /**
+     * performs a {@link #quickThetaCorrection()}, but will also correct either the x or y position
+     * for the {@link Odometer}.
+     */
+    public void quickLocalization() {
+        // turn to the nearest right angle
+        movCon.turnTo(movCon.roundAngle());
+        // perform quick theta correction
+        quickThetaCorrection();
+        // update the x or y position of the odometer (depending on orientation)
+        switch (movCon.roundAngle()) {
+        case 0:
+            odo.setY(MovementController.roundDistance(odo.getXYT()[1], Main.TILE_SIZE) + Main.LT_SENSOR_TO_WHEELBASE);
+            break;
+        case 90:
+            odo.setX(MovementController.roundDistance(odo.getXYT()[0], Main.TILE_SIZE) + Main.LT_SENSOR_TO_WHEELBASE);
+            break;
+        case 180:
+            odo.setY(MovementController.roundDistance(odo.getXYT()[1], Main.TILE_SIZE) - Main.LT_SENSOR_TO_WHEELBASE);
+            break;
+        case 270:
+            odo.setX(MovementController.roundDistance(odo.getXYT()[0], Main.TILE_SIZE) - Main.LT_SENSOR_TO_WHEELBASE);
+            break;
+        default:
+            break;
+        }
+    }
 
     /**
      * light localization routine to be called after
-     * {@link #initialUSLocalization()}
+     * {@link #initialUSLocalization()}.
      */
     public void initialLightLocalization() {
         quickThetaCorrection();
