@@ -1,4 +1,4 @@
-package ca.mcgill.ecse.sensors;
+package ca.mcgill.ecse211.sensors;
 
 import lejos.robotics.SampleProvider;
 
