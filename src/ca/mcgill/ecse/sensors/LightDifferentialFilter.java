@@ -2,12 +2,27 @@ package ca.mcgill.ecse.sensors;
 
 import lejos.robotics.SampleProvider;
 
+/**
+ * Provides methodology for getting the difference between two subsequent polls
+ * from a light sensor sample provider.
+ * 
+ * @author Julian Armour, Alice Kazarine
+ * @since March 4, 2019
+ * @version 1
+ */
 public class LightDifferentialFilter extends Thread {
 
     private float          pastSample;
     private SampleProvider colorProvider;
     private float[]        sampleLSData;
 
+    /**
+     * 
+     * @param LSprovider
+     *            A light sensor sample provider
+     * @param sampleLS
+     *            A buffer for the light sensor sample provider
+     */
     public LightDifferentialFilter(SampleProvider LSprovider, float[] sampleLS) {
         this.pastSample = 0;
         this.colorProvider = LSprovider;
