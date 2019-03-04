@@ -1,6 +1,7 @@
 package ca.mcgill.ecse211.strategies;
 
 import java.io.ObjectOutputStream.PutField;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -19,7 +20,8 @@ import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
  */
 public class CanSearch {
 	
-	private Odometer odo;
+	protected static final long CAN_SCAN_PERIOD = 100;
+    private Odometer odo;
 	private MovementController movCon;
 	private MedianDistanceSensor  USData;
 	private float[] PLL,PUR,PTUN, PISL_LL, PISL_UR;
@@ -105,12 +107,77 @@ public class CanSearch {
 		
 	}
 	
-	public List<Double[]> getCanLocations(double[] robotPos, double[] searchLL, double[] searchUR) {
-	    
-        return null;
-	}
+    /**
+     * 
+     * @param robotPos
+     * @param searchLL
+     * @param searchUR
+     * @return a list containing detected positions of cans
+     * @author Julian Armour
+     */
+    public List<double[]> getCanLocations(double[] robotPos, double[] searchLL, double[] searchUR) {
+        final List<double[]> angleDistData = new LinkedList<double[]>();
+        // anonymous class for polling distance data while the robot rotates
+        Thread distancePoller = new Thread() {
+            @Override
+            public void run() {
+                while (!Thread.interrupted()) {
+                    double angle = odo.getXYT()[2];
+                    double dist = Math.min((double) USData.getFilteredDistance(), 255);
+                    angleDistData.add(new double[] { angle, dist });
+                    // sleep for a bit
+                    try {
+                        Thread.sleep(CAN_SCAN_PERIOD);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+        };
+
+        USData.flush();
+        distancePoller.start();
+        movCon.rotateAngle(360, true, false);
+        distancePoller.interrupt();
+
+        List<double[]> positionData = new LinkedList<double[]>();
+        Iterator<double[]> it = angleDistData.iterator();
+        while (it.hasNext()) {
+            double[] dat = it.next();
+            double[] position = new double[] { dat[1] * Math.sin(Math.toRadians(dat[0])) + robotPos[0],
+                    dat[1] * Math.cos(Math.toRadians(dat[0])) + robotPos[1] };
+            
+            if (inSearchZone(position, searchLL, searchUR)) {
+                positionData.add(position);
+            }
+        }
+
+        return positionData;
+    }
 	
-	/*
+    /**
+     * @param position
+     *            the position being checked for
+     * @param searchLL
+     *            the lower left of a zone
+     * @param searchUR
+     *            the upper right of a zone
+     * @return true if the position is in the zone, false if it's not.
+     * 
+     * @author Julian Armour
+     */
+    private boolean inSearchZone(double[] position, double[] searchLL, double[] searchUR) {
+        if (position[0] > searchUR[0] || position[0] < searchLL[0]) {
+            return false;
+        } else if (position[1] > searchUR[1] || position[1] < searchLL[1]) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /*
 	 * approaches the position where a potential can was detected,
 	 * performs a second scan, 
 	 * takes position for grabbing
