@@ -123,9 +123,34 @@ public class Localization {
      */
     public void initialLightLocalization() {
         quickThetaCorrection();
-        movCon.driveDistance(Main.TILE_SIZE * 0.3, false);
+        
+        // set the x-position
+        switch (startingCorner) {
+        case GREEN_CORNER:
+            odo.setX(14 * Main.TILE_SIZE);
+            break;
+        case RED_CORNER:
+            odo.setX(Main.TILE_SIZE);
+            break;
+        default:
+            break;
+        }
+        
+        movCon.driveDistance(Main.TILE_SIZE / 4, false);
         movCon.rotateAngle(90, true, false);
         quickThetaCorrection();
+        
+        // set the y-position
+        switch (startingCorner) {
+        case GREEN_CORNER:
+            odo.setY(Main.TILE_SIZE);
+            break;
+        case RED_CORNER:
+            odo.setY(8 * Main.TILE_SIZE);
+            break;
+        default:
+            break;
+        }
     }
 
     /**
