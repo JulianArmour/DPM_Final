@@ -28,6 +28,10 @@ public class TunnelNavigator {
 		
 	}
 	
+	/**
+	 * Travel to the tunnel from starting point
+	 * 
+	 */
 	public void travelToFTunnel() {
 		int tCornerIntX = 0, tCornerIntY = 0;
 		boolean turnFirLoc = true, turnSecLoc = true;
@@ -72,6 +76,9 @@ public class TunnelNavigator {
 		
 	}
 	
+	/**
+	 * Travel across the tunnel
+	 */
 	public void throughTunnel() {
 		int posCorX = 0, posCorY = 0;
 		int thetaCor = 0;
@@ -110,6 +117,9 @@ public class TunnelNavigator {
 		
 	}
 	
+	/**
+	 * Travel back to the tunnel from the search zone
+	 */
 	public void travelToBTunnel() {
 		
 		move.travelTo((TURX+1)*TILE_SIZE, odo.getXYT()[1], false);
