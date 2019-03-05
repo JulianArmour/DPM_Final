@@ -1,5 +1,4 @@
 package ca.mcgill.ecse211.navigators;
-import ca.mcgill.ecse211.StartingCorner;
 import ca.mcgill.ecse211.localizers.Localization;
 import ca.mcgill.ecse211.odometer.*;
 
@@ -13,9 +12,9 @@ public class Navigator {
 	private static Localization localizer;
 	private static int TLLX, TLLY, TURX, TURY;
 	private static int bridgeTileLength;
-	private static StartingCorner SC;
+	private static int SC;
 
-	public Navigator(MovementController move, Odometer odo, Localization localizer, int TLLX, int TLLY, int TURX, int TURY, StartingCorner SC) {
+	public Navigator(MovementController move, Odometer odo, Localization localizer, int TLLX, int TLLY, int TURX, int TURY, int SC) {
 		this.move = move;
 		this.odo = odo;
 		this.TLLX = TLLX;
@@ -35,7 +34,7 @@ public class Navigator {
 	public void travelToFTunnel() {
 		int tCornerIntX = 0, tCornerIntY = 0;
 		boolean turnFirLoc = true, turnSecLoc = true;
-		if(SC == StartingCorner.RED_CORNER) {
+		if(SC == 3) {
 			if(TURY == 9) {
 				tCornerIntX = -1;
 				tCornerIntY = 0;
@@ -83,7 +82,7 @@ public class Navigator {
 		int posCorX = 0, posCorY = 0;
 		int thetaCor = 0;
 		boolean turnLoc = true;
-		if(SC == StartingCorner.RED_CORNER) {
+		if(SC == 3) {
 			if(TURY == 9) {
 				posCorX = 1;
 				posCorY = -1;
@@ -114,7 +113,6 @@ public class Navigator {
 		move.driveDistance(-VERT_SENSOR_OFFSET);
 		
 		odo.setXYT((TURX + posCorX)*TILE_SIZE, (TURY + posCorY)*TILE_SIZE, thetaCor);
-		
 	}
 	
 	/**
@@ -133,5 +131,9 @@ public class Navigator {
 		move.turnTo(180);
 		
 		
+	}
+	
+	public void goToStartingTile() {
+		if(St)
 	}
 }
