@@ -1,10 +1,10 @@
 package ca.mcgill.ecse211.localizers;
 
-import ca.mcgill.ecse.sensors.LightDifferentialFilter;
 import ca.mcgill.ecse211.Main;
 import ca.mcgill.ecse211.StartingCorner;
 import ca.mcgill.ecse211.navigators.MovementController;
 import ca.mcgill.ecse211.odometer.Odometer;
+import ca.mcgill.ecse211.sensors.LightDifferentialFilter;
 import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
 
 /**
