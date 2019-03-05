@@ -107,6 +107,77 @@ public class CanSearch {
 		
 	}
 	
+	/**
+	 * 
+	 * @param searchLL lower left of the search zone
+	 * @param searchUR upper right of the search zone
+	 * @return the position of a can in the scan radius, or <code>null</code> if a can is not found
+	 */
+	public double[] fastCanScan(double[] searchLL, double[] searchUR) {
+	    double[] robotPos = odo.getXYT();
+	    // start rotating clockwise
+	    // scan for positions that are within the search zone
+	    final double finalHeading = (robotPos[2] - 1.0) % 360.0;
+	    
+	    final boolean[] atFinalHeading = {false}; // anonymous class trick for outer-scope variables
+	    Runnable rotater = new Runnable() {
+            @Override
+            public void run() {
+                movCon.turnClockwiseTo(finalHeading, false);
+                if (!Thread.interrupted()) {
+                    atFinalHeading[0] = true;
+                }
+            }
+        };
+
+        USData.flush();
+        Thread rotT = new Thread(rotater);
+        rotT.start(); // start rotating
+        double[] position = new double[2];
+        while (!atFinalHeading[0]) {
+            double dist = (double) USData.getFilteredDistance();
+            if (dist <= scanRadius) {
+                double angle = odo.getXYT()[2];
+                position[0] = dist * Math.sin(Math.toRadians(angle)) + robotPos[0];
+                position[1] = dist * Math.cos(Math.toRadians(angle)) + robotPos[1];
+                if (inSearchZone(position, searchLL, searchUR)) {
+                    rotT.interrupt();
+                    movCon.stopMotors();
+
+                    // more checks to see if it is really a can
+                    double meanDist = 0;
+                    for (int i = 0; i < 10; i++) {
+                        meanDist += (double) USData.getFilteredDistance();
+                        try {
+                            Thread.sleep(30);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    meanDist /= 10;
+                    angle = odo.getXYT()[2];
+                    position[0] = meanDist * Math.sin(Math.toRadians(angle)) + robotPos[0];
+                    position[1] = meanDist * Math.cos(Math.toRadians(angle)) + robotPos[1];
+                    if (inSearchZone(position, searchLL, searchUR)) {
+                        // true positive, return
+                        return position;
+                    } else {
+                        // false positive, keep scanning
+                        rotT = new Thread(rotater);
+                        rotT.start(); // start rotating again
+                    }
+                }
+            }
+            
+            try {
+                Thread.sleep(CAN_SCAN_PERIOD);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        return null;
+	}
 	
     /**
      * 
@@ -116,7 +187,9 @@ public class CanSearch {
      * @return a list containing detected positions of cans
      * @author Julian Armour
      */
-    public List<double[]> canScan(double[] robotPos, double[] searchLL, double[] searchUR) {
+    public List<double[]> canScan(double[] searchLL, double[] searchUR) {
+        double[] robotPos = odo.getXYT();
+        
         final List<double[]> angleDistData = new LinkedList<double[]>();
         // anonymous class for polling distance data while the robot rotates
         Thread distancePoller = new Thread() {
@@ -124,9 +197,11 @@ public class CanSearch {
             public void run() {
                 while (!Thread.interrupted()) {
                     double angle = odo.getXYT()[2];
-                    double dist = Math.min((double) USData.getFilteredDistance(), 255);
-                    angleDistData.add(new double[] { angle, dist });
-                    // sleep for a bit
+                    double dist = (double) USData.getFilteredDistance();
+                    if (dist <= scanRadius) {
+                        angleDistData.add(new double[] { angle, dist });
+                    }
+
                     try {
                         Thread.sleep(CAN_SCAN_PERIOD);
                     } catch (InterruptedException e) {

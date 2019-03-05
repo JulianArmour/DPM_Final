@@ -69,6 +69,23 @@ public class MovementController {
             rotateAngle(360 - dT, false);
         }
     }
+    
+    /**
+     * Turns the robot towards an absolute (i.e. not relative) angle on the platform. The robot will only
+     * turn clockwise.
+     * 
+     * @param theta
+     *            The angle in degrees the robot will rotate to.
+     */
+    public void turnClockwiseTo(double angle, boolean immediateReturn) {
+        double heading = odometer.getXYT()[2];
+        
+        if (heading < angle) {
+            rotateAngle(angle - heading, true, immediateReturn);
+        } else {
+            rotateAngle(360 - (heading - angle), true, immediateReturn);
+        }
+    }
 
     /**
      * Rotates the robot by the specified angle. The thread waits until the rotation

@@ -83,7 +83,7 @@ public class MedianDistanceSensor {
      */
     public float getFilteredDistance() {
         fetchAndFilter();
-        return median;
+        return Math.min(median, 255);
     }
 
     /**
