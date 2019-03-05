@@ -13,9 +13,9 @@ public class Navigator {
 	private static Localization localizer;
 	private static int TLLX, TLLY, TURX, TURY;
 	private static int bridgeTileLength;
-	private static StartingCorner SC;
+	private static int SC;
 
-	public Navigator(MovementController move, Odometer odo, Localization localizer, int TLLX, int TLLY, int TURX, int TURY, StartingCorner SC) {
+	public Navigator(MovementController move, Odometer odo, Localization localizer, int TLLX, int TLLY, int TURX, int TURY, int SC) {
 		this.move = move;
 		this.odo = odo;
 		this.TLLX = TLLX;
@@ -128,5 +128,9 @@ public class Navigator {
 		odo.setTheta(180);
 		move.travelTo(odo.getXYT()[0], TURY*TILE_SIZE, false);
 		
+	}
+	
+	public void goToStartingTile() {
+		if(St)
 	}
 }
