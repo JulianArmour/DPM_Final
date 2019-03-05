@@ -1,7 +1,6 @@
 package ca.mcgill.ecse211.localizers;
 
 import ca.mcgill.ecse211.Main;
-import ca.mcgill.ecse211.StartingCorner;
 import ca.mcgill.ecse211.navigators.MovementController;
 import ca.mcgill.ecse211.odometer.Odometer;
 import ca.mcgill.ecse211.sensors.LightDifferentialFilter;
@@ -28,11 +27,11 @@ public class Localization {
     private MedianDistanceSensor    med;
     private LightDifferentialFilter dLTleft;
     private LightDifferentialFilter dLTright;
-    private StartingCorner          startingCorner;
+    private int          startingCorner;
 
     public Localization(MovementController movementController, Odometer odometer,
             MedianDistanceSensor medianDistanceSensor, LightDifferentialFilter leftLightDiff,
-            LightDifferentialFilter rightLightDiff, StartingCorner startingCorner) {
+            LightDifferentialFilter rightLightDiff, int startingCorner) {
 
         this.movCon = movementController;
         this.odo = odometer;
@@ -164,10 +163,10 @@ public class Localization {
         
         // set the x-position
         switch (startingCorner) {
-        case GREEN_CORNER:
+        case 1:
             odo.setX(14 * Main.TILE_SIZE);
             break;
-        case RED_CORNER:
+        case 3:
             odo.setX(Main.TILE_SIZE);
             break;
         default:
@@ -180,10 +179,10 @@ public class Localization {
         
         // set the y-position
         switch (startingCorner) {
-        case GREEN_CORNER:
+        case 1:
             odo.setY(Main.TILE_SIZE);
             break;
-        case RED_CORNER:
+        case 3:
             odo.setY(8 * Main.TILE_SIZE);
             break;
         default:
@@ -264,10 +263,10 @@ public class Localization {
         movCon.turnTo(0.0);
 
         switch (startingCorner) {
-        case GREEN_CORNER:
+        case 1:
             odo.setTheta(270);
             break;
-        case RED_CORNER:
+        case 3:
             odo.setTheta(90);
             break;
         default:

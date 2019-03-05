@@ -1,5 +1,4 @@
 package ca.mcgill.ecse211.navigators;
-import ca.mcgill.ecse211.StartingCorner;
 import ca.mcgill.ecse211.localizers.Localization;
 import ca.mcgill.ecse211.odometer.*;
 
@@ -35,7 +34,7 @@ public class Navigator {
 	public void travelToFTunnel() {
 		int tCornerIntX = 0, tCornerIntY = 0;
 		boolean turnFirLoc = true, turnSecLoc = true;
-		if(SC == StartingCorner.RED_CORNER) {
+		if(SC == 3) {
 			if(TURY == 9) {
 				tCornerIntX = -1;
 				tCornerIntY = 0;
@@ -83,7 +82,7 @@ public class Navigator {
 		int posCorX = 0, posCorY = 0;
 		int thetaCor = 0;
 		boolean turnLoc = true;
-		if(SC == StartingCorner.RED_CORNER) {
+		if(SC == 3) {
 			if(TURY == 9) {
 				posCorX = 1;
 				posCorY = -1;
