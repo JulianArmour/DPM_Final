@@ -297,6 +297,7 @@ public class MovementController {
         return angleToHead;
     }
 
+    
     public void turnLeft(int motorSpeed, int delta) {
         leftMotor.setSpeed(motorSpeed - delta);
         rightMotor.setSpeed(motorSpeed + delta);
@@ -304,6 +305,15 @@ public class MovementController {
         rightMotor.forward();
     }
 
+    /**
+     * 
+     * @param motorSpeed
+     *          base motor speed.
+     * @param delta
+     *          the difference in deg/sec for turning the robot.
+     * @author Julian Armour, Alice Kazarine
+     * @since September 21, 2019
+     */
     public void turnRight(int motorSpeed, int delta) {
         leftMotor.setSpeed(motorSpeed + delta);
         rightMotor.setSpeed(motorSpeed - delta);
@@ -311,6 +321,11 @@ public class MovementController {
         rightMotor.forward();
     }
 
+    /**
+     * travels the robot to position (-5,-5)
+     * @param odo
+     * @author Alice Kazarine
+     */
     public void travelCloseToOrigin(Odometer odo) {
 
         // double[] odoData = odo.getXYT();
