@@ -9,5 +9,5 @@ public class Main {
     // distance from the ultrasonic sensor to the "thumb" of the claw
     public static double          US_SENSOR_TO_CLAW = 3.0;
     // the corner the robot will start in, downloaded via wifi
-    private static StartingCorner startingCorner;
+    private static int startingCorner;
 }
