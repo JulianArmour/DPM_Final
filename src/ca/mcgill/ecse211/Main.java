@@ -6,7 +6,8 @@ public class Main {
     public static final double    TRACK                 = 11.9;
     // distance from the light back light sensors to the wheel-base
     public static double          LT_SENSOR_TO_WHEELBASE = 11.9;
-
+    // distance from the ultrasonic sensor to the "thumb" of the claw
+    public static double          US_SENSOR_TO_CLAW = 3.0;
     // the corner the robot will start in, downloaded via wifi
     private static StartingCorner startingCorner;
 }

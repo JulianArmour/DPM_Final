@@ -107,6 +107,39 @@ public class CanSearch {
 		
 	}
 	
+    /**
+     * Causes the robot to travel to the general location of a detected can.
+     * 
+     * @param canPos
+     *            the general position of a can, which the robot will travel to.
+     * @author Julian Armour
+     * @since March 5, 2019
+     */
+    public void travelToCan(double canPos[]) {
+        double[] robotPos = odo.getXYT();
+        // travel robot 10 cm in front of can
+        movCon.turnTo(movCon.calculateAngle(robotPos[0], robotPos[1], canPos[0], canPos[1]));
+        movCon.driveDistance(movCon.calculateDistance(robotPos[0], robotPos[1], canPos[0], canPos[1]) - 10, false);
+        // rotate counter-clockwise 45 degrees
+        movCon.rotateAngle(45, false, false);
+        // rotate clockwise until the can is detected
+        USData.flush();
+        movCon.rotateAngle(45, true, true);
+        // check for cans
+        while (USData.getFilteredDistance() >= 12) {
+            try {
+                Thread.sleep(CAN_SCAN_PERIOD / 2);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        movCon.stopMotors();
+        // rotate back 15 degrees to account for ultrasonic arc
+        movCon.rotateAngle(15, true, false);
+        // move forward until to appropriate distance for gripping the can
+        movCon.driveDistance(USData.getFilteredDistance() - Main.US_SENSOR_TO_CLAW, false);
+    }
+	
 	/**
 	 * 
 	 * @param searchLL lower left of the search zone
@@ -220,7 +253,7 @@ public class CanSearch {
         List<double[]> positionData = new LinkedList<double[]>();
         Iterator<double[]> it = angleDistData.iterator();
         while (it.hasNext()) {
-            double[] dat = it.next();
+            double[] dat = (double[]) it.next();
             double[] position = new double[] { dat[1] * Math.sin(Math.toRadians(dat[0])) + robotPos[0],
                     dat[1] * Math.cos(Math.toRadians(dat[0])) + robotPos[1] };
             
