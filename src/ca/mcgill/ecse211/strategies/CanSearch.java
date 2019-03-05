@@ -58,47 +58,76 @@ public class CanSearch {
 		deltaY = PISL_UR[1] - PISL_LL[1];
 		
 		
-		if (startCorner == 1) {
+		if (startCorner == 1 || startCorner == 2) {
 
 			//calculate positions as float[]
 			float[] firstPos = {PISL_UR[0]-TILE_LENGTH/2 , PISL_LL[1]+TILE_LENGTH/2};
 			scanningPoints.add(firstPos);
-			
-			for(int i=1; i <3; i++) {
-				
-				nextPos[0] = PISL_UR[0] - i*(deltaX/SCAN_RADIUS)*TILE_LENGTH;
-				
+
+			for(int i=0; i <3; i++) {
 				for(int j=0; j<3; j++) {
-					
-					if (j == 0) {
+					float[] nextPos = new float[2];
+
+					if(i==0 && j ==0) {
+						System.out.println("BOTH 0");
+						nextPos[0] = PISL_UR[0]-TILE_LENGTH/2;
 						nextPos[1] = PISL_LL[1] + TILE_LENGTH/2;
 					}
-					
-					nextPos[1] = PISL_LL[1] + j*(deltaY/SCAN_RADIUS)*TILE_LENGTH;
-					
-					//now that nextPos[0] and nextPos[1] are defined, add them to the list
+
+					else if(i==0) {
+						System.out.println("i is 0");
+						nextPos[0] = PISL_UR[0]-TILE_LENGTH/2;
+						nextPos[1] = PISL_LL[1] + j*(deltaY/SCAN_RADIUS)*TILE_LENGTH;
+					}
+
+					else if (j == 0) {
+						System.out.println("j is 0");
+						nextPos[1] = PISL_LL[1] + TILE_LENGTH/2;
+						nextPos[0] = PISL_UR[0] - i*(deltaX/SCAN_RADIUS)*TILE_LENGTH;
+
+					}
+
+					else {
+						System.out.println("none of them are 0");
+						nextPos[0] = PISL_UR[0] - i*(deltaX/SCAN_RADIUS)*TILE_LENGTH;
+
+						nextPos[1] = PISL_LL[1] + j*(deltaY/SCAN_RADIUS)*TILE_LENGTH;
+					}
 					scanningPoints.add(nextPos);
 				}
 			}
 		}
 		
-		if (startCorner == 3) {
+		
+		if (startCorner == 3 || startCorner == 0) {
 			
-			float[] firstPos = {PISL_LL[0]+TILE_LENGTH/2 , PISL_UR[1]-TILE_LENGTH/2};
-			scanningPoints.add(firstPos);
-			
-			for(int i=1;i<3;i++) {
-				
-				nextPos[1] = PISL_UR[1] - i*(deltaY/SCAN_RADIUS)*TILE_LENGTH;
-				
+			for(int i=0; i <3; i++) {
 				for(int j=0; j<3; j++) {
-					if (j==0) {
-					nextPos[0] = PISL_LL[0] + TILE_LENGTH/2;
+					float[] nextPos = new float[2];
+
+					if(i==0 && j ==0) {
+					
+						nextPos[0] = PISL_LL[0]+TILE_LENGTH/2;
+						nextPos[1] = PISL_LL[1]+TILE_LENGTH/2;
+					}
+					if(i==0) {
+						
+						nextPos[0]=PISL_LL[0] + TILE_LENGTH/2;
+						nextPos[1] = PISL_LL[1] + j*(deltaY/SCAN_RADIUS)*TILE_LENGTH;
+					}
+					if(j==0) {
+						
+						nextPos[1] = PISL_LL[1]+TILE_LENGTH/2;
+						nextPos[0] = PISL_LL[0]+ i*(deltaX/SCAN_RADIUS)*TILE_LENGTH;
+					}
+					else {
+						
+						nextPos[0]=PISL_LL[0]+ i*(deltaX/SCAN_RADIUS)*TILE_LENGTH;
+						nextPos[1] = PISL_LL[1] + j*(deltaY/SCAN_RADIUS)*TILE_LENGTH;
 					}
 					
-					nextPos[0] = PISL_LL[0] + j*(deltaX/SCAN_RADIUS)*TILE_LENGTH;
-					
 					scanningPoints.add(nextPos);
+					
 				}
 			}
 			
@@ -163,7 +192,7 @@ public class CanSearch {
         double[] position = new double[2];
         while (!atFinalHeading[0]) {
             double dist = (double) USData.getFilteredDistance();
-            if (dist <= scanRadius) {
+            if (dist <= SCAN_RADIUS) {
                 double angle = odo.getXYT()[2];
                 position[0] = dist * Math.sin(Math.toRadians(angle)) + robotPos[0];
                 position[1] = dist * Math.cos(Math.toRadians(angle)) + robotPos[1];
@@ -225,7 +254,7 @@ public class CanSearch {
                 while (!Thread.interrupted()) {
                     double angle = odo.getXYT()[2];
                     double dist = (double) USData.getFilteredDistance();
-                    if (dist <= scanRadius) {
+                    if (dist <= SCAN_RADIUS) {
                         angleDistData.add(new double[] { angle, dist });
                     }
 
