@@ -107,6 +107,7 @@ public class CanSearch {
 		
 	}
 	
+	
     /**
      * 
      * @param robotPos
@@ -115,7 +116,7 @@ public class CanSearch {
      * @return a list containing detected positions of cans
      * @author Julian Armour
      */
-    public List<double[]> getCanLocations(double[] robotPos, double[] searchLL, double[] searchUR) {
+    public List<double[]> canScan(double[] robotPos, double[] searchLL, double[] searchUR) {
         final List<double[]> angleDistData = new LinkedList<double[]>();
         // anonymous class for polling distance data while the robot rotates
         Thread distancePoller = new Thread() {
