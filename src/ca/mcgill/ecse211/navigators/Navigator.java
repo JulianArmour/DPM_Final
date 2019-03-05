@@ -3,7 +3,7 @@ import ca.mcgill.ecse211.StartingCorner;
 import ca.mcgill.ecse211.localizers.Localization;
 import ca.mcgill.ecse211.odometer.*;
 
-public class TunnelNavigator {
+public class Navigator {
 	
 	private static final double TILE_SIZE = 30.48;
 	private static final double VERT_SENSOR_OFFSET = 5; 
@@ -15,7 +15,7 @@ public class TunnelNavigator {
 	private static int bridgeTileLength;
 	private static StartingCorner SC;
 
-	public TunnelNavigator(MovementController move, Odometer odo, Localization localizer, int TLLX, int TLLY, int TURX, int TURY, StartingCorner SC) {
+	public Navigator(MovementController move, Odometer odo, Localization localizer, int TLLX, int TLLY, int TURX, int TURY, StartingCorner SC) {
 		this.move = move;
 		this.odo = odo;
 		this.TLLX = TLLX;
