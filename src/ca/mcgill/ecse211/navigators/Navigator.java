@@ -65,12 +65,12 @@ public class Navigator {
 		move.travelTo((TLLX + tCornerIntX)*TILE_SIZE, (TLLY + tCornerIntY)*TILE_SIZE, false); //Travel to the tile intersection diagonally opposite to LL tunnel corner
 		move.turnTo(90); 
 		
-		localizer.quickLocalization(); //Correction in y
+		localizer.quickThetaCorrection(); //Correction in y
 		move.driveDistance(-VERT_SENSOR_OFFSET); 
 		move.rotateAngle(90, turnFirLoc);
 		move.driveDistance(-5);
 		
-		localizer.quickLocalization(); //Correction in x
+		localizer.quickThetaCorrection(); //Correction in x
 		move.driveDistance((TILE_SIZE/2)-VERT_SENSOR_OFFSET); //Position itself in the middle of the tile in front and facing the tunnel
 		move.rotateAngle(90, turnSecLoc);
 		
@@ -103,14 +103,14 @@ public class Navigator {
 				turnLoc = false;
 				thetaCor = 0;
 		}
-		localizer.quickLocalization(); //Make sure robot is straight
+		localizer.quickThetaCorrection(); //Make sure robot is straight
 		move.driveDistance((bridgeTileLength+2)*TILE_SIZE - VERT_SENSOR_OFFSET); //Cross tunnel
 		
-		localizer.quickLocalization(); //Correct angle and x position 
+		localizer.quickThetaCorrection(); //Correct angle and x position 
 		move.driveDistance(-VERT_SENSOR_OFFSET); 
 		move.rotateAngle(90, turnLoc);
 		
-		localizer.quickLocalization(); //Correct y position
+		localizer.quickThetaCorrection(); //Correct y position
 		move.driveDistance(-VERT_SENSOR_OFFSET);
 		
 		odo.setXYT((TURX + posCorX)*TILE_SIZE, (TURY + posCorY)*TILE_SIZE, thetaCor);
@@ -123,10 +123,15 @@ public class Navigator {
 	public void travelToBTunnel() {
 		
 		move.travelTo((TURX+1)*TILE_SIZE, odo.getXYT()[1], false);
-		localizer.quickLocalization();
+		localizer.quickThetaCorrection();
 		move.driveDistance(-VERT_SENSOR_OFFSET);
-		odo.setTheta(180);
+		odo.setTheta(move.roundAngle());
 		move.travelTo(odo.getXYT()[0], TURY*TILE_SIZE, false);
+		localizer.quickThetaCorrection();
+		move.driveDistance(-VERT_SENSOR_OFFSET);
+		odo.setTheta(move.roundAngle());
+		move.turnTo(180);
+		
 		
 	}
 }
