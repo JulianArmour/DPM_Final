@@ -1,4 +1,4 @@
-package ca.mcgill.ecse.sensors;
+package ca.mcgill.ecse211.sensors;
 
 import java.util.Arrays;
 
@@ -83,7 +83,7 @@ public class MedianDistanceSensor {
      */
     public float getFilteredDistance() {
         fetchAndFilter();
-        return median;
+        return Math.min(median, 255);
     }
 
     /**

@@ -1,11 +1,11 @@
 package ca.mcgill.ecse211.localizers;
 
 import ca.mcgill.ecse.sensors.LightDifferentialFilter;
-import ca.mcgill.ecse.sensors.MedianDistanceSensor;
 import ca.mcgill.ecse211.Main;
 import ca.mcgill.ecse211.StartingCorner;
 import ca.mcgill.ecse211.navigators.MovementController;
 import ca.mcgill.ecse211.odometer.Odometer;
+import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
 
 /**
  * Provides the methods for the initial localization and localizing on the fly.
@@ -116,10 +116,48 @@ public class Localization {
 
         odo.setTheta(movCon.roundAngle());
     }
+    
+    /**
+     * performs a {@link #quickThetaCorrection()}, but will also correct either the x or y position
+     * for the {@link Odometer}.
+     */
+    public void quickLocalization() {
+        // turn to the nearest right angle
+        movCon.turnTo(movCon.roundAngle());
+        // perform quick theta correction
+        quickThetaCorrection();
+        // update the x or y position of the odometer (depending on orientation)
+        switch (movCon.roundAngle()) {
+        case 0:
+            odo.setY(MovementController.roundDistance(odo.getXYT()[1], Main.TILE_SIZE) + Main.LT_SENSOR_TO_WHEELBASE);
+            break;
+        case 90:
+            odo.setX(MovementController.roundDistance(odo.getXYT()[0], Main.TILE_SIZE) + Main.LT_SENSOR_TO_WHEELBASE);
+            break;
+        case 180:
+            odo.setY(MovementController.roundDistance(odo.getXYT()[1], Main.TILE_SIZE) - Main.LT_SENSOR_TO_WHEELBASE);
+            break;
+        case 270:
+            odo.setX(MovementController.roundDistance(odo.getXYT()[0], Main.TILE_SIZE) - Main.LT_SENSOR_TO_WHEELBASE);
+            break;
+        default:
+            break;
+        }
+    }
+    
+    /**
+     * performs two {@link #quickLocalization()} routines to completely update the odometer's position and angle.
+     */
+    public void completeQuickLocalization() {
+        quickLocalization();
+        movCon.driveDistance(-1 * Main.LT_SENSOR_TO_WHEELBASE, false);
+        movCon.rotateAngle(90, false, false);
+        quickLocalization();
+    }
 
     /**
      * light localization routine to be called after
-     * {@link #initialUSLocalization()}
+     * {@link #initialUSLocalization()}.
      */
     public void initialLightLocalization() {
         quickThetaCorrection();
