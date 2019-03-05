@@ -113,7 +113,6 @@ public class Navigator {
 		move.driveDistance(-VERT_SENSOR_OFFSET);
 		
 		odo.setXYT((TURX + posCorX)*TILE_SIZE, (TURY + posCorY)*TILE_SIZE, thetaCor);
-		
 	}
 	
 	/**
