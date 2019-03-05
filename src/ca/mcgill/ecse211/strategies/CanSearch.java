@@ -26,7 +26,7 @@ public class CanSearch {
 	private int startCorner;
 	private float TILE_LENGTH;
 	private float deltaX, deltaY;
-	private float scanRadius = TILE_LENGTH*3;
+	private float SCAN_RADIUS = TILE_LENGTH*3;
 	private float[] nextPos;
 	
 	private LinkedList<float[]> scanningPoints = new LinkedList<float[]>();
@@ -52,7 +52,7 @@ public class CanSearch {
 	public void setScanPositions() {
 		// TODO add all possibilities ST ==0,1,2,3
 		
-		deltaX = PISL_UR[0] - PISL_LL[0];
+		deltaX = PISL_UR[0] - PLL[0];
 		deltaY = PISL_UR[1] - PISL_LL[1];
 		
 		
@@ -64,7 +64,7 @@ public class CanSearch {
 			
 			for(int i=1; i <3; i++) {
 				
-				nextPos[0] = PISL_UR[0] - i*(deltaX/scanRadius)*TILE_LENGTH;
+				nextPos[0] = PISL_UR[0] - i*(deltaX/SCAN_RADIUS)*TILE_LENGTH;
 				
 				for(int j=0; j<3; j++) {
 					
@@ -72,37 +72,64 @@ public class CanSearch {
 						nextPos[1] = PISL_LL[1] + TILE_LENGTH/2;
 					}
 					
-					nextPos[1] = PISL_LL[1] + j*(deltaY/scanRadius)*TILE_LENGTH;
+					nextPos[1] = PISL_LL[1] + j*(deltaY/SCAN_RADIUS)*TILE_LENGTH;
 					
 					//now that nextPos[0] and nextPos[1] are defined, add them to the list
 					scanningPoints.add(nextPos);
 				}
 			}
 		}
+		
+		if (startCorner == 3) {
+			
+			float[] firstPos = {PISL_LL[0]+TILE_LENGTH/2 , PISL_UR[1]-TILE_LENGTH/2};
+			scanningPoints.add(firstPos);
+			
+			for(int i=1;i<3;i++) {
+				
+				nextPos[1] = PISL_UR[1] - i*(deltaY/SCAN_RADIUS)*TILE_LENGTH;
+				
+				for(int j=0; j<3; j++) {
+					if (j==0) {
+					nextPos[0] = PISL_LL[0] + TILE_LENGTH/2;
+					}
+					
+					nextPos[0] = PISL_LL[0] + j*(deltaX/SCAN_RADIUS)*TILE_LENGTH;
+					
+					scanningPoints.add(nextPos);
+				}
+			}
+			
+		}
+		
+		
 	}
 	
 	/*
 	 * Goes to current scan position and scans to detect a can
 	 */
 	public void getCanPosition() {
-		
-		
+
+
 		if(startCorner == 1) {
-		movCon.travelTo(scanningPoints.getFirst()[0], scanningPoints.getFirst()[1], false);
-		movCon.turnTo(90);
-		movCon.rotateAngle(360, false, true);
-		while(USData.getFilteredDistance() > scanRadius) {
+			movCon.travelTo(scanningPoints.getFirst()[0], scanningPoints.getFirst()[1], false);
+			movCon.turnTo(90);
+			movCon.rotateAngle(360, false, true);
 			
-			try {
-				Thread.sleep(50);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			while(USData.getFilteredDistance() > SCAN_RADIUS) {
+
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
+
+
 		}
-		}
-		
-		
+
+
 	}
 	
 	/*
@@ -110,7 +137,7 @@ public class CanSearch {
 	 * performs a second scan, 
 	 * takes position for grabbing
 	 */
-	public void secondaryScar() {
+	public void secondaryScan() {
 		
 	}
 	
