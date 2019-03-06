@@ -133,6 +133,7 @@ public class Navigator {
 	 * Travel across the tunnel
 	 */
 	public void throughTunnel() {
+		//STILL NEED TO CHANGE ALL OF THIS AFTER TUNNEL FINDER COMPLETION
 		int posCorX = 0, posCorY = 0;
 		int thetaCor = 0;
 		boolean turnLoc = true;
@@ -185,7 +186,7 @@ public class Navigator {
 	 * Travel back to the tunnel from the search zone
 	 */
 	public void travelToBTunnel() {
-		
+		 //havent checked this yet after tunnel finder completion
 
 		move.travelTo((TURX+1)*TILE_SIZE, odo.getXYT()[1], false);
 		localizer.quickThetaCorrection();
