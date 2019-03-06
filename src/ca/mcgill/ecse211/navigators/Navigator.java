@@ -10,20 +10,24 @@ public class Navigator {
 	private static MovementController move;
 	private static Odometer odo;
 	private static Localization localizer;
-	private static int TLLX, TLLY, TURX, TURY;
+	private static int TLLX, TLLY, TURX, TURY, ZLLX, ZLLY, ZURX, ZURY;
 	private static int bridgeTileLength;
 	private static int SC;
 
-	public Navigator(MovementController move, Odometer odo, Localization localizer, int TLLX, int TLLY, int TURX, int TURY, int SC) {
+	public Navigator(MovementController move, Odometer odo, Localization localizer, int TLLX, int TLLY, int TURX, int TURY, int ZLLX, int ZLLY, int ZURX, int ZURY, int SC) {
 		this.move = move;
 		this.odo = odo;
 		this.TLLX = TLLX;
 		this.TLLY = TLLY;
 		this.TURX = TURX;
 		this.TURY = TURY;
+		this.ZLLX = ZLLX;
+		this.ZLLY = ZLLY;
+		this.ZURX = ZURX;
+		this.ZURY = ZURY;
 		this.localizer = localizer;
 		this.SC = SC;
-		bridgeTileLength = (Math.abs(TLLX-TURX) > Math.abs(TLLY-TURY)) ? Math.abs(TLLX-TURX) : Math.abs(TLLY-TURY); //Calculate birdge length from coordinates
+		bridgeTileLength = (Math.abs(TLLX-TURX) > Math.abs(TLLY-TURY)) ? Math.abs(TLLX-TURX) : Math.abs(TLLY-TURY); //Calculate bridge length from coordinates
 		
 	}
 	
@@ -32,46 +36,88 @@ public class Navigator {
 	 * 
 	 */
 	public void travelToFTunnel() {
-		int tCornerIntX = 0, tCornerIntY = 0;
-		boolean turnFirLoc = true, turnSecLoc = true;
-		if(SC == 3) {
-			if(TURY == 9) {
-				tCornerIntX = -1;
-				tCornerIntY = 0;
-				turnFirLoc = false;
-				turnSecLoc = true;
-			}else {
-				tCornerIntX = -1;
-				tCornerIntY = 1;
-				turnFirLoc = true;
-				turnSecLoc = false;
+		boolean OP1 = true;
+		int turnToTunnel = 0;
+		double tunnelTilePosYOP2 = 0, tunnelTilePosXOP2 = 0, tunnelTilePosXOP1 = 0, tunnelTilePosYOP1 = 0;
+		switch(SC) {
+		case 0:
+			if(TURX > ZURX) {
+				OP1 = true;
+				turnToTunnel = 0;
+				tunnelTilePosXOP1 = TLLX-1;
+				tunnelTilePosYOP1 = TLLY + 0.5;
+			} else {
+				OP1 = false;
+				tunnelTilePosYOP2 = TLLY - 1;
+				tunnelTilePosXOP2 = TURX - 0.5;
+				turnToTunnel = 90;
 			}
+			break;
+		case 1:
+			if(TLLX < ZLLX) {
+				OP1 = true;
+				tunnelTilePosXOP1 = TURX + 1;
+				tunnelTilePosYOP1 = TURY - 0.5;
+				turnToTunnel = 0;
+			} else { 
+				OP1 = false;
+				tunnelTilePosXOP2 = TURX - 0.5;
+				tunnelTilePosYOP2 = TLLY - 1;
+				turnToTunnel = 90;
+			}
+			break;
+		case 2:
+			if(TLLX < ZLLX) {
+				OP1 = true;
+				tunnelTilePosXOP1 = TURX + 1;
+				tunnelTilePosYOP1 = TURY - 0.5;
+				turnToTunnel = 0;
+			} else {
+				OP1 = false;
+				tunnelTilePosYOP2 = TURY + 1;
+				tunnelTilePosXOP2 = TURX - 0.5;
+				turnToTunnel = 270;
+			}
+			break;
+		case 3:
+			if(TURX > ZURX) {
+				OP1 = true;
+				turnToTunnel = 0;
+				tunnelTilePosXOP1 = TLLX-1;
+				tunnelTilePosYOP1 = TLLY + 0.5;
+			} else {
+				OP1 = false;
+				tunnelTilePosYOP2 = TURY + 1;
+				tunnelTilePosXOP2 = TURX - 0.5;
+				turnToTunnel = 270;
+			}
+			break;
+			default:
+				break;
+		}
+		if(OP1) {
+			move.travelTo(tunnelTilePosXOP1*TILE_SIZE, odo.getXYT()[1], false); //Move to the x position on the grid line before the tunnel
+			localizer.quickThetaCorrection();
+			odo.setTheta(move.roundAngle());
+			move.driveDistance(-VERT_SENSOR_OFFSET);
+			
+			move.travelTo(odo.getXYT()[0], tunnelTilePosYOP1 * TILE_SIZE, false); //Move the to y position on the grid line in the middle of the tile in front of the tunnel
+			move.turnTo(turnToTunnel);
+			localizer.quickThetaCorrection(); //Make sure we are well facing the tunnel
+			odo.setTheta(move.roundAngle());
 			
 		}
 		else {
-			if(TURX == 15) {
-				tCornerIntX = 0;
-				tCornerIntY = -1;
-				turnFirLoc = true;
-				turnSecLoc = false;
-			}else {
-				tCornerIntX = 1;
-				tCornerIntY = -1;
-				turnFirLoc = false;
-				turnSecLoc = true;
-			}
+			move.travelTo(odo.getXYT()[0], tunnelTilePosYOP2*TILE_SIZE, false);
+			localizer.quickThetaCorrection();
+			odo.setTheta(move.roundAngle());
+			move.driveDistance(-VERT_SENSOR_OFFSET);
+			
+			move.travelTo(tunnelTilePosXOP2*TILE_SIZE, odo.getXYT()[1], false);
+			move.turnTo(turnToTunnel);;
+			localizer.quickThetaCorrection();
+			odo.setTheta(move.roundAngle());
 		}
-		move.travelTo((TLLX + tCornerIntX)*TILE_SIZE, (TLLY + tCornerIntY)*TILE_SIZE, false); //Travel to the tile intersection diagonally opposite to LL tunnel corner
-		move.turnTo(90); 
-		
-		localizer.quickThetaCorrection(); //Correction in y
-		move.driveDistance(-VERT_SENSOR_OFFSET); 
-		move.rotateAngle(90, turnFirLoc);
-		move.driveDistance(-5);
-		
-		localizer.quickThetaCorrection(); //Correction in x
-		move.driveDistance((TILE_SIZE/2)-VERT_SENSOR_OFFSET); //Position itself in the middle of the tile in front and facing the tunnel
-		move.rotateAngle(90, turnSecLoc);
 		
 	}
 	
@@ -134,6 +180,5 @@ public class Navigator {
 	}
 	
 	public void goToStartingTile() {
-		if(St)
 	}
 }
