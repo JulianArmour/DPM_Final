@@ -1,4 +1,6 @@
 package ca.mcgill.ecse211.navigators;
+import java.util.function.IntPredicate;
+
 import ca.mcgill.ecse211.localizers.Localization;
 import ca.mcgill.ecse211.odometer.*;
 
@@ -11,23 +13,29 @@ public class Navigator {
 	private static Odometer odo;
 	private static Localization localizer;
 	private static int TLLX, TLLY, TURX, TURY, ZLLX, ZLLY, ZURX, ZURY;
+
+	
+	
+	
 	private static int bridgeTileLength;
 	private static int SC;
 
-	public Navigator(MovementController move, Odometer odo, Localization localizer, int TLLX, int TLLY, int TURX, int TURY, int ZLLX, int ZLLY, int ZURX, int ZURY, int SC) {
-		this.move = move;
+	public Navigator(MovementController move, Odometer odo, Localization localizer, int[] TLL, int TUR[], int ZLL[], int ZUR[], int SC) {
+		this.move = move; 
 		this.odo = odo;
-		this.TLLX = TLLX;
-		this.TLLY = TLLY;
-		this.TURX = TURX;
-		this.TURY = TURY;
-		this.ZLLX = ZLLX;
-		this.ZLLY = ZLLY;
-		this.ZURX = ZURX;
-		this.ZURY = ZURY;
+
+		TLLX = TLL[0];
+		TLLY = TLL[1];
+		TURX = TUR[0];
+		TURY = TUR[1];
+		ZLLX = ZLL[0];
+		ZLLY = ZLL[1];
+		ZURX = ZUR[0];
+		ZURY = ZUR[1];
 		this.localizer = localizer;
 		this.SC = SC;
 		bridgeTileLength = (Math.abs(TLLX-TURX) > Math.abs(TLLY-TURY)) ? Math.abs(TLLX-TURX) : Math.abs(TLLY-TURY); //Calculate bridge length from coordinates
+
 		
 	}
 	
@@ -36,6 +44,7 @@ public class Navigator {
 	 * 
 	 */
 	public void travelToFTunnel() {
+
 		boolean OP1 = true;
 		int turnToTunnel = 0;
 		double tunnelTilePosYOP2 = 0, tunnelTilePosXOP2 = 0, tunnelTilePosXOP1 = 0, tunnelTilePosYOP1 = 0;
@@ -118,7 +127,6 @@ public class Navigator {
 			localizer.quickThetaCorrection();
 			odo.setTheta(move.roundAngle());
 		}
-		
 	}
 	
 	/**
@@ -148,15 +156,27 @@ public class Navigator {
 				turnLoc = false;
 				thetaCor = 0;
 		}
+		
 		localizer.quickThetaCorrection(); //Make sure robot is straight
 		move.driveDistance((bridgeTileLength+2)*TILE_SIZE - VERT_SENSOR_OFFSET); //Cross tunnel
-		
+
+		localizer.quickLocalization(); //Make sure robot is straight
+		move.driveDistance((bridgeTileLength+2)*TILE_SIZE - VERT_SENSOR_OFFSET); //Cross tunnel
+
 		localizer.quickThetaCorrection(); //Correct angle and x position 
 		move.driveDistance(-VERT_SENSOR_OFFSET); 
 		move.rotateAngle(90, turnLoc);
-		
+
+		localizer.quickLocalization(); //Correct angle and x position 
+		move.driveDistance(-VERT_SENSOR_OFFSET); 
+		move.rotateAngle(90, turnLoc);
+
 		localizer.quickThetaCorrection(); //Correct y position
 		move.driveDistance(-VERT_SENSOR_OFFSET);
+
+		localizer.quickLocalization(); //Correct y position
+		move.driveDistance(-VERT_SENSOR_OFFSET);
+
 		
 		odo.setXYT((TURX + posCorX)*TILE_SIZE, (TURY + posCorY)*TILE_SIZE, thetaCor);
 	}
@@ -166,6 +186,7 @@ public class Navigator {
 	 */
 	public void travelToBTunnel() {
 		
+
 		move.travelTo((TURX+1)*TILE_SIZE, odo.getXYT()[1], false);
 		localizer.quickThetaCorrection();
 		move.driveDistance(-VERT_SENSOR_OFFSET);
@@ -176,9 +197,20 @@ public class Navigator {
 		odo.setTheta(move.roundAngle());
 		move.turnTo(180);
 		
+		move.travelTo((TURX+1)*TILE_SIZE, odo.getXYT()[1], false);
+		localizer.quickLocalization();
+		move.driveDistance(-VERT_SENSOR_OFFSET);
+		odo.setTheta(180);
+		move.travelTo(odo.getXYT()[0], TURY*TILE_SIZE, false);
 		
 	}
 	
 	public void goToStartingTile() {
+
+		if(SC==0) {
+
+
+		}
 	}
 }
+
