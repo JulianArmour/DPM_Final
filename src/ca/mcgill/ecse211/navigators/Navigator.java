@@ -12,7 +12,7 @@ public class Navigator {
 	private static MovementController move;
 	private static Odometer odo;
 	private static Localization localizer;
-	private static int TLLX, TLLY, TURX, TURY, ZLLX, ZLLY, ZURX, ZURY;
+	private static int TLLX, TLLY, TURX, TURY, STZLLX, STZLLY, STZURX, STZURY, SEZLLX, SEZLLY, SEZURX, SEZURY;
 
 	
 	
@@ -20,7 +20,7 @@ public class Navigator {
 	private static int bridgeTileLength;
 	private static int SC;
 
-	public Navigator(MovementController move, Odometer odo, Localization localizer, int[] TLL, int TUR[], int ZLL[], int ZUR[], int SC) {
+	public Navigator(MovementController move, Odometer odo, Localization localizer, int[] TLL, int TUR[], int STZLL[], int STZUR[], int SC, int SEZLL[], int SEZUR[]) {
 		this.move = move; 
 		this.odo = odo;
 
@@ -28,10 +28,14 @@ public class Navigator {
 		TLLY = TLL[1];
 		TURX = TUR[0];
 		TURY = TUR[1];
-		ZLLX = ZLL[0];
-		ZLLY = ZLL[1];
-		ZURX = ZUR[0];
-		ZURY = ZUR[1];
+		STZLLX = STZLL[0];
+		STZLLY = STZLL[1];
+		STZURX = STZUR[0];
+		STZURY = STZUR[1];
+		SEZLLX = SEZLL[0];
+		SEZLLY = SEZLL[1];
+		SEZURX = SEZUR[0];
+		SEZURY = SEZUR[1];
 		this.localizer = localizer;
 		this.SC = SC;
 		bridgeTileLength = (Math.abs(TLLX-TURX) > Math.abs(TLLY-TURY)) ? Math.abs(TLLX-TURX) : Math.abs(TLLY-TURY); //Calculate bridge length from coordinates
@@ -50,7 +54,7 @@ public class Navigator {
 		double tunnelTilePosYOP2 = 0, tunnelTilePosXOP2 = 0, tunnelTilePosXOP1 = 0, tunnelTilePosYOP1 = 0;
 		switch(SC) {
 		case 0:
-			if(TURX > ZURX) {
+			if(TURX > STZURX) {
 				OP1 = true;
 				turnToTunnel = 0;
 				tunnelTilePosXOP1 = TLLX-1;
@@ -63,7 +67,7 @@ public class Navigator {
 			}
 			break;
 		case 1:
-			if(TLLX < ZLLX) {
+			if(TLLX < STZLLX) {
 				OP1 = true;
 				tunnelTilePosXOP1 = TURX + 1;
 				tunnelTilePosYOP1 = TURY - 0.5;
@@ -76,7 +80,7 @@ public class Navigator {
 			}
 			break;
 		case 2:
-			if(TLLX < ZLLX) {
+			if(TLLX < STZLLX) {
 				OP1 = true;
 				tunnelTilePosXOP1 = TURX + 1;
 				tunnelTilePosYOP1 = TURY - 0.5;
@@ -89,7 +93,7 @@ public class Navigator {
 			}
 			break;
 		case 3:
-			if(TURX > ZURX) {
+			if(TURX > STZURX) {
 				OP1 = true;
 				turnToTunnel = 0;
 				tunnelTilePosXOP1 = TLLX-1;
@@ -137,49 +141,84 @@ public class Navigator {
 		int posCorX = 0, posCorY = 0;
 		int thetaCor = 0;
 		boolean turnLoc = true;
-		if(SC == 3) {
-			if(TURY == 9) {
-				posCorX = 1;
-				posCorY = -1;
-				turnLoc = true;
-				thetaCor = 90;
-			}else {
-				posCorX = 1;
-				posCorY = 0;
-				turnLoc= false;
-				thetaCor = 270;
+		switch(SC) {
+		case 0:
+			if(TURX > STZURX) {
+				if(TURY == SEZURY) {
+					turnLoc = true;
+					posCorX = TURX + 1;
+					posCorY = TURY - 1;
+				} else {
+					turnLoc = false;
+					posCorX = TURX + 1;
+					posCorY = TURY;
+				}
+			} else {
+				if(TURX == SEZURX) {
+					turnLoc = false;
+					posCorX = TURX - 1;
+					posCorY = TURY + 1;
+				} else {
+					turnLoc = true;
+					posCorX = TURX;
+					posCorY = TURY + 1;
+				}
 			}
-			
-		}
-		else {
-				posCorX = -1;
-				posCorY = +1;
+			break;
+		case 1:
+			if(TLLX < STZLLX) {
+				if(TURY == STZURY) {
+					turnLoc = false;
+					posCorX = TLLX - 1;
+					posCorY = TLLY;
+				} else {
+					turnLoc = true;
+					posCorX = TLLX - 1;
+					posCorY = TLLY + 1;
+				}
+			} else { 
+				if(TLLX )
 				turnLoc = false;
-				thetaCor = 0;
+				posCorX = TURX - 1;
+				posCorY = TURY + 1;
+				
+			}
+			break;
+		case 2:
+			if(TLLX < STZLLX) {
+				if(TLLY == STZLLY) {
+					turnLoc = true; 
+					posCorX = TLLX - 1;
+					posCorY = TLLY + 1;
+				} else {
+					turnLoc = false;
+					posCorX = TLLX - 1;
+					posCorY = TLLY;
+				}
+			} else {
+				
+			}
+			break;
+		case 3:
+			if(TURX > STZURX) {
+				
+			} else {
+				
+			}
+			break;
+			default:
+				break;
 		}
-		
-		localizer.quickThetaCorrection(); //Make sure robot is straight
-		move.driveDistance((bridgeTileLength+2)*TILE_SIZE - VERT_SENSOR_OFFSET); //Cross tunnel
-
-		localizer.quickLocalization(); //Make sure robot is straight
 		move.driveDistance((bridgeTileLength+2)*TILE_SIZE - VERT_SENSOR_OFFSET); //Cross tunnel
 
 		localizer.quickThetaCorrection(); //Correct angle and x position 
 		move.driveDistance(-VERT_SENSOR_OFFSET); 
 		move.rotateAngle(90, turnLoc);
 
-		localizer.quickLocalization(); //Correct angle and x position 
-		move.driveDistance(-VERT_SENSOR_OFFSET); 
-		move.rotateAngle(90, turnLoc);
-
 		localizer.quickThetaCorrection(); //Correct y position
 		move.driveDistance(-VERT_SENSOR_OFFSET);
-
-		localizer.quickLocalization(); //Correct y position
-		move.driveDistance(-VERT_SENSOR_OFFSET);
-
 		
-		odo.setXYT((TURX + posCorX)*TILE_SIZE, (TURY + posCorY)*TILE_SIZE, thetaCor);
+		odo.setXYT(posCorX*TILE_SIZE, posCorY*TILE_SIZE, thetaCor);
 	}
 	
 	/**
