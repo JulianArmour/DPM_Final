@@ -24,15 +24,15 @@ public class Navigator {
 		this.move = move; 
 		this.odo = odo;
 
-		TLLX = TLL[0];
+		TLLX = TLL[0]; //Set tunnel coordinates
 		TLLY = TLL[1];
 		TURX = TUR[0];
 		TURY = TUR[1];
-		STZLLX = STZLL[0];
+		STZLLX = STZLL[0]; //Set starting zone coordinates
 		STZLLY = STZLL[1];
 		STZURX = STZUR[0];
 		STZURY = STZUR[1];
-		SEZLLX = SEZLL[0];
+		SEZLLX = SEZLL[0]; //Set search zone coordinates
 		SEZLLY = SEZLL[1];
 		SEZURX = SEZUR[0];
 		SEZURY = SEZUR[1];
@@ -136,108 +136,208 @@ public class Navigator {
 	/**
 	 * Travel across the tunnel
 	 */
-	public void throughTunnel() {
-		//STILL NEED TO CHANGE ALL OF THIS AFTER TUNNEL FINDER COMPLETION
+	public void throughTunnel(boolean direction) {
 		int posCorX = 0, posCorY = 0;
 		int thetaCor = 0;
 		boolean turnLoc = true;
-		switch(SC) {
-		case 0:
-			if(TURX > STZURX) {
-				if(TURY == SEZURY) {
-					turnLoc = true;
-					posCorX = TURX + 1;
-					posCorY = TURY - 1;
+		if (direction) { //If robot is going from starting zone to search zone, these are the parameters to use
+			switch(SC) {
+			case 0:
+				if(TURX > STZURX) {
+					if(TURY == SEZURY) {
+						turnLoc = true;
+						posCorX = TURX + 1;
+						posCorY = TURY - 1;
+					} else {
+						turnLoc = false;
+						posCorX = TURX + 1;
+						posCorY = TURY;
+					}
 				} else {
-					turnLoc = false;
-					posCorX = TURX + 1;
-					posCorY = TURY;
+					if(TURX == SEZURX) {
+						turnLoc = false;
+						posCorX = TURX - 1;
+						posCorY = TURY + 1;
+					} else {
+						turnLoc = true;
+						posCorX = TURX;
+						posCorY = TURY + 1;
+					}
 				}
-			} else {
-				if(TURX == SEZURX) {
-					turnLoc = false;
-					posCorX = TURX - 1;
-					posCorY = TURY + 1;
-				} else {
-					turnLoc = true;
-					posCorX = TURX;
-					posCorY = TURY + 1;
-				}
-			}
-			break;
-		case 1:
-			if(TLLX < STZLLX) {
-				if(TURY == STZURY) {
-					turnLoc = false;
-					posCorX = TLLX - 1;
-					posCorY = TLLY;
-				} else {
-					turnLoc = true;
-					posCorX = TLLX - 1;
-					posCorY = TLLY + 1;
-				}
-			} else { 
-				if(TLLX == SEZLLX) {
-					turnLoc = true; 
-					posCorX = TURX;
-					posCorY = TURY + 1;
-				} else {
-					turnLoc = false;
-					posCorX = TURX - 1;
-					posCorY = TURY + 1;
-				}
-				
-			}
-			break;
-		case 2:
-			if(TLLX < STZLLX) {
-				if(TLLY == STZLLY) {
-					turnLoc = true; 
-					posCorX = TLLX - 1;
-					posCorY = TLLY + 1;
-				} else {
-					turnLoc = false;
-					posCorX = TLLX - 1;
-					posCorY = TLLY;
-				}
-			} else {
-				if(TLLX == SEZLLX) {
-					turnLoc = false;
-					posCorX = TLLX + 1;
-					posCorY = TLLY - 1;
-				} else {
-					turnLoc = true;
-					posCorX = TLLX;
-					posCorY = TLLY - 1;
-				}
-			}
-			break;
-		case 3:
-			if(TURX > STZURX) {
-				if(TURY == SEZURY) {
-					turnLoc = true;
-					posCorX = TURX + 1;
-					posCorY = TURY - 1;
-				} else {
-					turnLoc = false;
-					posCorX = TURX + 1;
-					posCorY = TURY;
-				}
-			} else {
-				if(TLLX == SEZLLX) {
-					turnLoc = false;
-					posCorX = TLLX + 1;
-					posCorY = TLLY - 1;
-				} else {
-					turnLoc = true;
-					posCorX = TLLX;
-					posCorY = TLLY - 1;
-				}
-			}
-			break;
-			default:
 				break;
+			case 1:
+				if(TLLX < STZLLX) {
+					if(TURY == SEZURY) {
+						turnLoc = false;
+						posCorX = TLLX - 1;
+						posCorY = TLLY;
+					} else {
+						turnLoc = true;
+						posCorX = TLLX - 1;
+						posCorY = TLLY + 1;
+					}
+				} else { 
+					if(TLLX == SEZLLX) {
+						turnLoc = true; 
+						posCorX = TURX;
+						posCorY = TURY + 1;
+					} else {
+						turnLoc = false;
+						posCorX = TURX - 1;
+						posCorY = TURY + 1;
+					}
+					
+				}
+				break;
+			case 2:
+				if(TLLX < STZLLX) {
+					if(TLLY == SEZLLY) {
+						turnLoc = true; 
+						posCorX = TLLX - 1;
+						posCorY = TLLY + 1;
+					} else {
+						turnLoc = false;
+						posCorX = TLLX - 1;
+						posCorY = TLLY;
+					}
+				} else {
+					if(TLLX == SEZLLX) {
+						turnLoc = false;
+						posCorX = TLLX + 1;
+						posCorY = TLLY - 1;
+					} else {
+						turnLoc = true;
+						posCorX = TLLX;
+						posCorY = TLLY - 1;
+					}
+				}
+				break;
+			case 3:
+				if(TURX > STZURX) {
+					if(TURY == SEZURY) {
+						turnLoc = true;
+						posCorX = TURX + 1;
+						posCorY = TURY - 1;
+					} else {
+						turnLoc = false;
+						posCorX = TURX + 1;
+						posCorY = TURY;
+					}
+				} else {
+					if(TLLX == SEZLLX) {
+						turnLoc = false;
+						posCorX = TLLX + 1;
+						posCorY = TLLY - 1;
+					} else {
+						turnLoc = true;
+						posCorX = TLLX;
+						posCorY = TLLY - 1;
+					}
+				}
+				break;
+				default:
+					break;
+			}
+		} else { //If robot is going from search zone to starting zone, these are the parameters to use
+			switch(SC) {
+			case 0:
+				if(TURX > STZURX) {
+					if(TLLY == STZLLY) {
+						turnLoc = true;
+						posCorX = TLLX - 1;
+						posCorY = TLLY + 1;
+					} else {
+						turnLoc = false;
+						posCorX = TLLX - 1;
+						posCorY = TLLY;
+					}
+				} else {
+					if(TLLX == STZLLX) {
+						turnLoc = false;
+						posCorX = TLLX + 1;
+						posCorY = TLLY - 1;
+					} else {
+						turnLoc = true;
+						posCorX = TLLX;
+						posCorY = TURY - 1;
+					}
+				}
+				break;
+			case 1:
+				if(TLLX < STZLLX) {
+					if(TLLY == SEZLLY) {
+						turnLoc = false;
+						posCorX = TURX + 1;
+						posCorY = TURY;
+					} else {
+						turnLoc = true;
+						posCorX = TURX + 1;
+						posCorY = TLLY - 1;
+					}
+				} else { 
+					if(TURX == SEZURX) {
+						turnLoc = true; 
+						posCorX = TLLX;
+						posCorY = TLLY - 1;
+					} else {
+						turnLoc = false;
+						posCorX = TLLX + 1;
+						posCorY = TLLY - 1;
+					}
+					
+				}
+				break;
+			case 2:
+				if(TLLX < STZLLX) {
+					if(TURY == STZURY) {
+						turnLoc = true; 
+						posCorX = TURX + 1;
+						posCorY = TURY - 1;
+					} else {
+						turnLoc = false;
+						posCorX = TURX + 1;
+						posCorY = TURY;
+					}
+				} else {
+					if(TURX == STZURX) {
+						turnLoc = false;
+						posCorX = TURX - 1;
+						posCorY = TURY + 1;
+					} else {
+						turnLoc = true;
+						posCorX = TURX;
+						posCorY = TURY + 1;
+					}
+				}
+				break;
+			case 3:
+				if(TURX > STZURX) {
+					if(TURY == STZURY) {
+						turnLoc = false;
+						posCorX = TLLX - 1;
+						posCorY = TLLY;
+					} else {
+						turnLoc = true;
+						posCorX = TLLX - 1;
+						posCorY = TLLY + 1;
+					}
+				} else {
+					if(TLLX == STZLLX) {
+						turnLoc = true;
+						posCorX = TURX;
+						posCorY = TLLY + 1;
+					} else {
+						turnLoc = false;
+						posCorX = TURX - 1;
+						posCorY = TURY + 1;
+					}
+				}
+				break;
+				default:
+					break;
+			}
 		}
+		
 		move.driveDistance((bridgeTileLength+2)*TILE_SIZE - VERT_SENSOR_OFFSET); //Cross tunnel
 
 		localizer.quickThetaCorrection(); //Correct angle and x position 
