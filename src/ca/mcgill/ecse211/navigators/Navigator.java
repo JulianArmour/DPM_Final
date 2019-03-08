@@ -46,70 +46,129 @@ public class Navigator {
 	
 	/**
 	 * Travel to the tunnel from starting point
-	 * 
+	 * @param direction Boolean, if true, robot is going to the tunnel from the starting zone, if false the robot is going to the tunnel from the search zone
 	 */
-	public void travelToFTunnel() {
+	public void travelToTunnel(boolean direction) {
 
 		boolean OP1 = true;
 		int turnToTunnel = 0;
 		double tunnelTilePosYOP2 = 0, tunnelTilePosXOP2 = 0, tunnelTilePosXOP1 = 0, tunnelTilePosYOP1 = 0;
-		switch(SC) {
-		case 0:
-			if(TURX > STZURX) {
-				OP1 = true;
-				turnToTunnel = 0;
-				tunnelTilePosXOP1 = TLLX-1;
-				tunnelTilePosYOP1 = TLLY + 0.5;
-			} else {
-				OP1 = false;
-				tunnelTilePosYOP2 = TLLY - 1;
-				tunnelTilePosXOP2 = TURX - 0.5;
-				turnToTunnel = 90;
-			}
-			break;
-		case 1:
-			if(TLLX < STZLLX) {
-				OP1 = true;
-				tunnelTilePosXOP1 = TURX + 1;
-				tunnelTilePosYOP1 = TURY - 0.5;
-				turnToTunnel = 0;
-			} else { 
-				OP1 = false;
-				tunnelTilePosXOP2 = TURX - 0.5;
-				tunnelTilePosYOP2 = TLLY - 1;
-				turnToTunnel = 90;
-			}
-			break;
-		case 2:
-			if(TLLX < STZLLX) {
-				OP1 = true;
-				tunnelTilePosXOP1 = TURX + 1;
-				tunnelTilePosYOP1 = TURY - 0.5;
-				turnToTunnel = 0;
-			} else {
-				OP1 = false;
-				tunnelTilePosYOP2 = TURY + 1;
-				tunnelTilePosXOP2 = TURX - 0.5;
-				turnToTunnel = 270;
-			}
-			break;
-		case 3:
-			if(TURX > STZURX) {
-				OP1 = true;
-				turnToTunnel = 0;
-				tunnelTilePosXOP1 = TLLX-1;
-				tunnelTilePosYOP1 = TLLY + 0.5;
-			} else {
-				OP1 = false;
-				tunnelTilePosYOP2 = TURY + 1;
-				tunnelTilePosXOP2 = TURX - 0.5;
-				turnToTunnel = 270;
-			}
-			break;
+		if(direction) { //If robot is going to tunnel in starting zone, use these parameters
+			switch(SC) {
+			case 0:
+				if(TURX > STZURX) {
+					OP1 = true;
+					turnToTunnel = 90;
+					tunnelTilePosXOP1 = TLLX-1;
+					tunnelTilePosYOP1 = TLLY + 0.5;
+				} else {
+					OP1 = false;
+					tunnelTilePosYOP2 = TLLY - 1;
+					tunnelTilePosXOP2 = TURX - 0.5;
+					turnToTunnel = 0;
+				}
+				break;
+			case 1:
+				if(TLLX < STZLLX) {
+					OP1 = true;
+					tunnelTilePosXOP1 = TURX + 1;
+					tunnelTilePosYOP1 = TURY - 0.5;
+					turnToTunnel = 270;
+				} else { 
+					OP1 = false;
+					tunnelTilePosXOP2 = TURX - 0.5;
+					tunnelTilePosYOP2 = TLLY - 1;
+					turnToTunnel = 0;
+				}
+				break;
+			case 2:
+				if(TLLX < STZLLX) {
+					OP1 = true;
+					tunnelTilePosXOP1 = TURX + 1;
+					tunnelTilePosYOP1 = TURY - 0.5;
+					turnToTunnel = 270;
+				} else {
+					OP1 = false;
+					tunnelTilePosYOP2 = TURY + 1;
+					tunnelTilePosXOP2 = TURX - 0.5;
+					turnToTunnel = 180;
+				}
+				break;
+			case 3:
+				if(TURX > STZURX) {
+					OP1 = true;
+					turnToTunnel = 90;
+					tunnelTilePosXOP1 = TLLX-1;
+					tunnelTilePosYOP1 = TLLY + 0.5;
+				} else {
+					OP1 = false;
+					tunnelTilePosYOP2 = TURY + 1;
+					tunnelTilePosXOP2 = TURX - 0.5;
+					turnToTunnel = 180;
+				}
+				break;
 			default:
 				break;
+			}
+		} else { //If robot is going to tunnel from search zone, use these parameters
+			switch(SC) {
+			case 0:
+				if(TURX > STZURX) {
+					OP1 = true;
+					turnToTunnel = 270;
+					tunnelTilePosXOP1 = TURX + 1;
+					tunnelTilePosYOP1 = TURY - 0.5;
+				} else {
+					OP1 = false;
+					tunnelTilePosYOP2 = TURY - 0.5;
+					tunnelTilePosXOP2 = TURX + 1;
+					turnToTunnel = 180;
+				}
+				break;
+			case 1:
+				if(TLLX < STZLLX) {
+					OP1 = true;
+					tunnelTilePosXOP1 = TLLX - 1;
+					tunnelTilePosYOP1 = TURY + 0.5;
+					turnToTunnel = 90;
+				} else { 
+					OP1 = false;
+					tunnelTilePosXOP2 = TURX - 0.5;
+					tunnelTilePosYOP2 = TURY + 1;
+					turnToTunnel = 180;
+				}
+				break;
+			case 2:
+				if(TLLX < STZLLX) {
+					OP1 = true;
+					tunnelTilePosXOP1 = TLLX - 1;
+					tunnelTilePosYOP1 = TLLY + 0.5;
+					turnToTunnel = 90;
+				} else {
+					OP1 = false;
+					tunnelTilePosYOP2 = TLLY - 1;
+					tunnelTilePosXOP2 = TLLX + 0.5;
+					turnToTunnel = 0;
+				}
+				break;
+			case 3:
+				if(TURX > STZURX) {
+					OP1 = true;
+					turnToTunnel = 270;
+					tunnelTilePosXOP1 = TURX + 1;
+					tunnelTilePosYOP1 = TURY - 0.5;
+				} else {
+					OP1 = false;
+					tunnelTilePosYOP2 = TLLY - 1;
+					tunnelTilePosXOP2 = TLLX + 0.5;
+					turnToTunnel = 0;
+				}
+				break;
+			default:
+				break;
+			}
 		}
-		if(OP1) {
+		if(OP1) { //Path 1 to tunnel depending on tunnel position: if the tunnel is on the east or west side of the starting zone
 			move.travelTo(tunnelTilePosXOP1*TILE_SIZE, odo.getXYT()[1], false); //Move to the x position on the grid line before the tunnel
 			localizer.quickThetaCorrection();
 			odo.setTheta(move.roundAngle());
@@ -121,14 +180,14 @@ public class Navigator {
 			odo.setTheta(move.roundAngle());
 			
 		}
-		else {
+		else { //Path 2 to tunnel depending on position: if tunnel is on the north or south side of the starting zone
 			move.travelTo(odo.getXYT()[0], tunnelTilePosYOP2*TILE_SIZE, false);
 			localizer.quickThetaCorrection();
 			odo.setTheta(move.roundAngle());
 			move.driveDistance(-VERT_SENSOR_OFFSET);
 			
 			move.travelTo(tunnelTilePosXOP2*TILE_SIZE, odo.getXYT()[1], false);
-			move.turnTo(turnToTunnel);;
+			move.turnTo(turnToTunnel);
 			localizer.quickThetaCorrection();
 			odo.setTheta(move.roundAngle());
 		}
@@ -136,6 +195,7 @@ public class Navigator {
 	
 	/**
 	 * Travel across the tunnel
+	 * @param direction Boolean: if true, the robot is going from starting zone to search zone, if false, the robot is going from search zone to starting zone
 	 */
 	public void throughTunnel(boolean direction) {
 		int posCorX = 0, posCorY = 0;
@@ -350,31 +410,10 @@ public class Navigator {
 		
 		thetaCor = move.roundAngle(); //Update the odometer
 		odo.setXYT(posCorX*TILE_SIZE, posCorY*TILE_SIZE, thetaCor);
+		move.driveDistance(0.5*TILE_SIZE);
+		move.rotateAngle(90, !turnLoc);
 	}
-	
-	/**
-	 * Travel back to the tunnel from the search zone
-	 */
-	public void travelToBTunnel() {
-		 //havent checked this yet after tunnel finder completion
 
-		move.travelTo((TURX+1)*TILE_SIZE, odo.getXYT()[1], false);
-		localizer.quickThetaCorrection();
-		move.driveDistance(-VERT_SENSOR_OFFSET);
-		odo.setTheta(move.roundAngle());
-		move.travelTo(odo.getXYT()[0], TURY*TILE_SIZE, false);
-		localizer.quickThetaCorrection();
-		move.driveDistance(-VERT_SENSOR_OFFSET);
-		odo.setTheta(move.roundAngle());
-		move.turnTo(180);
-		
-		move.travelTo((TURX+1)*TILE_SIZE, odo.getXYT()[1], false);
-		localizer.quickLocalization();
-		move.driveDistance(-VERT_SENSOR_OFFSET);
-		odo.setTheta(180);
-		move.travelTo(odo.getXYT()[0], TURY*TILE_SIZE, false);
-		
-	}
 	
 	
 	public void goToStartingTile() {
