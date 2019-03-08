@@ -27,13 +27,21 @@ public class ArmController {
      * @since March 8 2019
      */
     public void grabCanOnFloor() {
-        claw.releaseCan(); // open the claw
+        claw.releaseCan();
         elbow.lowerArmToFloor();
         claw.grabCan();
     }
 
+    /**
+     * <b>This method assumes the claw is already holding a can</b>. It will place
+     * the can held in the claw into the basket and release the claw.
+     * 
+     * @author Julian Armour
+     * @since March 8 2019
+     */
     public void dropCanInBasket() {
-
+        elbow.raiseArmToBasket();
+        claw.releaseCan();
     }
 
 }
