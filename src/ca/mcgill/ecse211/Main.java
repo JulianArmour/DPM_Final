@@ -39,8 +39,8 @@ public class Main {
             }
         }
         // init remote motors
-        elbowMotor = remoteEv3.createRegulatedMotor("A", 'L');// L = EV3LargeRegulatedMotor, N = NXTRegulatedMotor
-        clawMotor = remoteEv3.createRegulatedMotor("B", 'L');
+        elbowMotor = remoteEv3.createRegulatedMotor("A", 'N');// L = EV3LargeRegulatedMotor, N = NXTRegulatedMotor
+        clawMotor = remoteEv3.createRegulatedMotor("B", 'N');
         // init remote touch-sensor sampler
         touchSensor = remoteEv3.createSampleProvider("S1", "lejos.hardware.sensor.EV3TouchSensor", "Touch");
         // init arm controller
