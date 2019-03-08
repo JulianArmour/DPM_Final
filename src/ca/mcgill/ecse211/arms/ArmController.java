@@ -1,5 +1,7 @@
 package ca.mcgill.ecse211.arms;
 
+import ca.mcgill.ecse211.detectors.ColourDetector;
+
 /**
  * Provides the methods for all needed arm movement routines.
  * 
@@ -42,6 +44,32 @@ public class ArmController {
     public void dropCanInBasket() {
         elbow.raiseArmToBasket();
         claw.releaseCan();
+    }
+
+    /**
+     * To be called before the colour scanning routine. This moves the arm into the
+     * proper position for colour scanning.
+     * 
+     * @author Julian Armour
+     * @since March 8 2019
+     */
+    public void moveArmToScanningPosition() {
+        elbow.moveArmToStartColourScan();
+    }
+
+    /**
+     * Performs the movements needed for the {@link ColourDetector} data collection.
+     * 
+     * @param numberOfScans
+     *            the can will be scanned 2 x numberOfScans.
+     * @author Julian Armour
+     * @since March 8 2019
+     */
+    public void performScanMovement(int numberOfScans) {
+        for (int i = 0; i < numberOfScans; i++) {
+            elbow.moveArmToEndColourScan();
+            elbow.moveArmToStartColourScan();
+        }
     }
 
 }
