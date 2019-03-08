@@ -375,12 +375,30 @@ public class Navigator {
 		
 	}
 	
+	
 	public void goToStartingTile() {
-
-		if(SC==0) {
-
-
+		
+		// if sc is 0, we want to go to (1,1)
+		if(SC == 0) {
+			move.travelTo(TILE_SIZE, TILE_SIZE, false);
+			
+		}
+		//if SC is 1, we want to go to (14,1)
+		else if(SC == 1) {
+			move.travelTo(14*TILE_SIZE, TILE_SIZE, false);
+		}
+		//if SC =, we want to go to (14,8)
+		else if(SC == 2) {
+			move.travelTo(14*TILE_SIZE, 8*TILE_SIZE, false);
+			
+		}
+		//if SC = 3, we want to go to (1,8)
+		else {
+			move.travelTo(TILE_SIZE, 8*TILE_SIZE, false);
+			
 		}
 	}
+	
+	
 }
 
