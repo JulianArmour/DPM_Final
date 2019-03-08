@@ -52,7 +52,7 @@ public class Navigator {
 		boolean OP1 = true;
 		int turnToTunnel = 0;
 		double tunnelTilePosYOP2 = 0, tunnelTilePosXOP2 = 0, tunnelTilePosXOP1 = 0, tunnelTilePosYOP1 = 0;
-		if(direction) {
+		if(direction) { //If robot is going to tunnel in starting zone, use these parameters
 			switch(SC) {
 			case 0:
 				if(TURX > STZURX) {
@@ -109,7 +109,7 @@ public class Navigator {
 			default:
 				break;
 			}
-		} else {
+		} else { //If robot is going to tunnel from search zone, use these parameters
 			switch(SC) {
 			case 0:
 				if(TURX > STZURX) {
