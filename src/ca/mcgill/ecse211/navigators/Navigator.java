@@ -1,5 +1,6 @@
 package ca.mcgill.ecse211.navigators;
 import java.util.function.IntPredicate;
+import java.util.function.ToDoubleBiFunction;
 
 import ca.mcgill.ecse211.localizers.Localization;
 import ca.mcgill.ecse211.odometer.*;
@@ -13,10 +14,10 @@ public class Navigator {
 	private static Odometer odo;
 	private static Localization localizer;
 	private static int TLLX, TLLY, TURX, TURY, STZLLX, STZLLY, STZURX, STZURY, SEZLLX, SEZLLY, SEZURX, SEZURY;
-
 	
 	
 	
+	private static int dumpingSpotX, dumpingSpotY;
 	private static int bridgeTileLength;
 	private static int SC;
 
@@ -438,6 +439,61 @@ public class Navigator {
 		}
 	}
 	
+	//sets the dumping waypoint depending on the tunnel and startingzone
+	public int[] setDumpingPoint() {
+		//TODO add the possibility that that spot is actually a wall or not accessible??
+		if(SC == 0) {
 	
+				if(TLLX == STZURX || TURX-TLLX == 2) { //if horizontal
+					dumpingSpotX = (int) (TURX+TILE_SIZE/2);
+					dumpingSpotY = (int) (TURY - 1.5*TILE_SIZE);
+
+				} else  { 
+					dumpingSpotX = (int) (TURX + TILE_SIZE/2);
+					dumpingSpotY = (int) (TURY + TILE_SIZE/2);
+				}
+			
+		} else if(SC == 3){ 
+			
+				if(TLLX == STZURX || TURX-TLLX == 2) {
+					//its horizontal
+					dumpingSpotX = (int) (TLLX + TILE_SIZE/2);
+					dumpingSpotY = (int) (TLLY - 1.5*TILE_SIZE);
+				} else {
+					//its vertical
+					dumpingSpotX = (int) (TURX-2.5*TILE_SIZE);
+					dumpingSpotY = (int) (TURY+TILE_SIZE/2);
+				}
+		} else if(SC == 1) {
+			
+			if(TURX == STZLLX || TURX-TLLX==2) {
+				//its horizontal
+				dumpingSpotX =  (int) (TURX - 1.5*TILE_SIZE);
+				dumpingSpotY = (int) (TURY-1.5*TILE_SIZE);
+			} else {
+				//its vertical
+				dumpingSpotX = (int) (TURX - 1.5*TILE_SIZE);
+				dumpingSpotY = (int) (TURY + TILE_SIZE/2);
+			}
+			
+		} else { //if (SC == 2)
+			
+			 if(TURX == STZLLX || TURX-TLLX == 2) {
+				 //its horizontal
+				 dumpingSpotX = (int) (TURX - 1.5*TILE_SIZE);
+				 dumpingSpotY = (int) (TURY - 1.5*TILE_SIZE);
+			 } else {
+				 //its vertical
+				 dumpingSpotX = (int) (TURX - 1.5*TILE_SIZE);
+				 dumpingSpotY = (int) (TURY - 1.5*TILE_SIZE);
+			 }
+		}
+		//puts the calculated X and Y into an array to return
+		int[] dumpingWaypoint = new int[2];
+		dumpingWaypoint[0] = dumpingSpotX;
+		dumpingWaypoint[1] = dumpingSpotY;
+		return dumpingWaypoint;
+
+	}
 }
 
