@@ -12,6 +12,7 @@ import lejos.remote.ev3.RMIRegulatedMotor;
  * @since March 5, 2019
  */
 public class Claw {
+    private static final int CLAW_SPEED = 200;
     private RMIRegulatedMotor claw;
     private static int        RELEASED_ANGLE = 15;// TODO
     private static int        GRABBED_ANGLE  = 0; // TODO
@@ -33,6 +34,7 @@ public class Claw {
      */
     public void grabCan() {
         try {
+            claw.setSpeed(CLAW_SPEED);
             claw.rotateTo(GRABBED_ANGLE, false);
         } catch (RemoteException e) {
             e.printStackTrace();
