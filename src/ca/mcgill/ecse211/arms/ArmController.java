@@ -47,8 +47,24 @@ public class ArmController {
     }
 
     /**
+     * Moves the arm into a position that doesn't obstruct the ultrasonic sensor.
+     * This is the position that the arm is in when placing a can into the basket.
+     * <p>
+     * Alias for {@link #dropCanInBasket()}
+     * 
+     * @author Julian Armour
+     * @since March 8 2019
+     */
+    public void moveArmToIdlePosition() {
+        dropCanInBasket();
+    }
+
+    /**
      * To be called before the colour scanning routine. This moves the arm into the
      * proper position for colour scanning.
+     * <p>
+     * This method should only be called from
+     * {@link ColourDetector#collectColourData()}
      * 
      * @author Julian Armour
      * @since March 8 2019
@@ -59,6 +75,9 @@ public class ArmController {
 
     /**
      * Performs the movements needed for the {@link ColourDetector} data collection.
+     * <p>
+     * This method should only be called from
+     * {@link ColourDetector#collectColourData()}
      * 
      * @param numberOfScans
      *            the can will be scanned 2 x numberOfScans.
