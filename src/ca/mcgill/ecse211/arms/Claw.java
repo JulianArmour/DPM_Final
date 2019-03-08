@@ -13,18 +13,18 @@ import lejos.remote.ev3.RMIRegulatedMotor;
  */
 public class Claw {
     private RMIRegulatedMotor claw;
-    private static int RELEASED_ANGLE = 15;// TODO
-    private static int GRABBED_ANGLE = 0; //TODO
-    
+    private static int        RELEASED_ANGLE = 15;// TODO
+    private static int        GRABBED_ANGLE  = 0; // TODO
+
     /**
-     * 
-     * @param clawMotor the motor used for the claw that grabs the cans
+     * @param clawMotor
+     *            the motor used for the claw that grabs the cans
      * @author Julian Armour
      */
     public Claw(RMIRegulatedMotor clawMotor) {
         this.claw = clawMotor;
     }
-    
+
     /**
      * Causes the claw arm to close around a can.
      * 
@@ -38,7 +38,7 @@ public class Claw {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * Releases a can that's held in the claw.
      * 
@@ -52,5 +52,5 @@ public class Claw {
             e.printStackTrace();
         }
     }
-    
+
 }
