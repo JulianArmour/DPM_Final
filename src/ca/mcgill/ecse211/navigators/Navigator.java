@@ -441,7 +441,6 @@ public class Navigator {
 	
 	//sets the dumping waypoint depending on the tunnel and startingzone
 	public int[] setDumpingPoint() {
-
 		//TODO add the possibility that that spot is actually a wall or not accessible??
 		if(SC == 0) {
 	
