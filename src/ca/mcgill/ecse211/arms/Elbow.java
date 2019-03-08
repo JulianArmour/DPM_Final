@@ -47,7 +47,7 @@ public class Elbow {
     public void lowerArmToFloor() {
         try {
             elbow.setSpeed(FAST_SPEED);
-            elbow.rotateTo(LOWERED_ANGLE);
+            elbow.rotateTo(LOWERED_ANGLE, false);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -62,7 +62,7 @@ public class Elbow {
     public void raiseArmToBasket() {
         try {
             elbow.setSpeed(FAST_SPEED);
-            elbow.rotateTo(RAISED_ANGLE);
+            elbow.rotateTo(RAISED_ANGLE, false);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -78,7 +78,7 @@ public class Elbow {
     public void moveArmToStartColourScan() {
         try {
             elbow.setSpeed(FAST_SPEED);
-            elbow.rotateTo(START_COLOUR_ANGLE);
+            elbow.rotateTo(START_COLOUR_ANGLE, false);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -93,7 +93,7 @@ public class Elbow {
     public void moveArmToEndColourScan() {
         try {
             elbow.setSpeed(FAST_SPEED);
-            elbow.rotateTo(END_COLOUR_ANGLE);
+            elbow.rotateTo(END_COLOUR_ANGLE, false);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -109,7 +109,7 @@ public class Elbow {
     public void scanMotionUp() {
         try {
             elbow.setSpeed(SCAN_SPEED);
-            elbow.rotateTo(END_COLOUR_ANGLE);
+            elbow.rotateTo(END_COLOUR_ANGLE, false);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -125,7 +125,7 @@ public class Elbow {
     public void scanMotionDown() {
         try {
             elbow.setSpeed(SCAN_SPEED);
-            elbow.rotateTo(START_COLOUR_ANGLE);
+            elbow.rotateTo(START_COLOUR_ANGLE, false);
         } catch (RemoteException e) {
             e.printStackTrace();
         }

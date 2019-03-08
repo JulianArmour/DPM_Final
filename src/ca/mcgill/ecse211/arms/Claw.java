@@ -49,6 +49,7 @@ public class Claw {
      */
     public void releaseCan() {
         try {
+            claw.setSpeed(CLAW_SPEED);
             claw.rotateTo(RELEASED_ANGLE, false);
         } catch (RemoteException e) {
             e.printStackTrace();
