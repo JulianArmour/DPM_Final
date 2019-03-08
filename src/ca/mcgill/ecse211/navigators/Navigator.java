@@ -177,10 +177,15 @@ public class Navigator {
 					posCorY = TLLY + 1;
 				}
 			} else { 
-				if(TLLX )
-				turnLoc = false;
-				posCorX = TURX - 1;
-				posCorY = TURY + 1;
+				if(TLLX == SEZLLX) {
+					turnLoc = true; 
+					posCorX = TURX;
+					posCorY = TURY + 1;
+				} else {
+					turnLoc = false;
+					posCorX = TURX - 1;
+					posCorY = TURY + 1;
+				}
 				
 			}
 			break;
@@ -196,14 +201,38 @@ public class Navigator {
 					posCorY = TLLY;
 				}
 			} else {
-				
+				if(TLLX == SEZLLX) {
+					turnLoc = false;
+					posCorX = TLLX + 1;
+					posCorY = TLLY - 1;
+				} else {
+					turnLoc = true;
+					posCorX = TLLX;
+					posCorY = TLLY - 1;
+				}
 			}
 			break;
 		case 3:
 			if(TURX > STZURX) {
-				
+				if(TURY == SEZURY) {
+					turnLoc = true;
+					posCorX = TURX + 1;
+					posCorY = TURY - 1;
+				} else {
+					turnLoc = false;
+					posCorX = TURX + 1;
+					posCorY = TURY;
+				}
 			} else {
-				
+				if(TLLX == SEZLLX) {
+					turnLoc = false;
+					posCorX = TLLX + 1;
+					posCorY = TLLY - 1;
+				} else {
+					turnLoc = true;
+					posCorX = TLLX;
+					posCorY = TLLY - 1;
+				}
 			}
 			break;
 			default:
@@ -218,6 +247,7 @@ public class Navigator {
 		localizer.quickThetaCorrection(); //Correct y position
 		move.driveDistance(-VERT_SENSOR_OFFSET);
 		
+		thetaCor = move.roundAngle(); //Update the odometer
 		odo.setXYT(posCorX*TILE_SIZE, posCorY*TILE_SIZE, thetaCor);
 	}
 	
