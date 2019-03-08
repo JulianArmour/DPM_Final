@@ -33,6 +33,21 @@ public class ArmController {
         elbow.lowerArmToFloor();
         claw.grabCan();
     }
+    
+    /**
+     * This method takes a can out of the basket and places it on the floor in front
+     * of the robot.
+     * 
+     * @author Julian Armour
+     * @since March 8 2019
+     */
+    public void dropCanOnFloor() {
+        claw.releaseCan();
+        elbow.raiseArmToBasket();
+        claw.grabCan();
+        elbow.lowerArmToFloor();
+        claw.releaseCan();
+    }
 
     /**
      * <b>This method assumes the claw is already holding a can</b>. It will place
