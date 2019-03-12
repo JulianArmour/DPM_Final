@@ -150,6 +150,7 @@ public class ColourDetector implements TimerListener {
 	 * @param BMean Normalized B values of the experimental data
 	 * @return The integer corresponding to the numerical representation of the can color
 	 */
+    
 	private static CanColour colorMatch(float RMean, float GMean, float BMean) {
 		Float dRCan, dBCan, dYCan, dGCan;
 		float min;
