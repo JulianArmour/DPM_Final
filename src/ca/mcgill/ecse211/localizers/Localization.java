@@ -15,7 +15,7 @@ import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
  */
 public class Localization {
 
-    private static final long       US_POLL_PERIOD              = 300;
+    private static final long       US_POLL_PERIOD              = 100;
     private static final int        MAX_DIST                    = 255;
     private static final double     EDGE_THRESHOLD              = 55.0;
     private static int              LIGHT_POLLING_PERIOD        = 20;
@@ -164,27 +164,39 @@ public class Localization {
 
         // set the x-position
         switch (startingCorner) {
+        case 0:
+            odo.setY(Main.TILE_SIZE + Main.LT_SENSOR_TO_WHEELBASE);
+            break;
         case 1:
-            odo.setX(14 * Main.TILE_SIZE);
+            odo.setX(14 * Main.TILE_SIZE - Main.LT_SENSOR_TO_WHEELBASE);
+            break;
+        case 2:
+            odo.setY(8 * Main.TILE_SIZE - Main.LT_SENSOR_TO_WHEELBASE);
             break;
         case 3:
-            odo.setX(Main.TILE_SIZE);
+            odo.setX(Main.TILE_SIZE + Main.LT_SENSOR_TO_WHEELBASE);
             break;
         default:
             break;
         }
 
-        movCon.driveDistance(Main.TILE_SIZE / 4, false);
+        movCon.driveDistance(-1 * Main.LT_SENSOR_TO_WHEELBASE, false);
         movCon.rotateAngle(90, true, false);
         quickThetaCorrection();
 
         // set the y-position
         switch (startingCorner) {
+        case 0:
+            odo.setX(Main.TILE_SIZE + Main.LT_SENSOR_TO_WHEELBASE);
+            break;
         case 1:
-            odo.setY(Main.TILE_SIZE);
+            odo.setY(Main.TILE_SIZE + Main.LT_SENSOR_TO_WHEELBASE);
+            break;
+        case 2:
+            odo.setX(14 * Main.TILE_SIZE - Main.LT_SENSOR_TO_WHEELBASE);
             break;
         case 3:
-            odo.setY(8 * Main.TILE_SIZE);
+            odo.setY(8 * Main.TILE_SIZE - Main.LT_SENSOR_TO_WHEELBASE);
             break;
         default:
             break;
@@ -248,10 +260,10 @@ public class Localization {
         double dTheta;
 
         if (alpha <= beta) {
-            dTheta = 355 - (alpha + beta) / 2;
+            dTheta = 246 - (alpha + beta) / 2;
             System.out.println("alpha <= beta");
         } else {
-            dTheta = 165 - (alpha + beta) / 2; // increase in ccw direction
+            dTheta = 85 - (alpha + beta) / 2; // increase in ccw direction
             System.out.println("alpha > beta");
         }
 
