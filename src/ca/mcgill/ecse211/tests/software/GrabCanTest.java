@@ -74,9 +74,9 @@ public class GrabCanTest {
         leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
         rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
         // set up arm motors
-        elbowMotor = new NXTRegulatedMotor(LocalEV3.get().getPort("B"));
+        elbowMotor = new NXTRegulatedMotor(LocalEV3.get().getPort("C"));
         elbowMotor.resetTachoCount();
-        clawMotor = new NXTRegulatedMotor(LocalEV3.get().getPort("C"));
+        clawMotor = new NXTRegulatedMotor(LocalEV3.get().getPort("B"));
         clawMotor.resetTachoCount();
         // starts odometer
         try {
@@ -101,12 +101,25 @@ public class GrabCanTest {
         // start test
         localEV3.getTextLCD().clear();
 //        System.out.println("Press any button to start.");
-        while (true) {
-            Button.waitForAnyPress();
-            localEV3.getTextLCD().clear();
-            System.out.println(elbowMotor.getPosition());
-        }
+//        elbowMotor.flt();
+        clawMotor.flt();
+//        while (true) {
+//            Button.waitForAnyPress();
+//            System.out.println(clawMotor.getPosition());
+//            elbow.lowerArmToFloor();
+//            elbow.raiseArmToBasket();
+//        }
+        elbow.lowerArmToFloor();
+        claw.grabCan();
+        elbow.raiseArmToBasket();
+        claw.releaseCan();
+        elbow.lowerArmToFloor();
+        elbow.raiseArmToBasket();
+        claw.grabCan();
+        elbow.lowerArmToFloor();
+        claw.releaseCan();
+        elbow.raiseArmToBasket();
         
-//        System.exit(0);
+        System.exit(0);
     }
 }

@@ -12,8 +12,8 @@ import lejos.hardware.motor.NXTRegulatedMotor;
 public class Claw {
     private static final int CLAW_SPEED = 200;
     private NXTRegulatedMotor claw;
-    private static int        RELEASED_ANGLE = 15;// TODO
-    private static int        GRABBED_ANGLE  = 0; // TODO
+    private static int        RELEASED_ANGLE = 0;// TODO
+    private static int        GRABBED_ANGLE  = 45; // TODO
 
     /**
      * @param clawMotor

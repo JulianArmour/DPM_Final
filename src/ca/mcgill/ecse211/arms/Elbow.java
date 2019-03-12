@@ -12,18 +12,18 @@ import lejos.hardware.motor.NXTRegulatedMotor;
  * @since March 8 2019
  */
 public class Elbow {
-    private static final int  FAST_SPEED         = 0;
+    private static final int  FAST_SPEED         = 200;
     private NXTRegulatedMotor elbow;
     // angle for when the arm is resting in front of the ev3
-    private static int        LOWERED_ANGLE      = 1;  // TODO
+    private static int        LOWERED_ANGLE      = -175;  // TODO
     // angle for dropping the can
     private static int        RAISED_ANGLE       = 0;  // TODO
     // angle for starting colour detection
-    private static int        START_COLOUR_ANGLE = 3;  // TODO
+    private static int        START_COLOUR_ANGLE = -141;  // TODO
     // angle for ending colour detection
-    private static int        END_COLOUR_ANGLE   = 4;  // TODO
+    private static int        END_COLOUR_ANGLE   = -107;  // TODO
     // the speed for scanning colour data
-    private static int        SCAN_SPEED         = 100;
+    private static int        SCAN_SPEED         = 50;
 
     /**
      * @param elbowMotor
