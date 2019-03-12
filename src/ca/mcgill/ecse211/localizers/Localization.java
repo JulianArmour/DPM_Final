@@ -195,7 +195,7 @@ public class Localization {
      * The subroutine for correcting the odometer's angle. If the robot is placed at
      * a corner tile with walls on each side of the corner, then the robot will
      * "scan" while rotating. It is looking for a large drop in distance measured by
-     * the {@link DifferentialDistancePoller}. It will record at what angles these
+     * the {@link MedianDistanceSensor}. It will record at what angles these
      * large differences in distance occured at and use them to calculate the
      * {@link Odometer}'s angle error.
      */

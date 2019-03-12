@@ -275,7 +275,6 @@ public class CanSearch {
     /**
      * Scans for cans by rotating 360-degrees and returns all potential locations of cans.
      * 
-     * @param robotPos
      * @param searchLL
      * @param searchUR
      * @return a list containing detected positions of cans
