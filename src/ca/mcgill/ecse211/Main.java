@@ -20,6 +20,7 @@ import ca.mcgill.ecse211.strategies.CanSearch;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.hardware.motor.NXTRegulatedMotor;
 import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3TouchSensor;
@@ -33,7 +34,11 @@ public class Main {
     private static final String      remoteIP               = "1.1.1.1";
     public static final double       TILE_SIZE              = 30.48;
     public static final double       WHEEL_RAD              = 2.2;
-    public static final double       TRACK                  = 11.9;
+    public static final double       TRACK                  = 11.9; //actual wheel base rn -> 14.5 cm
+    private static final String                 remoteIP               = "1.1.1.1";
+    public static final double                  TILE_SIZE              = 30.48;
+    public static final double                  WHEEL_RAD              = 2.2;
+    public static final double                  TRACK                  = 11.9;
     // distance from the light back light sensors to the wheel-base
     public static double             LT_SENSOR_TO_WHEELBASE = 11.9;
     // distance from the ultrasonic sensor to the "thumb" of the claw
@@ -84,8 +89,8 @@ public class Main {
     
     
     private static RemoteEV3         remoteEv3;
-    private static RMIRegulatedMotor elbowMotor;
-    private static RMIRegulatedMotor clawMotor;
+    private static NXTRegulatedMotor elbowMotor;
+    private static NXTRegulatedMotor clawMotor;
     private static RMISampleProvider touchSensor;
     private static ArmController armController;
 
@@ -135,9 +140,10 @@ public class Main {
                 continue;
             }
         }
-        // init remote motors
-        elbowMotor = remoteEv3.createRegulatedMotor("A", 'N');// L = EV3LargeRegulatedMotor, N = NXTRegulatedMotor
-        clawMotor = remoteEv3.createRegulatedMotor("B", 'N');
+        // init arm motors
+        
+        elbowMotor = new NXTRegulatedMotor(LocalEV3.get().getPort("B"));
+        clawMotor = new NXTRegulatedMotor(LocalEV3.get().getPort("C"));
         // init remote touch-sensor sampler
         touchSensor = remoteEv3.createSampleProvider("S1", "lejos.hardware.sensor.EV3TouchSensor", "Touch");
         // init arm controller

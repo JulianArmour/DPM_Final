@@ -1,8 +1,7 @@
 package ca.mcgill.ecse211.arms;
 
-import java.rmi.RemoteException;
-
-import lejos.remote.ev3.RMIRegulatedMotor;
+import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.hardware.motor.NXTRegulatedMotor;
 
 /**
  * Provides the methods for controlling the robotic arm this is used to grab
@@ -14,11 +13,11 @@ import lejos.remote.ev3.RMIRegulatedMotor;
  */
 public class Elbow {
     private static final int  FAST_SPEED         = 0;
-    private RMIRegulatedMotor elbow;
+    private NXTRegulatedMotor elbow;
     // angle for when the arm is resting in front of the ev3
     private static int        LOWERED_ANGLE      = 1;  // TODO
     // angle for dropping the can
-    private static int        RAISED_ANGLE       = 2;  // TODO
+    private static int        RAISED_ANGLE       = 0;  // TODO
     // angle for starting colour detection
     private static int        START_COLOUR_ANGLE = 3;  // TODO
     // angle for ending colour detection
@@ -34,7 +33,7 @@ public class Elbow {
      * @author Julian Armour
      * @since March 8 2019
      */
-    public Elbow(RMIRegulatedMotor elbowMotor) {
+    public Elbow(NXTRegulatedMotor elbowMotor) {
         this.elbow = elbowMotor;
     }
 
@@ -45,12 +44,8 @@ public class Elbow {
      * @since March 8 2019
      */
     public void lowerArmToFloor() {
-        try {
             elbow.setSpeed(FAST_SPEED);
             elbow.rotateTo(LOWERED_ANGLE, false);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -60,12 +55,8 @@ public class Elbow {
      * @since March 8 2019
      */
     public void raiseArmToBasket() {
-        try {
             elbow.setSpeed(FAST_SPEED);
             elbow.rotateTo(RAISED_ANGLE, false);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -76,12 +67,8 @@ public class Elbow {
      * @since March 8 2019
      */
     public void moveArmToStartColourScan() {
-        try {
             elbow.setSpeed(FAST_SPEED);
             elbow.rotateTo(START_COLOUR_ANGLE, false);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -91,12 +78,8 @@ public class Elbow {
      * @since March 8 2019
      */
     public void moveArmToEndColourScan() {
-        try {
             elbow.setSpeed(FAST_SPEED);
             elbow.rotateTo(END_COLOUR_ANGLE, false);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -107,12 +90,8 @@ public class Elbow {
      * @since March 8 2019
      */
     public void scanMotionUp() {
-        try {
             elbow.setSpeed(SCAN_SPEED);
             elbow.rotateTo(END_COLOUR_ANGLE, false);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -123,12 +102,8 @@ public class Elbow {
      * @since March 8 2019
      */
     public void scanMotionDown() {
-        try {
             elbow.setSpeed(SCAN_SPEED);
             elbow.rotateTo(START_COLOUR_ANGLE, false);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
     }
 
 }

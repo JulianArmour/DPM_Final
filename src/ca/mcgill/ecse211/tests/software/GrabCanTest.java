@@ -1,5 +1,8 @@
 package ca.mcgill.ecse211.tests.software;
 
+import ca.mcgill.ecse211.arms.ArmController;
+import ca.mcgill.ecse211.arms.Claw;
+import ca.mcgill.ecse211.arms.Elbow;
 import ca.mcgill.ecse211.localizers.Localization;
 import ca.mcgill.ecse211.navigators.MovementController;
 import ca.mcgill.ecse211.odometer.Odometer;
@@ -9,12 +12,13 @@ import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
 import lejos.hardware.Button;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.hardware.motor.NXTRegulatedMotor;
 import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.hardware.sensor.SensorMode;
 
-public class InitialLocalizationTest {
+public class GrabCanTest {
 
     public static final double             WHEEL_RAD = 2.2;
     public static final double             TRACK     = 17.3;
@@ -41,6 +45,11 @@ public class InitialLocalizationTest {
     private static SensorMode              rightLSProvider;
     private static float[]                 rightLSSample;
     private static LightDifferentialFilter rightLightDiff;
+    private static NXTRegulatedMotor elbowMotor;
+    private static NXTRegulatedMotor clawMotor;
+    private static ArmController armController;
+    private static Claw claw;
+    private static Elbow elbow;
 
     public static void main(String[] args) {
         // set up side ultrasonic sensor
@@ -64,6 +73,11 @@ public class InitialLocalizationTest {
         // set up wheel motors
         leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
         rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
+        // set up arm motors
+        elbowMotor = new NXTRegulatedMotor(LocalEV3.get().getPort("B"));
+        elbowMotor.resetTachoCount();
+        clawMotor = new NXTRegulatedMotor(LocalEV3.get().getPort("C"));
+        clawMotor.resetTachoCount();
         // starts odometer
         try {
             odometer = Odometer.getOdometer(leftMotor, rightMotor, TRACK, WHEEL_RAD);
@@ -79,16 +93,20 @@ public class InitialLocalizationTest {
         rightLightDiff = new LightDifferentialFilter(rightLSProvider, rightLSSample);
         localizer = new Localization(movementController, odometer, medianDistanceSensor, leftLightDiff, rightLightDiff,
                 SC);
+        claw = new Claw(clawMotor);
+        elbow = new Elbow(elbowMotor);
+        armController = new ArmController(claw, elbow);
         localEV3 = (LocalEV3) LocalEV3.get();
 
         // start test
         localEV3.getTextLCD().clear();
-        System.out.println("Press any button to start.");
-//        Button.waitForAnyPress();
-//         movementController.rotateAngle(360, true, false);
-        localizer.initialUSLocalization();
-        localizer.initialLightLocalization();
-        System.out.println(odometer.getXYT()[0]+","+odometer.getXYT()[1]+","+odometer.getXYT()[2]);
-        System.exit(0);
+//        System.out.println("Press any button to start.");
+        while (true) {
+            Button.waitForAnyPress();
+            localEV3.getTextLCD().clear();
+            System.out.println(elbowMotor.getPosition());
+        }
+        
+//        System.exit(0);
     }
 }
