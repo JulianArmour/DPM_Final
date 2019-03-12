@@ -1,6 +1,5 @@
 package ca.mcgill.ecse211.strategies;
 
-import java.io.ObjectOutputStream.PutField;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,7 +30,7 @@ public class CanSearch {
 	private float SCAN_RADIUS = TILE_LENGTH*3;
 	private float[] nextPos;
 	
-	private LinkedList<float[]> scanningPoints = new LinkedList<float[]>();
+	private LinkedList<float[]> scanningPoints = new LinkedList<float[]>();//TODO implement as queue or stack
 	
 	public CanSearch(Odometer odometer, MovementController movementController, MedianDistanceSensor USData,float[] PLL, float[] PUR, float[] PTUNEL, float[] PISLAND_LL,float [] PISLAND_UR, int startingCorner, float TILE_LENGTH) {
 		
@@ -50,6 +49,7 @@ public class CanSearch {
 	
 	/**
 	 * Sets the scan locations depending on the starting corner, the tunnel position, the LL and the UR 
+	 * @author Alice Kazarine
 	 */
 	public void setScanPositions() {
 		// TODO add all possibilities ST ==0,1,2,3
@@ -136,6 +136,7 @@ public class CanSearch {
 	
 	/**
 	 * Goes to current scan position and scans to detect a can
+	 * @author Alice Kazarine
 	 */
 	public void getCanPosition() {
 
@@ -143,22 +144,18 @@ public class CanSearch {
 		if(startCorner == 1) {
 			movCon.travelTo(scanningPoints.getFirst()[0], scanningPoints.getFirst()[1], false);
 			movCon.turnTo(90);
-			movCon.rotateAngle(360, false, true);
-			
-			while(USData.getFilteredDistance() > SCAN_RADIUS) {
+            double[] canPos = fastCanScan(new double[] { Main.SZR_LL_x, Main.SZR_LL_y },
+                    new double[] { Main.SRZ_UR_x, Main.SRZ_UR_y });
 
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-
-
+            if (canPos != null) {
+                travelToCan(canPos);
+            } else {
+                // TODO go to next scan point
+            }
+            //TODO what do you do after you get to the can?
 		}
 
-
+		// TODO finish this
 	}
 	
     /**
