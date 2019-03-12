@@ -17,7 +17,7 @@ public class Elbow {
     // angle for when the arm is resting in front of the ev3
     private static int        LOWERED_ANGLE      = 1;  // TODO
     // angle for dropping the can
-    private static int        RAISED_ANGLE       = 2;  // TODO
+    private static int        RAISED_ANGLE       = 0;  // TODO
     // angle for starting colour detection
     private static int        START_COLOUR_ANGLE = 3;  // TODO
     // angle for ending colour detection
