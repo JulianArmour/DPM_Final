@@ -138,7 +138,7 @@ public class CanSearch {
 	 * Goes to current scan position and scans to detect a can
 	 * @author Alice Kazarine
 	 */
-	public void getCanPosition() {
+	public void scanCurrentZone() {
 		int currentPos = 0;
 
 		if(startCorner == 1) {
@@ -152,7 +152,7 @@ public class CanSearch {
                 travelToCan(canPos);
             } else {
             	currentPos += 1;
-            	getCanPosition();
+            	scanCurrentZone();
             	
             }
             //TODO what do you do after you get to the can?
