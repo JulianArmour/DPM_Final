@@ -180,7 +180,7 @@ public class Main {
         medianDistanceSensor = new MedianDistanceSensor(DistanceProvider, USSample, odometer, MEDIAN_FILTER_WINDOW);
         localization = new Localization(movementController, odometer, medianDistanceSensor, leftLightDifferentialFilter, rightLightDifferentialFilter, startingCorner);
         movementController = new MovementController(leftMotor, rightMotor, WHEEL_RAD, TRACK, odometer);
-        navigator = new Navigator(movementController, odometer, localization, TLL, TUR, STZLL, STZUR, startingCorner, SEZLL, SEZUR);
+        navigator = new Navigator(movementController, odometer, localization, TLL, TUR, STZLL, STZUR, startingCorner, ILL, IUR);
         canSearch = new CanSearch(odometer, movementController, medianDistanceSensor, PLL, PUR, PTUNEL, PISLAND_LL, PISLAND_UR, startingCorner, TILE_SIZE);
         weightDetector = new WeightDetector(touchSensor);
         
