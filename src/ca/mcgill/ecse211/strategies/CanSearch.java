@@ -138,11 +138,12 @@ public class CanSearch {
 	 * Goes to current scan position and scans to detect a can
 	 * @author Alice Kazarine
 	 */
-	public void getCanPosition() {
-
+	public void scanCurrentZone() {
+		int currentPos = 0;
 
 		if(startCorner == 1) {
-			movCon.travelTo(scanningPoints.getFirst()[0], scanningPoints.getFirst()[1], false);
+			
+			movCon.travelTo(scanningPoints.get(currentPos)[0], scanningPoints.get(currentPos)[1], false);
 			movCon.turnTo(90);
             double[] canPos = fastCanScan(new double[] { Main.SZR_LL_x, Main.SZR_LL_y },
                     new double[] { Main.SRZ_UR_x, Main.SRZ_UR_y });
@@ -150,7 +151,9 @@ public class CanSearch {
             if (canPos != null) {
                 travelToCan(canPos);
             } else {
-                // TODO go to next scan point
+            	currentPos += 1;
+            	scanCurrentZone();
+            	
             }
             //TODO what do you do after you get to the can?
 		}
