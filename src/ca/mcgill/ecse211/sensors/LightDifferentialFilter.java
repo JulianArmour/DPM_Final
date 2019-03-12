@@ -32,7 +32,7 @@ public class LightDifferentialFilter extends Thread {
         colorProvider.fetchSample(sampleLSData, 0);
 
         // calculate the difference between current and past light intensity
-        float deltaL = (100 * sampleLSData[0] - pastSample);//TODO make it 1000 * ...
+        float deltaL = (100 * sampleLSData[0] - pastSample);
 
         // store the last data in past Data
         pastSample = 100 * sampleLSData[0];
