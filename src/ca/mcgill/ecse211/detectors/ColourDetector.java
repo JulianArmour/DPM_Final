@@ -25,6 +25,13 @@ public class ColourDetector implements TimerListener {
     private List<float[]>    colourSamples;
     private Timer            colourPoller;
 
+    /**
+     * 
+     * @param armController
+     *            The robot's arm controller
+     * @param colourSampler
+     *            The RGB colour sample provider
+     */
     public ColourDetector(ArmController armController, SampleProvider colourSampler) {
         this.armController = armController;
         this.colourSampler = colourSampler;
@@ -75,5 +82,21 @@ public class ColourDetector implements TimerListener {
         float[] sample = new float[colourSampler.sampleSize()];
         colourSampler.fetchSample(sample, 0);
         colourSamples.add(sample);
+    }
+
+    /**
+     * Given a list of colour samples, this method will calculate and return the
+     * detected colour of a can.
+     * 
+     * @param colourSamples
+     *            A list of colour samples
+     * @return The detected colour of the can
+     * 
+     * @author Cedric Barre
+     * @since TODO
+     */
+    public CanColour getCanColour(List colourSamples) {
+        // TODO Implement this
+        return null;
     }
 }

@@ -12,8 +12,8 @@ import ca.mcgill.ecse211.odometer.Odometer;
  * @version 5.1
  */
 public class MovementController {
-    private static final int       ROTATE_SPEED  = 45;
-    private static final int       FORWARD_SPEED = 150;
+    private static final int       ROTATE_SPEED  = 150;
+    private static final int       FORWARD_SPEED = 200;
     private EV3LargeRegulatedMotor leftMotor;
     private EV3LargeRegulatedMotor rightMotor;
     private Odometer               odometer;
@@ -69,17 +69,17 @@ public class MovementController {
             rotateAngle(360 - dT, false);
         }
     }
-    
+
     /**
-     * Turns the robot towards an absolute (i.e. not relative) angle on the platform. The robot will only
-     * turn clockwise.
+     * Turns the robot towards an absolute (i.e. not relative) angle on the
+     * platform. The robot will only turn clockwise.
      * 
      * @param theta
      *            The angle in degrees the robot will rotate to.
      */
     public void turnClockwiseTo(double angle, boolean immediateReturn) {
         double heading = odometer.getXYT()[2];
-        
+
         if (heading < angle) {
             rotateAngle(angle - heading, true, immediateReturn);
         } else {
@@ -199,8 +199,10 @@ public class MovementController {
 
     public void stopMotor(boolean right, boolean immediateReturn) {
 
-        if (right) rightMotor.stop(immediateReturn);
-        else leftMotor.stop(immediateReturn);
+        if (right)
+            rightMotor.stop(immediateReturn);
+        else
+            leftMotor.stop(immediateReturn);
 
     }
 
@@ -297,7 +299,13 @@ public class MovementController {
         return angleToHead;
     }
 
-    
+    /**
+     * 
+     * @param motorSpeed
+     *            motor speed when turning
+     * @param delta
+     *            how sensitive the turn will be
+     */
     public void turnLeft(int motorSpeed, int delta) {
         leftMotor.setSpeed(motorSpeed - delta);
         rightMotor.setSpeed(motorSpeed + delta);
@@ -308,9 +316,9 @@ public class MovementController {
     /**
      * 
      * @param motorSpeed
-     *          base motor speed.
+     *            base motor speed.
      * @param delta
-     *          the difference in deg/sec for turning the robot.
+     *            the difference in deg/sec for turning the robot.
      * @author Julian Armour, Alice Kazarine
      * @since September 21, 2019
      */
@@ -323,6 +331,7 @@ public class MovementController {
 
     /**
      * travels the robot to position (-5,-5)
+     * 
      * @param odo
      * @author Alice Kazarine
      */
