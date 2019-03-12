@@ -21,15 +21,6 @@ public class MedianDistanceSensor {
     private float[]        USData;
 
     /**
-     * Creates a MedianDistanceSensor object
-     * 
-     * @param USSampleProvider
-     *            The ultrasonic sample provider
-     * @param USSample
-     *            The data storage array for the sample
-     */
-
-    /**
      * 
      * @param USSampleProvider
      *            The ultrasonic's sample provider

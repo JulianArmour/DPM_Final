@@ -1,5 +1,8 @@
+package ca.mcgill.ecse211.odometer;
+
+import lejos.hardware.motor.EV3LargeRegulatedMotor;
+
 /**
- * This class is meant as a skeleton for the odometer class to be used.
  * 
  * @author Rodrigo Silva
  * @author Dirk Dubois
@@ -7,11 +10,6 @@
  * @author Karim El-Baba
  * @author Michael Smith
  */
-
-package ca.mcgill.ecse211.odometer;
-
-import lejos.hardware.motor.EV3LargeRegulatedMotor;
-
 public class Odometer extends OdometerData implements Runnable {
 
     public static final double RAD_TO_DEG = 57.2958; // conversion constant for conversions
@@ -99,8 +97,9 @@ public class Odometer extends OdometerData implements Runnable {
     /**
      * This method is where the logic for the odometer will run. Use the methods
      * provided from the OdometerData class to implement the odometer.
+     * 
+     * @author Julian Armour, Alice Kazarine
      */
-    // run method (required for Thread)
     public void run() {
         long updateStart, updateEnd;
 
