@@ -31,19 +31,19 @@ import lejos.remote.ev3.RMISampleProvider;
 import lejos.remote.ev3.RemoteEV3;
 
 public class Main {
-    private static final String      remoteIP               = "1.1.1.1";
-    public static final double       TILE_SIZE              = 30.48;
-    public static final double       WHEEL_RAD              = 2.2;
-    public static final double       TRACK                  = 11.9;
+    private static final String                 remoteIP               = "1.1.1.1";
+    public static final double                  TILE_SIZE              = 30.48;
+    public static final double                  WHEEL_RAD              = 2.2;
+    public static final double                  TRACK                  = 11.9;
     // distance from the light back light sensors to the wheel-base
-    public static double             LT_SENSOR_TO_WHEELBASE = 11.9;
+    public static double                        LT_SENSOR_TO_WHEELBASE = 11.9;
     // distance from the ultrasonic sensor to the "thumb" of the claw
-    public static double             US_SENSOR_TO_CLAW      = 3.0;
-    //median filter window width
-    private static int 				MEDIAN_FILTER_WINDOW 	= 5;
-    
+    public static double                        US_SENSOR_TO_CLAW      = 3.0;
+    // median filter window width
+    private static int                          MEDIAN_FILTER_WINDOW   = 5;
+
     // the corner the robot will start in, downloaded via wifi
-    private static int               startingCorner;
+    private static int                          startingCorner;
    
     //parameters sent through wifi
     public static int Red_LL_x;
@@ -90,8 +90,8 @@ public class Main {
     private static RMISampleProvider touchSensor;
     private static ArmController armController;
 
-    private static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
-    private static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
+    private static EV3LargeRegulatedMotor leftMotor;
+    private static EV3LargeRegulatedMotor rightMotor;
     private static final TextLCD lcd = LocalEV3.get().getTextLCD();
     
     //needed to set up the sensors
@@ -127,6 +127,9 @@ public class Main {
     
     
     public static void main(String[] args) {
+        
+        leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
+        rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
         // init remote ev3
         while (remoteEv3 == null) {
             try {

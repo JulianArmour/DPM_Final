@@ -18,7 +18,7 @@ public class InitialLocalizationTest {
 
     public static final double             WHEEL_RAD = 2.2;
     public static final double             TRACK     = 17.3;
-    public static final int                SC        = 0;
+    public static final int                SC        = 2;
 
     private static Port                    USPort;
     private static EV3UltrasonicSensor     ultrasonicSensor;
@@ -84,9 +84,11 @@ public class InitialLocalizationTest {
         // start test
         localEV3.getTextLCD().clear();
         System.out.println("Press any button to start.");
-        Button.waitForAnyPress();
-//        movementController.rotateAngle(360, true, false);
+//        Button.waitForAnyPress();
+//         movementController.rotateAngle(360, true, false);
         localizer.initialUSLocalization();
+        localizer.initialLightLocalization();
+        System.out.println(odometer.getXYT()[0]+","+odometer.getXYT()[1]+","+odometer.getXYT()[2]);
         System.exit(0);
     }
 }
