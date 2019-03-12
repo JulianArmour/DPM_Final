@@ -4,16 +4,28 @@ import java.rmi.RemoteException;
 
 import lejos.remote.ev3.RMISampleProvider;
 
+/**
+ * Provides methodology for determining if a can is heavy
+ * 
+ * @author Julian Armour
+ * @since March 8, 2019
+ * @version 1
+ */
 public class WeightDetector {
 
     private RMISampleProvider touchSampler;
-    
-    public WeightDetector(RMISampleProvider rmiSampleProvider) {
-        this.touchSampler = rmiSampleProvider;
-    }
-    
+
     /**
-     * @return true the can is heavy
+     * 
+     * @param rmiTouchSampleProvider
+     *            a remote touch sensor
+     */
+    public WeightDetector(RMISampleProvider rmiTouchSampleProvider) {
+        this.touchSampler = rmiTouchSampleProvider;
+    }
+
+    /**
+     * @return true if the can is heavy
      * 
      * @author Julian Armour
      * @since March 8 2019
@@ -30,5 +42,5 @@ public class WeightDetector {
         }
         return false;
     }
-    
+
 }

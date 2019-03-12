@@ -27,7 +27,7 @@ public class Localization {
     private MedianDistanceSensor    med;
     private LightDifferentialFilter dLTleft;
     private LightDifferentialFilter dLTright;
-    private int          startingCorner;
+    private int                     startingCorner;
 
     public Localization(MovementController movementController, Odometer odometer,
             MedianDistanceSensor medianDistanceSensor, LightDifferentialFilter leftLightDiff,
@@ -115,10 +115,10 @@ public class Localization {
 
         odo.setTheta(movCon.roundAngle());
     }
-    
+
     /**
-     * performs a {@link #quickThetaCorrection()}, but will also correct either the x or y position
-     * for the {@link Odometer}.
+     * performs a {@link #quickThetaCorrection()}, but will also correct either the
+     * x or y position for the {@link Odometer}.
      */
     public void quickLocalization() {
         // turn to the nearest right angle
@@ -143,9 +143,10 @@ public class Localization {
             break;
         }
     }
-    
+
     /**
-     * performs two {@link #quickLocalization()} routines to completely update the odometer's position and angle.
+     * performs two {@link #quickLocalization()} routines to completely update the
+     * odometer's position and angle.
      */
     public void completeQuickLocalization() {
         quickLocalization();
@@ -160,7 +161,7 @@ public class Localization {
      */
     public void initialLightLocalization() {
         quickThetaCorrection();
-        
+
         // set the x-position
         switch (startingCorner) {
         case 1:
@@ -172,11 +173,11 @@ public class Localization {
         default:
             break;
         }
-        
+
         movCon.driveDistance(Main.TILE_SIZE / 4, false);
         movCon.rotateAngle(90, true, false);
         quickThetaCorrection();
-        
+
         // set the y-position
         switch (startingCorner) {
         case 1:
@@ -194,7 +195,7 @@ public class Localization {
      * The subroutine for correcting the odometer's angle. If the robot is placed at
      * a corner tile with walls on each side of the corner, then the robot will
      * "scan" while rotating. It is looking for a large drop in distance measured by
-     * the {@link DifferentialDistancePoller}. It will record at what angles these
+     * the {@link MedianDistanceSensor}. It will record at what angles these
      * large differences in distance occured at and use them to calculate the
      * {@link Odometer}'s angle error.
      */
@@ -263,8 +264,14 @@ public class Localization {
         movCon.turnTo(0.0);
 
         switch (startingCorner) {
+        case 0:
+            odo.setTheta(0);
+            break;
         case 1:
             odo.setTheta(270);
+            break;
+        case 2:
+            odo.setTheta(180);
             break;
         case 3:
             odo.setTheta(90);

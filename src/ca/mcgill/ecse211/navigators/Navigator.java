@@ -5,6 +5,12 @@ import java.util.function.ToDoubleBiFunction;
 import ca.mcgill.ecse211.localizers.Localization;
 import ca.mcgill.ecse211.odometer.*;
 
+/**
+ * Provides the methods for navigation tasks
+ * @author Cedric
+ * @since 5th of March 2019
+ * @version 1
+ */
 public class Navigator {
 	
 	private static final double TILE_SIZE = 30.48;
@@ -13,7 +19,7 @@ public class Navigator {
 	private static MovementController move;
 	private static Odometer odo;
 	private static Localization localizer;
-	private static int TLLX, TLLY, TURX, TURY, STZLLX, STZLLY, STZURX, STZURY, SEZLLX, SEZLLY, SEZURX, SEZURY;
+	private static int TLLX, TLLY, TURX, TURY, STZLLX, STZLLY, STZURX, STZURY, ILLX, ILLY, IURX, IURY;
 	
 	
 	
@@ -21,7 +27,20 @@ public class Navigator {
 	private static int bridgeTileLength;
 	private static int SC;
 
-	public Navigator(MovementController move, Odometer odo, Localization localizer, int[] TLL, int TUR[], int STZLL[], int STZUR[], int SC, int SEZLL[], int SEZUR[]) {
+	/**
+	 * Contructor for the navigator class
+	 * @param move Movement controller instance to control the robots movements
+	 * @param odo Odometer instance for odometry
+	 * @param localizer Localizer for the robot to use its sensors for localization
+	 * @param TLL Lower left coordinates for the tunnel
+	 * @param TUR Upper right coordinates for the tunnel
+	 * @param STZLL Lower left coordinates for the starting zone
+	 * @param STZUR Upper right coordinates for the starting zone
+	 * @param SC Starting corner
+	 * @param ILL Lower left coordinates for the island
+	 * @param IUR Upper right coordinates for the island
+	 */
+	public Navigator(MovementController move, Odometer odo, Localization localizer, int[] TLL, int TUR[], int STZLL[], int STZUR[], int SC, int ILL[], int IUR[]) {
 		this.move = move; 
 		this.odo = odo;
 
@@ -33,10 +52,10 @@ public class Navigator {
 		STZLLY = STZLL[1];
 		STZURX = STZUR[0];
 		STZURY = STZUR[1];
-		SEZLLX = SEZLL[0]; //Set search zone coordinates
-		SEZLLY = SEZLL[1];
-		SEZURX = SEZUR[0];
-		SEZURY = SEZUR[1];
+		ILLX = ILL[0]; //Set search zone coordinates
+		ILLY = ILL[1];
+		IURX = IUR[0];
+		IURY = IUR[1];
 		this.localizer = localizer;
 		this.SC = SC;
 		bridgeTileLength = (Math.abs(TLLX-TURX) > Math.abs(TLLY-TURY)) ? Math.abs(TLLX-TURX) : Math.abs(TLLY-TURY); //Calculate bridge length from coordinates
@@ -45,7 +64,7 @@ public class Navigator {
 	}
 	
 	/**
-	 * Travel to the tunnel from starting point
+	 * Travel to the tunnel from either the starting point or any point on the island
 	 * @param direction Boolean, if true, robot is going to the tunnel from the starting zone, if false the robot is going to the tunnel from the search zone
 	 */
 	public void travelToTunnel(boolean direction) {
@@ -194,7 +213,7 @@ public class Navigator {
 	}
 	
 	/**
-	 * Travel across the tunnel
+	 * Travel across the tunnel from front to back or from back to front
 	 * @param direction Boolean: if true, the robot is going from starting zone to search zone, if false, the robot is going from search zone to starting zone
 	 */
 	public void throughTunnel(boolean direction) {
@@ -205,7 +224,7 @@ public class Navigator {
 			switch(SC) {
 			case 0:
 				if(TURX > STZURX) {
-					if(TURY == SEZURY) {
+					if(TURY == IURY) {
 						turnLoc = true;
 						posCorX = TURX + 1;
 						posCorY = TURY - 1;
@@ -215,7 +234,7 @@ public class Navigator {
 						posCorY = TURY;
 					}
 				} else {
-					if(TURX == SEZURX) {
+					if(TURX == IURX) {
 						turnLoc = false;
 						posCorX = TURX - 1;
 						posCorY = TURY + 1;
@@ -228,7 +247,7 @@ public class Navigator {
 				break;
 			case 1:
 				if(TLLX < STZLLX) {
-					if(TURY == SEZURY) {
+					if(TURY == IURY) {
 						turnLoc = false;
 						posCorX = TLLX - 1;
 						posCorY = TLLY;
@@ -238,7 +257,7 @@ public class Navigator {
 						posCorY = TLLY + 1;
 					}
 				} else { 
-					if(TLLX == SEZLLX) {
+					if(TLLX == ILLX) {
 						turnLoc = true; 
 						posCorX = TURX;
 						posCorY = TURY + 1;
@@ -252,7 +271,7 @@ public class Navigator {
 				break;
 			case 2:
 				if(TLLX < STZLLX) {
-					if(TLLY == SEZLLY) {
+					if(TLLY == ILLY) {
 						turnLoc = true; 
 						posCorX = TLLX - 1;
 						posCorY = TLLY + 1;
@@ -262,7 +281,7 @@ public class Navigator {
 						posCorY = TLLY;
 					}
 				} else {
-					if(TLLX == SEZLLX) {
+					if(TLLX == ILLX) {
 						turnLoc = false;
 						posCorX = TLLX + 1;
 						posCorY = TLLY - 1;
@@ -275,7 +294,7 @@ public class Navigator {
 				break;
 			case 3:
 				if(TURX > STZURX) {
-					if(TURY == SEZURY) {
+					if(TURY == IURY) {
 						turnLoc = true;
 						posCorX = TURX + 1;
 						posCorY = TURY - 1;
@@ -285,7 +304,7 @@ public class Navigator {
 						posCorY = TURY;
 					}
 				} else {
-					if(TLLX == SEZLLX) {
+					if(TLLX == ILLX) {
 						turnLoc = false;
 						posCorX = TLLX + 1;
 						posCorY = TLLY - 1;
@@ -326,7 +345,7 @@ public class Navigator {
 				break;
 			case 1:
 				if(TLLX < STZLLX) {
-					if(TLLY == SEZLLY) {
+					if(TLLY == ILLY) {
 						turnLoc = false;
 						posCorX = TURX + 1;
 						posCorY = TURY;
@@ -336,7 +355,7 @@ public class Navigator {
 						posCorY = TLLY - 1;
 					}
 				} else { 
-					if(TURX == SEZURX) {
+					if(TURX == IURX) {
 						turnLoc = true; 
 						posCorX = TLLX;
 						posCorY = TLLY - 1;

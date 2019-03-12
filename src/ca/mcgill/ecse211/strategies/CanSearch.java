@@ -1,6 +1,5 @@
 package ca.mcgill.ecse211.strategies;
 
-import java.io.ObjectOutputStream.PutField;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,7 +11,7 @@ import ca.mcgill.ecse211.navigators.MovementController;
 import ca.mcgill.ecse211.odometer.Odometer;
 import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
 
-/*
+/**
  * This class contains the search algorithm used to find the cans in the search zone and approach them 
  * in such a way that it is easy to grab onto them. 
  * 
@@ -31,7 +30,7 @@ public class CanSearch {
 	private float SCAN_RADIUS = TILE_LENGTH*3;
 	private float[] nextPos;
 	
-	private LinkedList<float[]> scanningPoints = new LinkedList<float[]>();
+	private LinkedList<float[]> scanningPoints = new LinkedList<float[]>();//TODO implement as queue or stack
 	
 	public CanSearch(Odometer odometer, MovementController movementController, MedianDistanceSensor USData,float[] PLL, float[] PUR, float[] PTUNEL, float[] PISLAND_LL,float [] PISLAND_UR, int startingCorner, float TILE_LENGTH) {
 		
@@ -48,8 +47,9 @@ public class CanSearch {
 	}
 		
 	
-	/*
+	/**
 	 * Sets the scan locations depending on the starting corner, the tunnel position, the LL and the UR 
+	 * @author Alice Kazarine
 	 */
 	public void setScanPositions() {
 		// TODO add all possibilities ST ==0,1,2,3
@@ -134,8 +134,9 @@ public class CanSearch {
 		}
 	}
 	
-	/*
+	/**
 	 * Goes to current scan position and scans to detect a can
+	 * @author Alice Kazarine
 	 */
 	public void getCanPosition() {
 
@@ -143,22 +144,18 @@ public class CanSearch {
 		if(startCorner == 1) {
 			movCon.travelTo(scanningPoints.getFirst()[0], scanningPoints.getFirst()[1], false);
 			movCon.turnTo(90);
-			movCon.rotateAngle(360, false, true);
-			
-			while(USData.getFilteredDistance() > SCAN_RADIUS) {
+            double[] canPos = fastCanScan(new double[] { Main.SZR_LL_x, Main.SZR_LL_y },
+                    new double[] { Main.SRZ_UR_x, Main.SRZ_UR_y });
 
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-
-
+            if (canPos != null) {
+                travelToCan(canPos);
+            } else {
+                // TODO go to next scan point
+            }
+            //TODO what do you do after you get to the can?
 		}
 
-
+		// TODO finish this
 	}
 	
     /**
@@ -191,23 +188,32 @@ public class CanSearch {
         // rotate back 15 degrees to account for ultrasonic arc
         movCon.rotateAngle(15, true, false);
         // move forward until to appropriate distance for gripping the can
-        movCon.driveDistance(USData.getFilteredDistance() - Main.US_SENSOR_TO_CLAW, false);
+        USData.flush();
+        float dist = USData.getFilteredDistance();
+        if (dist < TILE_LENGTH) {
+            movCon.driveDistance(dist - Main.US_SENSOR_TO_CLAW, false);
+        }
     }
 	
-	/**
-	 * 
-	 * @param searchLL lower left of the search zone
-	 * @param searchUR upper right of the search zone
-	 * @return the position of a can in the scan radius, or <code>null</code> if a can is not found
-	 */
-	public double[] fastCanScan(double[] searchLL, double[] searchUR) {
-	    double[] robotPos = odo.getXYT();
-	    // start rotating clockwise
-	    // scan for positions that are within the search zone
-	    final double finalHeading = (robotPos[2] - 1.0) % 360.0;
-	    
-	    final boolean[] atFinalHeading = {false}; // anonymous class trick for outer-scope variables
-	    Runnable rotater = new Runnable() {
+    /**
+     * Scans for cans, if it finds one it returns it's position. If it does not find
+     * a can, it returns <code>null</code>
+     * 
+     * @param searchLL
+     *            lower left of the search zone
+     * @param searchUR
+     *            upper right of the search zone
+     * @return the position of a can in the scan radius, or <code>null</code> if a
+     *         can is not found
+     */
+    public double[] fastCanScan(double[] searchLL, double[] searchUR) {
+        double[] robotPos = odo.getXYT();
+        // start rotating clockwise
+        // scan for positions that are within the search zone
+        final double finalHeading = (robotPos[2] - 1.0) % 360.0;
+
+        final boolean[] atFinalHeading = { false }; // anonymous class trick for outer-scope variables
+        Runnable rotater = new Runnable() {
             @Override
             public void run() {
                 movCon.turnClockwiseTo(finalHeading, false);
@@ -255,20 +261,20 @@ public class CanSearch {
                     }
                 }
             }
-            
+
             try {
                 Thread.sleep(CAN_SCAN_PERIOD);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        
+
         return null;
-	}
+    }
 	
     /**
+     * Scans for cans by rotating 360-degrees and returns all potential locations of cans.
      * 
-     * @param robotPos
      * @param searchLL
      * @param searchUR
      * @return a list containing detected positions of cans
@@ -339,16 +345,4 @@ public class CanSearch {
             return true;
         }
     }
-
-    /*
-	 * approaches the position where a potential can was detected,
-	 * performs a second scan, 
-	 * takes position for grabbing
-	 */
-	public void secondaryScan() {
-		
-	}
-	
-	
-
 }

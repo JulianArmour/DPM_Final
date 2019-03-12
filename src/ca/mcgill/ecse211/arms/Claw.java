@@ -1,8 +1,6 @@
 package ca.mcgill.ecse211.arms;
 
-import java.rmi.RemoteException;
-
-import lejos.remote.ev3.RMIRegulatedMotor;
+import lejos.hardware.motor.NXTRegulatedMotor;
 
 /**
  * Provides methods for controlling the motor that will grab the cans.
@@ -13,7 +11,7 @@ import lejos.remote.ev3.RMIRegulatedMotor;
  */
 public class Claw {
     private static final int CLAW_SPEED = 200;
-    private RMIRegulatedMotor claw;
+    private NXTRegulatedMotor claw;
     private static int        RELEASED_ANGLE = 15;// TODO
     private static int        GRABBED_ANGLE  = 0; // TODO
 
@@ -22,7 +20,7 @@ public class Claw {
      *            the motor used for the claw that grabs the cans
      * @author Julian Armour
      */
-    public Claw(RMIRegulatedMotor clawMotor) {
+    public Claw(NXTRegulatedMotor clawMotor) {
         this.claw = clawMotor;
     }
 
@@ -33,12 +31,8 @@ public class Claw {
      * @since March 5, 2019
      */
     public void grabCan() {
-        try {
             claw.setSpeed(CLAW_SPEED);
             claw.rotateTo(GRABBED_ANGLE, false);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -48,12 +42,8 @@ public class Claw {
      * @since March 5, 2019
      */
     public void releaseCan() {
-        try {
             claw.setSpeed(CLAW_SPEED);
             claw.rotateTo(RELEASED_ANGLE, false);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
     }
 
 }

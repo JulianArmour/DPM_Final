@@ -20,6 +20,7 @@ import ca.mcgill.ecse211.strategies.CanSearch;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.hardware.motor.NXTRegulatedMotor;
 import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3TouchSensor;
@@ -84,8 +85,8 @@ public class Main {
     
     
     private static RemoteEV3         remoteEv3;
-    private static RMIRegulatedMotor elbowMotor;
-    private static RMIRegulatedMotor clawMotor;
+    private static NXTRegulatedMotor elbowMotor;
+    private static NXTRegulatedMotor clawMotor;
     private static RMISampleProvider touchSensor;
     private static ArmController armController;
 
@@ -135,9 +136,10 @@ public class Main {
                 continue;
             }
         }
-        // init remote motors
-        elbowMotor = remoteEv3.createRegulatedMotor("A", 'N');// L = EV3LargeRegulatedMotor, N = NXTRegulatedMotor
-        clawMotor = remoteEv3.createRegulatedMotor("B", 'N');
+        // init arm motors
+        
+        elbowMotor = new NXTRegulatedMotor(LocalEV3.get().getPort("B"));
+        clawMotor = new NXTRegulatedMotor(LocalEV3.get().getPort("C"));
         // init remote touch-sensor sampler
         touchSensor = remoteEv3.createSampleProvider("S1", "lejos.hardware.sensor.EV3TouchSensor", "Touch");
         // init arm controller
@@ -180,7 +182,7 @@ public class Main {
         medianDistanceSensor = new MedianDistanceSensor(DistanceProvider, USSample, odometer, MEDIAN_FILTER_WINDOW);
         localization = new Localization(movementController, odometer, medianDistanceSensor, leftLightDifferentialFilter, rightLightDifferentialFilter, startingCorner);
         movementController = new MovementController(leftMotor, rightMotor, WHEEL_RAD, TRACK, odometer);
-        navigator = new Navigator(movementController, odometer, localization, TLL, TUR, STZLL, STZUR, startingCorner, SEZLL, SEZUR);
+        navigator = new Navigator(movementController, odometer, localization, TLL, TUR, STZLL, STZUR, startingCorner, ILL, IUR);
         canSearch = new CanSearch(odometer, movementController, medianDistanceSensor, PLL, PUR, PTUNEL, PISLAND_LL, PISLAND_UR, startingCorner, TILE_SIZE);
         weightDetector = new WeightDetector(touchSensor);
         
