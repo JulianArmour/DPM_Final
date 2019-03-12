@@ -8,7 +8,8 @@ import ca.mcgill.ecse211.odometer.*;
 /**
  * Provides the methods for navigation tasks
  * @author Cedric
- *
+ * @since 5th of March 2019
+ * @version 1
  */
 public class Navigator {
 	
