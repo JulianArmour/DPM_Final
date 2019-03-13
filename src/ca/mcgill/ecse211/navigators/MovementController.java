@@ -13,7 +13,7 @@ import ca.mcgill.ecse211.odometer.Odometer;
  */
 public class MovementController {
     private static final int       ROTATE_SPEED  = 150;
-    private static final int       FORWARD_SPEED = 200;
+    private static final int       FORWARD_SPEED = 360;
     private EV3LargeRegulatedMotor leftMotor;
     private EV3LargeRegulatedMotor rightMotor;
     private Odometer               odometer;

@@ -1,5 +1,6 @@
 package ca.mcgill.ecse211.tests.software;
 
+import ca.mcgill.ecse211.Main;
 import ca.mcgill.ecse211.arms.ArmController;
 import ca.mcgill.ecse211.arms.Claw;
 import ca.mcgill.ecse211.arms.Elbow;
@@ -12,6 +13,7 @@ import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
 import lejos.hardware.Button;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.hardware.motor.NXTRegulatedMotor;
 import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3ColorSensor;
@@ -35,7 +37,6 @@ public class GrabCanTest {
     private static MedianDistanceSensor    medianDistanceSensor;
     private static LocalEV3                localEV3;
     private static LightDifferentialFilter leftLightDiff;
-    private static Localization            localizer;
     private static Port                    leftLSPort;
     private static Port                    rightLSPort;
     private static EV3ColorSensor          leftLightSensor;
@@ -46,12 +47,12 @@ public class GrabCanTest {
     private static float[]                 rightLSSample;
     private static LightDifferentialFilter rightLightDiff;
     private static NXTRegulatedMotor elbowMotor;
-    private static NXTRegulatedMotor clawMotor;
+    private static EV3MediumRegulatedMotor clawMotor;
     private static ArmController armController;
     private static Claw claw;
     private static Elbow elbow;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         // set up side ultrasonic sensor
         USPort = LocalEV3.get().getPort("S2");
         ultrasonicSensor = new EV3UltrasonicSensor(USPort);
@@ -76,7 +77,7 @@ public class GrabCanTest {
         // set up arm motors
         elbowMotor = new NXTRegulatedMotor(LocalEV3.get().getPort("C"));
         elbowMotor.resetTachoCount();
-        clawMotor = new NXTRegulatedMotor(LocalEV3.get().getPort("B"));
+        clawMotor = new EV3MediumRegulatedMotor(LocalEV3.get().getPort("B"));
         clawMotor.resetTachoCount();
         // starts odometer
         try {
@@ -91,8 +92,6 @@ public class GrabCanTest {
         medianDistanceSensor = new MedianDistanceSensor(distanceProvider, USSample, odometer, 5);
         leftLightDiff = new LightDifferentialFilter(leftLSProvider, leftLSSample);
         rightLightDiff = new LightDifferentialFilter(rightLSProvider, rightLSSample);
-        localizer = new Localization(movementController, odometer, medianDistanceSensor, leftLightDiff, rightLightDiff,
-                SC);
         claw = new Claw(clawMotor);
         elbow = new Elbow(elbowMotor);
         armController = new ArmController(claw, elbow);
@@ -109,17 +108,25 @@ public class GrabCanTest {
 //            elbow.lowerArmToFloor();
 //            elbow.raiseArmToBasket();
 //        }
-        elbow.lowerArmToFloor();
-        claw.grabCan();
-        elbow.raiseArmToBasket();
-        claw.releaseCan();
-        elbow.lowerArmToFloor();
-        elbow.raiseArmToBasket();
-        claw.grabCan();
-        elbow.lowerArmToFloor();
-        claw.releaseCan();
-        elbow.raiseArmToBasket();
+//        elbow.lowerArmToFloor();
+//        claw.grabCan();
+//        elbow.raiseArmToBasket();
+//        claw.releaseCan();
+//        elbow.lowerArmToFloor();
+//        elbow.raiseArmToBasket();
+//        claw.grabCan();
+//        elbow.lowerArmToFloor();
+//        claw.releaseCan();
+//        elbow.raiseArmToBasket();
         
-        System.exit(0);
+        while (true) {
+            Button.waitForAnyPress();
+            Thread.sleep(1000);
+            clawMotor.resetTachoCount();
+            clawMotor.flt();
+            movementController.driveDistance(-Main.TILE_SIZE / 2);
+            System.out.println(clawMotor.getTachoCount());
+        }
+//        System.exit(0);
     }
 }
