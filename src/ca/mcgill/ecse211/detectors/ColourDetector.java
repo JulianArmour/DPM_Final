@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import ca.mcgill.ecse211.arms.ArmController;
+import ca.mcgill.ecse211.arms.ColourArm;
 import lejos.robotics.SampleProvider;
 import lejos.utility.Timer;
 import lejos.utility.TimerListener;
@@ -37,7 +37,7 @@ public class ColourDetector implements TimerListener {
 	private static final float GCAN_BMEAN = 0.4489f;
 
     private static final int COLOUR_POLL_PERIOD = 50;
-    private ArmController    armController;
+    private ColourArm    colourArm;
     private SampleProvider   colourSampler;
 
     private List<float[]>    colourSamples;
@@ -45,13 +45,13 @@ public class ColourDetector implements TimerListener {
 
     /**
      * 
-     * @param armController
+     * @param colourArm
      *            The robot's arm controller
      * @param colourSampler
      *            The RGB colour sample provider
      */
-    public ColourDetector(ArmController armController, SampleProvider colourSampler) {
-        this.armController = armController;
+    public ColourDetector(ColourArm colourArm, SampleProvider colourSampler) {
+        this.colourArm = colourArm;
         this.colourSampler = colourSampler;
         this.colourPoller = new Timer(COLOUR_POLL_PERIOD, this);
     }
@@ -59,7 +59,7 @@ public class ColourDetector implements TimerListener {
     /**
      * This is the main entry point for starting the colour detection routine.
      * <p>
-     * It should be called after {@link ArmController#grabCanOnFloor()}
+     * It should be called after {@link ColourArm#scan(int)}
      * <p>
      * The colour data can then be retrieved with {@link #getColourSamples()}
      * 
@@ -70,18 +70,18 @@ public class ColourDetector implements TimerListener {
      * @since March 8, 2019
      */
     public void collectColourData(int numberOfScans) {
-        armController.moveArmToScanningPosition();
         // initialize a new list
         colourSamples = new LinkedList<float[]>();
         // start polling colour data
         colourPoller.start();
         // start arm scan movement routine
-        armController.performScanMovement(numberOfScans);
+        colourArm.scan(numberOfScans);
         // stop polling colour data
         colourPoller.stop();
     }
 
     /**
+     * Returns the colour samples that were collected from the previous scan.
      * 
      * @return The colour samples from the previous scan
      */

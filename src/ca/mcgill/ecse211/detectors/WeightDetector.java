@@ -1,27 +1,23 @@
 package ca.mcgill.ecse211.detectors;
 
-import java.rmi.RemoteException;
-
-import lejos.remote.ev3.RMISampleProvider;
+import ca.mcgill.ecse211.navigators.MovementController;
+import lejos.hardware.motor.EV3LargeRegulatedMotor;
 
 /**
  * Provides methodology for determining if a can is heavy
  * 
  * @author Julian Armour
- * @since March 8, 2019
- * @version 1
+ * @since March 13, 2019
+ * @version 2
  */
 public class WeightDetector {
 
-    private RMISampleProvider touchSampler;
+    private EV3LargeRegulatedMotor clawMotor;
+    private MovementController     movementController;
 
-    /**
-     * 
-     * @param rmiTouchSampleProvider
-     *            a remote touch sensor
-     */
-    public WeightDetector(RMISampleProvider rmiTouchSampleProvider) {
-        this.touchSampler = rmiTouchSampleProvider;
+    public WeightDetector(EV3LargeRegulatedMotor clawMotor, MovementController movementController) {
+        this.clawMotor = clawMotor;
+        this.movementController = movementController;
     }
 
     /**
@@ -31,16 +27,7 @@ public class WeightDetector {
      * @since March 8 2019
      */
     public boolean isCanHeavy() {
-        try {
-            if (touchSampler.fetchSample()[0] == 1) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-        return false;
+        // TODO
     }
 
 }

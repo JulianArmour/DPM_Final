@@ -4,45 +4,38 @@ import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
-import ca.mcgill.ecse211.arms.ArmController;
 import ca.mcgill.ecse211.arms.Claw;
-import ca.mcgill.ecse211.arms.Elbow;
-import ca.mcgill.ecse211.detectors.ColourDetector;
 import ca.mcgill.ecse211.detectors.WeightDetector;
 import ca.mcgill.ecse211.localizers.Localization;
 import ca.mcgill.ecse211.navigators.MovementController;
 import ca.mcgill.ecse211.navigators.Navigator;
 import ca.mcgill.ecse211.odometer.Odometer;
-import ca.mcgill.ecse211.odometer.OdometerData;
 import ca.mcgill.ecse211.sensors.LightDifferentialFilter;
 import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
 import ca.mcgill.ecse211.strategies.CanSearch;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import lejos.hardware.motor.NXTRegulatedMotor;
+import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3ColorSensor;
-import lejos.hardware.sensor.EV3TouchSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.hardware.sensor.SensorMode;
-import lejos.remote.ev3.RMIRegulatedMotor;
 import lejos.remote.ev3.RMISampleProvider;
 import lejos.remote.ev3.RemoteEV3;
 
 public class Main {
-    private static final String                 remoteIP               = "1.1.1.1";
-    public static final double                  TILE_SIZE              = 30.48;
-    public static final double                  WHEEL_RAD              = 2.2;
-    public static final double                  TRACK                  = 11.9;
+    public static final double             TILE_SIZE              = 30.48;
+    public static final double             WHEEL_RAD              = 2.2;
+    public static final double             TRACK                  = 11.9;
     // distance from the light back light sensors to the wheel-base
-    public static double                        LT_SENSOR_TO_WHEELBASE = 11.9;
+    public static double                   LT_SENSOR_TO_WHEELBASE = 11.9;
     // distance from the ultrasonic sensor to the "thumb" of the claw
-    public static double                        US_SENSOR_TO_CLAW      = 3.0;
+    public static double                   US_SENSOR_TO_CLAW      = 3.0;                        // TODO
     // median filter window width
-    private static int                          MEDIAN_FILTER_WINDOW   = 5;
+    private static int                     MEDIAN_FILTER_WINDOW   = 5;
     // the speed at which the claw grabs the can
-    private static final int                    CLAW_SPEED             = 200;
+    private static final int               CLAW_SPEED             = 200;
 
     // the corner the robot will start in, downloaded via wifi
     private static int                          startingCorner;
@@ -86,14 +79,11 @@ public class Main {
    
     
     
-    private static RemoteEV3         remoteEv3;
-    private static EV3LargeRegulatedMotor elbowMotor;
+    private static EV3MediumRegulatedMotor colourMotor;
     private static EV3LargeRegulatedMotor clawMotor;
-    private static RMISampleProvider touchSensor;
-    private static ArmController armController;
-
-    private static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
-    private static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
+    private static EV3LargeRegulatedMotor leftMotor;
+    private static EV3LargeRegulatedMotor rightMotor;
+    
     private static final TextLCD lcd = LocalEV3.get().getTextLCD();
     
     //needed to set up the sensors
@@ -110,12 +100,11 @@ public class Main {
     private static SensorMode backRightLSProvider;
     private static float[] backRightLSSample;
     private static Port sideLSPort;
-    private static EV3ColorSensor sideLS;
-    private static SensorMode sideLSProvider;
-    private static float[] sideLSSample;
+    private static EV3ColorSensor canColourSensor;
+    private static SensorMode canRGBProvider;
+    private static float[] canRGBBuffer;
     
     //class instances 
-    
     private static MovementController movementController;
     private static Odometer odometer;
     private static LightDifferentialFilter leftLightDifferentialFilter;
@@ -125,27 +114,16 @@ public class Main {
     private static Navigator navigator;
     private static CanSearch canSearch;
     private static WeightDetector weightDetector;
+    private static Claw claw;
     
     
     
     public static void main(String[] args) {
-        // init remote ev3
-        while (remoteEv3 == null) {
-            try {
-                remoteEv3 = new RemoteEV3(remoteIP);
-            } catch (RemoteException | MalformedURLException | NotBoundException e) {
-                System.out.println("Could not connect to other EV3");
-                continue;
-            }
-        }
-        // init arm motors
-        
-        elbowMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("B"));
+        // init motors
+        leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
+        rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
+        colourMotor = new EV3MediumRegulatedMotor(LocalEV3.get().getPort("B"));
         clawMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("C"));
-        // init remote touch-sensor sampler
-        touchSensor = remoteEv3.createSampleProvider("S1", "lejos.hardware.sensor.EV3TouchSensor", "Touch");
-        // init arm controller
-        armController = new ArmController(new Claw(clawMotor, CLAW_SPEED), new Elbow(elbowMotor));
         
         // set up side ultrasonic sensor
         USPort = LocalEV3.get().getPort("S2");
@@ -167,9 +145,9 @@ public class Main {
         
         //set up side light sensor
         sideLSPort = LocalEV3.get().getPort("S3");
-        sideLS = new EV3ColorSensor(sideLSPort);
-        sideLSProvider = sideLS.getMode("RGB");
-        sideLSSample = new float[sideLSProvider.sampleSize()];
+        canColourSensor = new EV3ColorSensor(sideLSPort);
+        canRGBProvider = canColourSensor.getMode("RGB");
+        canRGBBuffer = new float[canRGBProvider.sampleSize()];
         
         //starts odometer
         odometer = Odometer.getOdometer(leftMotor, rightMotor, TRACK, WHEEL_RAD);
@@ -177,8 +155,6 @@ public class Main {
         odoThread.start();
         
         //set up of all the class instances
-        
-        
         leftLightDifferentialFilter = new LightDifferentialFilter(backLeftLSProvider, backLeftLSSample);
         rightLightDifferentialFilter = new LightDifferentialFilter(backRightLSProvider, backRightLSSample);
         medianDistanceSensor = new MedianDistanceSensor(DistanceProvider, USSample, odometer, MEDIAN_FILTER_WINDOW);
@@ -186,7 +162,8 @@ public class Main {
         movementController = new MovementController(leftMotor, rightMotor, WHEEL_RAD, TRACK, odometer);
         navigator = new Navigator(movementController, odometer, localization, TLL, TUR, STZLL, STZUR, startingCorner, ILL, IUR);
         canSearch = new CanSearch(odometer, movementController, medianDistanceSensor, PLL, PUR, PTUNEL, PISLAND_LL, PISLAND_UR, startingCorner, TILE_SIZE);
-        weightDetector = new WeightDetector(touchSensor);
+        claw = new Claw(clawMotor, CLAW_SPEED);
+        weightDetector = new WeightDetector(clawMotor, movementController);
         
         
         
@@ -196,7 +173,7 @@ public class Main {
 
         // close remote motors before the program ends
         try {
-            elbowMotor.close();
+            colourMotor.close();
             clawMotor.close();
         } catch (RemoteException e) {
             System.out.println("Could not close remote ev3's motor ports");

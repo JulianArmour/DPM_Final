@@ -8,8 +8,8 @@ import lejos.hardware.motor.NXTRegulatedMotor;
  * Provides methods for controlling the motor that will grab the cans.
  * 
  * @author Julian Armour
- * @version 1
- * @since March 5, 2019
+ * @version 2
+ * @since March 13, 2019
  */
 public class Claw {
     
