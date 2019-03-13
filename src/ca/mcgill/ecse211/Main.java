@@ -31,23 +31,21 @@ import lejos.remote.ev3.RMISampleProvider;
 import lejos.remote.ev3.RemoteEV3;
 
 public class Main {
-    private static final String      remoteIP               = "1.1.1.1";
-    public static final double       TILE_SIZE              = 30.48;
-    public static final double       WHEEL_RAD              = 2.2;
-    public static final double       TRACK                  = 11.9; //actual wheel base rn -> 14.5 cm
     private static final String                 remoteIP               = "1.1.1.1";
     public static final double                  TILE_SIZE              = 30.48;
     public static final double                  WHEEL_RAD              = 2.2;
     public static final double                  TRACK                  = 11.9;
     // distance from the light back light sensors to the wheel-base
-    public static double             LT_SENSOR_TO_WHEELBASE = 11.9;
+    public static double                        LT_SENSOR_TO_WHEELBASE = 11.9;
     // distance from the ultrasonic sensor to the "thumb" of the claw
-    public static double             US_SENSOR_TO_CLAW      = 3.0;
-    //median filter window width
-    private static int 				MEDIAN_FILTER_WINDOW 	= 5;
-    
+    public static double                        US_SENSOR_TO_CLAW      = 3.0;
+    // median filter window width
+    private static int                          MEDIAN_FILTER_WINDOW   = 5;
+    // the speed at which the claw grabs the can
+    private static final int                    CLAW_SPEED             = 200;
+
     // the corner the robot will start in, downloaded via wifi
-    private static int               startingCorner;
+    private static int                          startingCorner;
    
     //parameters sent through wifi
     public static int Red_LL_x;
@@ -89,8 +87,8 @@ public class Main {
     
     
     private static RemoteEV3         remoteEv3;
-    private static NXTRegulatedMotor elbowMotor;
-    private static NXTRegulatedMotor clawMotor;
+    private static EV3LargeRegulatedMotor elbowMotor;
+    private static EV3LargeRegulatedMotor clawMotor;
     private static RMISampleProvider touchSensor;
     private static ArmController armController;
 
@@ -142,12 +140,12 @@ public class Main {
         }
         // init arm motors
         
-        elbowMotor = new NXTRegulatedMotor(LocalEV3.get().getPort("B"));
-        clawMotor = new NXTRegulatedMotor(LocalEV3.get().getPort("C"));
+        elbowMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("B"));
+        clawMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("C"));
         // init remote touch-sensor sampler
         touchSensor = remoteEv3.createSampleProvider("S1", "lejos.hardware.sensor.EV3TouchSensor", "Touch");
         // init arm controller
-        armController = new ArmController(new Claw(clawMotor), new Elbow(elbowMotor));
+        armController = new ArmController(new Claw(clawMotor, CLAW_SPEED), new Elbow(elbowMotor));
         
         // set up side ultrasonic sensor
         USPort = LocalEV3.get().getPort("S2");

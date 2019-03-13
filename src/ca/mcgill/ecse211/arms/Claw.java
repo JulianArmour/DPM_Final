@@ -1,5 +1,6 @@
 package ca.mcgill.ecse211.arms;
 
+import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.hardware.motor.NXTRegulatedMotor;
 
@@ -11,18 +12,20 @@ import lejos.hardware.motor.NXTRegulatedMotor;
  * @since March 5, 2019
  */
 public class Claw {
-    private static final int CLAW_SPEED = 200;
-    private EV3MediumRegulatedMotor claw;
-    private static int        RELEASED_ANGLE = 0;// TODO
-    private static int        GRABBED_ANGLE  = 45; // TODO
+    
+    private EV3LargeRegulatedMotor claw;
+    private int                    clawSpeed;
+    private static int             RELEASED_ANGLE = 0;  // TODO
+    private static int             GRABBED_ANGLE  = 45; // TODO
 
     /**
      * @param clawMotor
      *            the motor used for the claw that grabs the cans
      * @author Julian Armour
      */
-    public Claw(EV3MediumRegulatedMotor clawMotor) {
+    public Claw(EV3LargeRegulatedMotor clawMotor, int clawSpeed) {
         this.claw = clawMotor;
+        this.clawSpeed = clawSpeed;
     }
 
     /**
@@ -32,7 +35,7 @@ public class Claw {
      * @since March 5, 2019
      */
     public void grabCan() {
-            claw.setSpeed(CLAW_SPEED);
+            claw.setSpeed(clawSpeed);
             claw.rotateTo(GRABBED_ANGLE, false);
     }
 
@@ -43,7 +46,7 @@ public class Claw {
      * @since March 5, 2019
      */
     public void releaseCan() {
-            claw.setSpeed(CLAW_SPEED);
+            claw.setSpeed(clawSpeed);
             claw.rotateTo(RELEASED_ANGLE, false);
     }
 

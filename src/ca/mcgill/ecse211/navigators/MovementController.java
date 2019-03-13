@@ -145,6 +145,27 @@ public class MovementController {
         leftMotor.rotate(convertDistance(wheelRadius, distance), true);
         rightMotor.rotate(convertDistance(wheelRadius, distance), false);
     }
+    
+    /**
+     * Causes the robot to move forward a distance
+     * 
+     * @param distance
+     *            the distance to be traveled in cm
+     * @param speed
+     *            the speed in deg/sec
+     * @param acceleration
+     *            the acceleration in deg/s
+     * @param immediateReturn
+     *            if true do not wait for the move to complete
+     */
+    public void driveDistance(double distance, int speed, int acceleration, boolean immediateReturn) {
+        leftMotor.setSpeed(speed);
+        rightMotor.setSpeed(speed);
+        leftMotor.setAcceleration(acceleration);
+        rightMotor.setAcceleration(acceleration);
+        leftMotor.rotate(convertDistance(wheelRadius, distance), true);
+        rightMotor.rotate(convertDistance(wheelRadius, distance), false);
+    }
 
     /**
      * Causes the robot to move forward the specified distance. Can cause the thread
