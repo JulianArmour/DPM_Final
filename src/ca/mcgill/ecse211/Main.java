@@ -157,7 +157,7 @@ public class Main {
         movementController = new MovementController(leftMotor, rightMotor, WHEEL_RAD, TRACK, odometer);
         navigator = new Navigator(
                 movementController, odometer, localization, tunnel_LL, tunnel_UR, startzone_LL, startzone_UR,
-                startingCorner, island_LL, island_UR);
+                startingCorner, island_LL, island_UR, TILE_SIZE);
         canSearch = new CanSearch(
                 odometer, movementController, medianDistanceSensor, searchzone_LL, searchzone_UR, tunnel_LL, tunnel_UR,
                 island_LL, island_UR, startingCorner, TILE_SIZE);

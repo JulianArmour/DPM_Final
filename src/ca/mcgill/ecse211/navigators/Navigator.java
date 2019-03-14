@@ -1,7 +1,4 @@
 package ca.mcgill.ecse211.navigators;
-import java.util.function.IntPredicate;
-import java.util.function.ToDoubleBiFunction;
-
 import ca.mcgill.ecse211.localizers.Localization;
 import ca.mcgill.ecse211.odometer.*;
 
@@ -12,56 +9,57 @@ import ca.mcgill.ecse211.odometer.*;
  * @version 1
  */
 public class Navigator {
-	
-	private static final double TILE_SIZE = 30.48;
-	private static final double VERT_SENSOR_OFFSET = 5; 
-	
-	private static MovementController move;
-	private static Odometer odo;
-	private static Localization localizer;
-	private static int TLLX, TLLY, TURX, TURY, STZLLX, STZLLY, STZURX, STZURY, ILLX, ILLY, IURX, IURY;
-	
-	
-	
-	private static int dumpingSpotX, dumpingSpotY;
-	private static int bridgeTileLength;
-	private static int SC;
+    // constants
+    private static final double VERT_SENSOR_OFFSET = 5;
+    // dependencies
+    private MovementController  move;
+    private Odometer            odo;
+    private Localization        localizer;
+    // fields
+    private double              tileSize;
+    private int                 TLLX, TLLY, TURX, TURY, STZLLX, STZLLY, STZURX, STZURY, ILLX, ILLY, IURX, IURY;
+    private int                 dumpingSpotX, dumpingSpotY;
+    private int                 bridgeTileLength;
+    private int                 SC;
 
 	/**
-	 * Contructor for the navigator class
-	 * @param move Movement controller instance to control the robots movements
-	 * @param odo Odometer instance for odometry
-	 * @param localizer Localizer for the robot to use its sensors for localization
-	 * @param TLL Lower left coordinates for the tunnel
-	 * @param TUR Upper right coordinates for the tunnel
-	 * @param STZLL Lower left coordinates for the starting zone
-	 * @param STZUR Upper right coordinates for the starting zone
-	 * @param SC Starting corner
-	 * @param ILL Lower left coordinates for the island
-	 * @param IUR Upper right coordinates for the island
+	 * @param move
+	 * @param odo
+	 * @param localizer
+	 * @param TLL
+	 * @param TUR
+	 * @param STZLL
+	 * @param STZUR
+	 * @param SC
+	 * @param ILL
+	 * @param IUR
+	 * @param tileSize
 	 */
-	public Navigator(MovementController move, Odometer odo, Localization localizer, int[] TLL, int TUR[], int STZLL[], int STZUR[], int SC, int ILL[], int IUR[]) {
-		this.move = move; 
-		this.odo = odo;
+    public Navigator(
+            MovementController move, Odometer odo, Localization localizer, int[] TLL, int TUR[], int STZLL[],
+            int STZUR[], int SC, int ILL[], int IUR[], double tileSize) {
+        this.move = move;
+        this.odo = odo;
+        this.TLLX = TLL[0]; // Set tunnel coordinates
+        this.TLLY = TLL[1];
+        this.TURX = TUR[0];
+        this.TURY = TUR[1];
+        this.STZLLX = STZLL[0]; // Set starting zone coordinates
+        this.STZLLY = STZLL[1];
+        this.STZURX = STZUR[0];
+        this.STZURY = STZUR[1];
+        this.ILLX = ILL[0]; // Set search zone coordinates
+        this.ILLY = ILL[1];
+        this.IURX = IUR[0];
+        this.IURY = IUR[1];
+        this.localizer = localizer;
+        this.SC = SC;
+        // Calculate bridge length from coordinates
+        this.bridgeTileLength = (Math.abs(TLLX - TURX) > Math.abs(TLLY - TURY)) ? 
+                                 Math.abs(TLLX - TURX) : Math.abs(TLLY - TURY);
+        this.tileSize = tileSize;
 
-		TLLX = TLL[0]; //Set tunnel coordinates
-		TLLY = TLL[1];
-		TURX = TUR[0];
-		TURY = TUR[1];
-		STZLLX = STZLL[0]; //Set starting zone coordinates
-		STZLLY = STZLL[1];
-		STZURX = STZUR[0];
-		STZURY = STZUR[1];
-		ILLX = ILL[0]; //Set search zone coordinates
-		ILLY = ILL[1];
-		IURX = IUR[0];
-		IURY = IUR[1];
-		this.localizer = localizer;
-		this.SC = SC;
-		bridgeTileLength = (Math.abs(TLLX-TURX) > Math.abs(TLLY-TURY)) ? Math.abs(TLLX-TURX) : Math.abs(TLLY-TURY); //Calculate bridge length from coordinates
-
-		
-	}
+    }
 	
 	/**
 	 * Travel to the tunnel from either the starting point or any point on the island
@@ -188,24 +186,24 @@ public class Navigator {
 			}
 		}
 		if(OP1) { //Path 1 to tunnel depending on tunnel position: if the tunnel is on the east or west side of the starting zone
-			move.travelTo(tunnelTilePosXOP1*TILE_SIZE, odo.getXYT()[1], false); //Move to the x position on the grid line before the tunnel
+			move.travelTo(tunnelTilePosXOP1*tileSize, odo.getXYT()[1], false); //Move to the x position on the grid line before the tunnel
 			localizer.quickThetaCorrection();
 			odo.setTheta(move.roundAngle());
 			move.driveDistance(-VERT_SENSOR_OFFSET);
 			
-			move.travelTo(odo.getXYT()[0], tunnelTilePosYOP1 * TILE_SIZE, false); //Move the to y position on the grid line in the middle of the tile in front of the tunnel
+			move.travelTo(odo.getXYT()[0], tunnelTilePosYOP1 * tileSize, false); //Move the to y position on the grid line in the middle of the tile in front of the tunnel
 			move.turnTo(turnToTunnel);
 			localizer.quickThetaCorrection(); //Make sure we are well facing the tunnel
 			odo.setTheta(move.roundAngle());
 			
 		}
 		else { //Path 2 to tunnel depending on position: if tunnel is on the north or south side of the starting zone
-			move.travelTo(odo.getXYT()[0], tunnelTilePosYOP2*TILE_SIZE, false);
+			move.travelTo(odo.getXYT()[0], tunnelTilePosYOP2*tileSize, false);
 			localizer.quickThetaCorrection();
 			odo.setTheta(move.roundAngle());
 			move.driveDistance(-VERT_SENSOR_OFFSET);
 			
-			move.travelTo(tunnelTilePosXOP2*TILE_SIZE, odo.getXYT()[1], false);
+			move.travelTo(tunnelTilePosXOP2*tileSize, odo.getXYT()[1], false);
 			move.turnTo(turnToTunnel);
 			localizer.quickThetaCorrection();
 			odo.setTheta(move.roundAngle());
@@ -419,7 +417,7 @@ public class Navigator {
 			}
 		}
 		
-		move.driveDistance((bridgeTileLength+2)*TILE_SIZE - VERT_SENSOR_OFFSET); //Cross tunnel
+		move.driveDistance((bridgeTileLength+2)*tileSize - VERT_SENSOR_OFFSET); //Cross tunnel
 
 		localizer.quickThetaCorrection(); //Correct angle and x position 
 		move.driveDistance(-VERT_SENSOR_OFFSET); 
@@ -429,8 +427,8 @@ public class Navigator {
 		move.driveDistance(-VERT_SENSOR_OFFSET);
 		
 		thetaCor = move.roundAngle(); //Update the odometer
-		odo.setXYT(posCorX*TILE_SIZE, posCorY*TILE_SIZE, thetaCor);
-		move.driveDistance(0.5*TILE_SIZE);
+		odo.setXYT(posCorX*tileSize, posCorY*tileSize, thetaCor);
+		move.driveDistance(0.5*tileSize);
 		move.rotateAngle(90, !turnLoc);
 	}
 
@@ -440,21 +438,21 @@ public class Navigator {
 		
 		// if sc is 0, we want to go to (1,1)
 		if(SC == 0) {
-			move.travelTo(TILE_SIZE, TILE_SIZE, false);
+			move.travelTo(tileSize, tileSize, false);
 			
 		}
 		//if SC is 1, we want to go to (14,1)
 		else if(SC == 1) {
-			move.travelTo(14*TILE_SIZE, TILE_SIZE, false);
+			move.travelTo(14*tileSize, tileSize, false);
 		}
 		//if SC =, we want to go to (14,8)
 		else if(SC == 2) {
-			move.travelTo(14*TILE_SIZE, 8*TILE_SIZE, false);
+			move.travelTo(14*tileSize, 8*tileSize, false);
 			
 		}
 		//if SC = 3, we want to go to (1,8)
 		else {
-			move.travelTo(TILE_SIZE, 8*TILE_SIZE, false);
+			move.travelTo(tileSize, 8*tileSize, false);
 			
 		}
 	}
@@ -465,47 +463,47 @@ public class Navigator {
 		if(SC == 0) {
 	
 				if(TLLX == STZURX || TURX-TLLX == 2) { //if horizontal
-					dumpingSpotX = (int) (TURX+TILE_SIZE/2);
-					dumpingSpotY = (int) (TURY - 1.5*TILE_SIZE);
+					dumpingSpotX = (int) (TURX+tileSize/2);
+					dumpingSpotY = (int) (TURY - 1.5*tileSize);
 
 				} else  { 
-					dumpingSpotX = (int) (TURX + TILE_SIZE/2);
-					dumpingSpotY = (int) (TURY + TILE_SIZE/2);
+					dumpingSpotX = (int) (TURX + tileSize/2);
+					dumpingSpotY = (int) (TURY + tileSize/2);
 				}
 			
 		} else if(SC == 3){ 
 			
 				if(TLLX == STZURX || TURX-TLLX == 2) {
 					//its horizontal
-					dumpingSpotX = (int) (TLLX + TILE_SIZE/2);
-					dumpingSpotY = (int) (TLLY - 1.5*TILE_SIZE);
+					dumpingSpotX = (int) (TLLX + tileSize/2);
+					dumpingSpotY = (int) (TLLY - 1.5*tileSize);
 				} else {
 					//its vertical
-					dumpingSpotX = (int) (TURX-2.5*TILE_SIZE);
-					dumpingSpotY = (int) (TURY+TILE_SIZE/2);
+					dumpingSpotX = (int) (TURX-2.5*tileSize);
+					dumpingSpotY = (int) (TURY+tileSize/2);
 				}
 		} else if(SC == 1) {
 			
 			if(TURX == STZLLX || TURX-TLLX==2) {
 				//its horizontal
-				dumpingSpotX =  (int) (TURX - 1.5*TILE_SIZE);
-				dumpingSpotY = (int) (TURY-1.5*TILE_SIZE);
+				dumpingSpotX =  (int) (TURX - 1.5*tileSize);
+				dumpingSpotY = (int) (TURY-1.5*tileSize);
 			} else {
 				//its vertical
-				dumpingSpotX = (int) (TURX - 1.5*TILE_SIZE);
-				dumpingSpotY = (int) (TURY + TILE_SIZE/2);
+				dumpingSpotX = (int) (TURX - 1.5*tileSize);
+				dumpingSpotY = (int) (TURY + tileSize/2);
 			}
 			
 		} else { //if (SC == 2)
 			
 			 if(TURX == STZLLX || TURX-TLLX == 2) {
 				 //its horizontal
-				 dumpingSpotX = (int) (TURX - 1.5*TILE_SIZE);
-				 dumpingSpotY = (int) (TURY - 1.5*TILE_SIZE);
+				 dumpingSpotX = (int) (TURX - 1.5*tileSize);
+				 dumpingSpotY = (int) (TURY - 1.5*tileSize);
 			 } else {
 				 //its vertical
-				 dumpingSpotX = (int) (TURX - 1.5*TILE_SIZE);
-				 dumpingSpotY = (int) (TURY - 1.5*TILE_SIZE);
+				 dumpingSpotX = (int) (TURX - 1.5*tileSize);
+				 dumpingSpotY = (int) (TURY - 1.5*tileSize);
 			 }
 		}
 		//puts the calculated X and Y into an array to return
