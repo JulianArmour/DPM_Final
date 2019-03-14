@@ -11,17 +11,25 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
  * @version 2
  */
 public class WeightDetector {
-    
-    private static final int HEAVY_CAN_THRESHOLD = 30;// TODO
-    private static final int DETECT_SPEED = 1000;
-    private static final int DETECT_ACC = 10000;
-
+    // constants
+    private static final int       HEAVY_CAN_THRESHOLD = 30;   // TODO
+    private static final int       DETECT_SPEED        = 1000;
+    private static final int       DETECT_ACC          = 10000;
+    // dependencies
     private EV3LargeRegulatedMotor clawMotor;
     private MovementController     movementController;
+    // fields
+    private float                  tileLength;
 
-    private int tileLength;
-
-    public WeightDetector(EV3LargeRegulatedMotor clawMotor, MovementController movementController, int tileLength) {
+    /**
+     * 
+     * @param clawMotor
+     *            The motor used for the mechanical claw in front of the robot
+     * @param movementController
+     * @param tileLength
+     *            The length of the tiles
+     */
+    public WeightDetector(EV3LargeRegulatedMotor clawMotor, MovementController movementController, float tileLength) {
         this.clawMotor = clawMotor;
         this.movementController = movementController;
         this.tileLength = tileLength;
@@ -40,14 +48,10 @@ public class WeightDetector {
     public boolean isCanHeavy() {
         int initTacho = clawMotor.getTachoCount();
         clawMotor.flt();
-        movementController.driveDistance(tileLength/2, DETECT_SPEED, DETECT_ACC, false);
+        movementController.driveDistance(tileLength / 2, DETECT_SPEED, DETECT_ACC, false);
         int dTacho = Math.abs(clawMotor.getTachoCount() - initTacho);
-        movementController.driveDistance(tileLength/2, false);
-        if (dTacho > HEAVY_CAN_THRESHOLD) {
-            return true;
-        } else {
-            return false;
-        }
+        movementController.driveDistance(tileLength / 2, false);
+        return (dTacho > HEAVY_CAN_THRESHOLD);
     }
 
 }
