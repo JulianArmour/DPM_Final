@@ -217,6 +217,7 @@ public class Navigator {
 	 * @param direction Boolean: if true, the robot is going from starting zone to search zone, if false, the robot is going from search zone to starting zone
 	 */
 	public void throughTunnel(boolean direction) {
+		//TODO close the calm while travelling inside of the tunnel
 		int posCorX = 0, posCorY = 0;
 		int thetaCor = 0;
 		boolean turnLoc = true;
