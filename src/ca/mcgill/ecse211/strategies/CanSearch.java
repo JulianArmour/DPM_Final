@@ -153,12 +153,9 @@ public class CanSearch {
             } else {
             	currentPos += 1;
             	scanCurrentZone();
-            	
-            }
-            //TODO what do you do after you get to the can?
-		}
+             }
+      }
 
-		// TODO finish this
 	}
 	
     /**

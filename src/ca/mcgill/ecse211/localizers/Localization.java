@@ -21,6 +21,8 @@ public class Localization {
     private static int              LIGHT_POLLING_PERIOD        = 20;
     private static float            FIRST_DIFFERENCE_THRESHOLD  = 4.0f;
     private static float            SECOND_DIFFERENCE_THRESHOLD = 1.5f;
+    private static final int 		SLOW_SPEED					= 300;
+    private static final int 		FAST_SPEED					= 100;
 
     private MovementController      movCon;
     private Odometer                odo;
@@ -48,6 +50,7 @@ public class Localization {
      * correction. The second is much slower and much more accurate.
      */
     public void quickThetaCorrection() {
+    	
         for (int i = 0; i < 2; i++) {
             boolean RLineDetected = false;
             boolean LLineDetected = false;
@@ -64,10 +67,10 @@ public class Localization {
             dLTleft.flush();
             if (i == 0) {
                 // first pass: move fast
-                movCon.driveForward(100);
+                movCon.driveForward(FAST_SPEED);
             } else {
                 // second pass: move much slower
-                movCon.driveForward(30);
+                movCon.driveForward(SLOW_SPEED);
             }
 
             float deltaR = 0f;

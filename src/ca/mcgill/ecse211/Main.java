@@ -29,9 +29,9 @@ public class Main {
     public static final double             WHEEL_RAD              = 2.2;
     public static final double             TRACK                  = 11.9;
     // distance from the light back light sensors to the wheel-base
-    public static double                   LT_SENSOR_TO_WHEELBASE = 11.9;
+    public static double                   LT_SENSOR_TO_WHEELBASE = 9.6;
     // distance from the ultrasonic sensor to the "thumb" of the claw
-    public static double                   US_SENSOR_TO_CLAW      = 3.0;                        // TODO
+    public static double                   US_SENSOR_TO_CLAW      = 6.0;                        // TODO
     // median filter window width
     private static int                     MEDIAN_FILTER_WINDOW   = 5;
     // the speed at which the claw grabs the can
