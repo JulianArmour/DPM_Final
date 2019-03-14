@@ -14,13 +14,12 @@ import lejos.hardware.motor.EV3MediumRegulatedMotor;
 public class ColourArm {
     private static final int        INIT_SCAN_POS = 0;
     private static final int        FIN_SCAN_POS  = 140;// TODO
+    private static final int SCAN_SPEED = 90;
 
     private EV3MediumRegulatedMotor colourMotor;
-    private int                     scanSpeed;
 
-    public ColourArm(EV3MediumRegulatedMotor colourMotor, int scanSpeed) {
+    public ColourArm(EV3MediumRegulatedMotor colourMotor) {
         this.colourMotor = colourMotor;
-        this.scanSpeed = scanSpeed;
     }
 
     /**
@@ -36,6 +35,7 @@ public class ColourArm {
      */
     public void scan(int numberOfScans) {
         for (int i = 0; i < numberOfScans; i++) {
+            colourMotor.setSpeed(SCAN_SPEED);
             colourMotor.rotateTo(FIN_SCAN_POS, false);
             colourMotor.rotateTo(INIT_SCAN_POS, false);
         }
