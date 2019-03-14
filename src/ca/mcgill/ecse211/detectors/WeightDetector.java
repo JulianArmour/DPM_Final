@@ -19,20 +19,20 @@ public class WeightDetector {
     private EV3LargeRegulatedMotor clawMotor;
     private MovementController     movementController;
     // fields
-    private float                  tileLength;
+    private double                 tileLength;
 
     /**
      * 
      * @param clawMotor
      *            The motor used for the mechanical claw in front of the robot
      * @param movementController
-     * @param tileLength
+     * @param tileSize
      *            The length of the tiles
      */
-    public WeightDetector(EV3LargeRegulatedMotor clawMotor, MovementController movementController, float tileLength) {
+    public WeightDetector(EV3LargeRegulatedMotor clawMotor, MovementController movementController, double tileSize) {
         this.clawMotor = clawMotor;
         this.movementController = movementController;
-        this.tileLength = tileLength;
+        this.tileLength = tileSize;
     }
 
     /**

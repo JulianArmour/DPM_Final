@@ -107,13 +107,13 @@ public class ColourDetector implements TimerListener {
      * detected colour of a can.
      * 
      * @param colourSamples
-     *            A list of colour samples
+     *            A list of RGB colour samples
      * @return The detected colour of the can
      * 
      * @author Cedric Barre
-     * @since TODO
+     * @since March 8, 2019
      */
-    public CanColour getCanColour(List colourSamples) {
+    public CanColour getCanColour(List<float[]> colourSamples) {
     	float RMean = 0.0f;
 		float GMean = 0.0f;
 		float BMean = 0.0f;
