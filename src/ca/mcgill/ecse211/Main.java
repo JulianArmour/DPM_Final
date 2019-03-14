@@ -107,6 +107,7 @@ public class Main {
     private static Claw                    claw;
 
     public static void main(String[] args) {
+        getWifiData();
         // init motors
         leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
         rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
@@ -166,7 +167,7 @@ public class Main {
     }
 
     @SuppressWarnings("rawtypes")
-    private void getWifiData() {
+    private static void getWifiData() {
         // Initialize WifiConnection class
         WifiConnection conn = new WifiConnection(SERVER_IP, TEAM_NUMBER, ENABLE_DEBUG_WIFI_PRINT);
 
@@ -176,22 +177,11 @@ public class Main {
 
             // set starting corner and can colour being searched for
             int redTeam = ((Long) data.get("RedTeam")).intValue();
-            int island_LL_x;
-            int island_LL_y;
-            int island_UR_x;
-            int island_UR_y;
-            int tunnel_LL_x;
-            int tunnel_LL_y;
-            int tunnel_UR_x;
-            int tunnel_UR_y;
-            int searchzone_LL_y;
-            int searchzone_LL_x;
-            int searchzone_UR_x;
-            int searchzone_UR_y;
-            int startzone_LL_x;
-            int startzone_LL_y;
-            int startzone_UR_x;
-            int startzone_UR_y;
+            int island_LL_x, island_LL_y, island_UR_x, island_UR_y;
+            int tunnel_LL_x, tunnel_LL_y, tunnel_UR_x, tunnel_UR_y;
+            int searchzone_LL_y, searchzone_LL_x, searchzone_UR_x, searchzone_UR_y;
+            int startzone_LL_x, startzone_LL_y, startzone_UR_x, startzone_UR_y;
+            
             if (redTeam == TEAM_NUMBER) {
                 startingCorner = ((Long) data.get("RedCorner")).intValue();
                 canColour = CanColour.RED;
@@ -199,26 +189,21 @@ public class Main {
                 island_LL_y = ((Long) data.get("Island_LL_y")).intValue();
                 island_UR_x = ((Long) data.get("Island_UR_x")).intValue();
                 island_UR_y = ((Long) data.get("Island_UR_y")).intValue();
-                island_LL = new int[] { island_LL_x, island_LL_y };
-                island_UR = new int[] { island_UR_x, island_UR_y };
+
                 tunnel_LL_x = ((Long) data.get("TNR_LL_x")).intValue();
                 tunnel_LL_y = ((Long) data.get("TNR_LL_y")).intValue();
                 tunnel_UR_x = ((Long) data.get("TNR_UR_x")).intValue();
                 tunnel_UR_y = ((Long) data.get("TNR_UR_y")).intValue();
-                tunnel_LL = new int[] { tunnel_LL_x, tunnel_LL_y };
-                tunnel_UR = new int[] { tunnel_UR_x, tunnel_UR_y };
+
                 searchzone_LL_x = ((Long) data.get("SZR_LL_x")).intValue();
                 searchzone_LL_y = ((Long) data.get("SZR_LL_y")).intValue();
                 searchzone_UR_x = ((Long) data.get("SZR_UR_x")).intValue();
                 searchzone_UR_y = ((Long) data.get("SZR_UR_y")).intValue();
-                tunnel_LL = new int[] { searchzone_LL_x, searchzone_LL_y };
-                tunnel_UR = new int[] { searchzone_UR_x, searchzone_UR_y };
+
                 startzone_LL_x = ((Long) data.get("Red_LL_x")).intValue();
                 startzone_LL_y = ((Long) data.get("Red_LL_y")).intValue();
                 startzone_UR_x = ((Long) data.get("Red_UR_x")).intValue();
                 startzone_UR_y = ((Long) data.get("Red_UR_y")).intValue();
-                startzone_LL = new int[] { startzone_LL_x, startzone_LL_y };
-                startzone_UR = new int[] { startzone_UR_x, startzone_UR_y };
             } else {
                 startingCorner = ((Long) data.get("GreenCorner")).intValue();
                 canColour = CanColour.GREEN;
@@ -226,26 +211,33 @@ public class Main {
                 island_LL_y = ((Long) data.get("Island_LL_y")).intValue();
                 island_UR_x = ((Long) data.get("Island_UR_x")).intValue();
                 island_UR_y = ((Long) data.get("Island_UR_y")).intValue();
-                island_LL = new int[] { island_LL_x, island_LL_y };
-                island_UR = new int[] { island_UR_x, island_UR_y };
+                
                 tunnel_LL_x = ((Long) data.get("TNG_LL_x")).intValue();
                 tunnel_LL_y = ((Long) data.get("TNG_LL_y")).intValue();
                 tunnel_UR_x = ((Long) data.get("TNG_UR_x")).intValue();
                 tunnel_UR_y = ((Long) data.get("TNG_UR_y")).intValue();
-                tunnel_LL = new int[] { tunnel_LL_x, tunnel_LL_y };
-                tunnel_UR = new int[] { tunnel_UR_x, tunnel_UR_y };
+                
                 searchzone_LL_x = ((Long) data.get("SZG_LL_x")).intValue();
                 searchzone_LL_y = ((Long) data.get("SZG_LL_y")).intValue();
                 searchzone_UR_x = ((Long) data.get("SZG_UR_x")).intValue();
                 searchzone_UR_y = ((Long) data.get("SZG_UR_y")).intValue();
-                tunnel_LL = new int[] { searchzone_LL_x, searchzone_LL_y };
-                tunnel_UR = new int[] { searchzone_UR_x, searchzone_UR_y };
+                
                 startzone_LL_x = ((Long) data.get("Red_LL_x")).intValue();
                 startzone_LL_y = ((Long) data.get("Red_LL_y")).intValue();
                 startzone_UR_x = ((Long) data.get("Red_UR_x")).intValue();
                 startzone_UR_y = ((Long) data.get("Red_UR_y")).intValue();
             }
-
+            island_LL = new int[] { island_LL_x, island_LL_y };
+            island_UR = new int[] { island_UR_x, island_UR_y };
+            
+            tunnel_LL = new int[] { tunnel_LL_x, tunnel_LL_y };
+            tunnel_UR = new int[] { tunnel_UR_x, tunnel_UR_y };
+            
+            searchzone_LL = new int[] { searchzone_LL_x, searchzone_LL_y };
+            searchzone_UR = new int[] { searchzone_UR_x, searchzone_UR_y };
+            
+            startzone_LL = new int[] { startzone_LL_x, startzone_LL_y };
+            startzone_UR = new int[] { startzone_UR_x, startzone_UR_y };
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());
         }

@@ -164,28 +164,12 @@ public class CanSearch {
             if (canPos != null) {
                 travelToCan(canPos);
             } else {
-<<<<<<< HEAD
                 currentPos += 1;
                 scanCurrentZone();
-=======
-            	currentPos += 1;
-            	scanCurrentZone();
-             }
-      }
->>>>>>> branch 'master' of https://github.com/JulianArmour/DPM_Final.git
-
-<<<<<<< HEAD
             }
-            // TODO what do you do after you get to the can?
         }
-
-        // TODO finish this
     }
-
-=======
-	}
 	
->>>>>>> branch 'master' of https://github.com/JulianArmour/DPM_Final.git
     /**
      * Causes the robot to travel to the general location of a detected can.
      * 
