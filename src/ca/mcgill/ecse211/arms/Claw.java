@@ -1,8 +1,6 @@
 package ca.mcgill.ecse211.arms;
 
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import lejos.hardware.motor.EV3MediumRegulatedMotor;
-import lejos.hardware.motor.NXTRegulatedMotor;
 
 /**
  * Provides methods for controlling the motor that will grab the cans.
@@ -33,7 +31,7 @@ public class Claw {
      * @author Julian Armour
      * @since March 5, 2019
      */
-    public void grabCan() {
+    public void closeClaw() {
         claw.setSpeed(CLAW_SPEED);
         claw.rotateTo(GRABBED_ANGLE, false);
     }
@@ -44,7 +42,7 @@ public class Claw {
      * @author Julian Armour
      * @since March 5, 2019
      */
-    public void releaseCan() {
+    public void openClaw() {
         claw.setSpeed(CLAW_SPEED);
         claw.rotateTo(RELEASED_ANGLE, false);
     }
