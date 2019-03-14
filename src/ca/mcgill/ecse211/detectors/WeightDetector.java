@@ -45,7 +45,7 @@ public class WeightDetector {
      * @author Julian Armour
      * @since March 14 2019
      */
-    public boolean isCanHeavy() {
+    public boolean canIsHeavy() {
         int initTacho = clawMotor.getTachoCount();
         clawMotor.flt();
         movementController.driveDistance(tileLength / 2, DETECT_SPEED, DETECT_ACC, false);
