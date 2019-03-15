@@ -159,7 +159,7 @@ public class CanSearch {
 
             movCon.travelTo(scanningPoints.get(currentPos)[0], scanningPoints.get(currentPos)[1], false);
             movCon.turnTo(90);
-            float[] canPos = fastCanScan(P_SZ_LL, P_SZ_UR);
+            float[] canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 359, SCAN_RADIUS);
 
             if (canPos != null) {
                 travelToCan(canPos);
@@ -176,35 +176,32 @@ public class CanSearch {
      * @param canPos
      *            the general position of a can, which the robot will travel to.
      * @author Julian Armour
+     * @return <code>true</code> if it found and traveled to a can, <code>false</code> if it didn't find a can.
      * @since March 5, 2019
      */
-    public void travelToCan(float[] canPos) {
+    public boolean travelToCan(float[] canPos) {
         double[] robotPos = odo.getXYT();
         // travel robot 10 cm in front of can
         movCon.turnTo(movCon.calculateAngle(robotPos[0], robotPos[1], canPos[0], canPos[1]));
         movCon.driveDistance(movCon.calculateDistance(robotPos[0], robotPos[1], canPos[0], canPos[1]) - 10, false);
         // rotate counter-clockwise 45 degrees
         movCon.rotateAngle(45, false, false);
-        // rotate clockwise until the can is detected
-        USData.flush();
-        movCon.rotateAngle(45, true, true);
-        // check for cans
-        while (USData.getFilteredDistance() >= 12) {
-            try {
-                Thread.sleep(CAN_SCAN_PERIOD / 2);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 90, 15);
+        // TODO return something if canPos = null or not
+        if (canPos == null) {
+            return false;
+        } else {
+            // rotate back 15 degrees to account for ultrasonic arc (30-deg)
+            movCon.rotateAngle(15, true, false);
+            // move forward until to appropriate distance for gripping the can
+            USData.flush();
+            float dist = USData.getFilteredDistance();
+            if (dist < TILE_LENGTH) {
+                movCon.driveDistance(dist - Main.US_SENSOR_TO_CLAW, false);
             }
+            return true;
         }
-        movCon.stopMotors();
-        // rotate back 15 degrees to account for ultrasonic arc
-        movCon.rotateAngle(15, true, false);
-        // move forward until to appropriate distance for gripping the can
-        USData.flush();
-        float dist = USData.getFilteredDistance();
-        if (dist < TILE_LENGTH) {
-            movCon.driveDistance(dist - Main.US_SENSOR_TO_CLAW, false);
-        }
+
     }
 
     /**
@@ -215,20 +212,28 @@ public class CanSearch {
      *            lower left of the search zone
      * @param searchUR
      *            upper right of the search zone
+     * @param sweepAngle
+     *            the angle the robot will rotate
+     * @param scanRadius
+     *            the maximum distance for detecting a can
      * @return the position of a can in the scan radius, or <code>null</code> if a
      *         can is not found
+     * 
+     * @author Julian Armour
+     * @since March 15, 2019
      */
-    public float[] fastCanScan(float[] searchLL, float[] searchUR) {
+    public float[] fastCanScan(float[] searchLL, float[] searchUR, double sweepAngle, float scanRadius) {//TODO
         double[] robotPos = odo.getXYT();
         // start rotating clockwise
         // scan for positions that are within the search zone
-        final double finalHeading = (robotPos[2] - 1.0) % 360.0;
+        final double finalHeading = (robotPos[2] + sweepAngle) % 360.0;
 
         final boolean[] atFinalHeading = { false }; // anonymous class trick for outer-scope variables
         Runnable rotater = new Runnable() {
             @Override
             public void run() {
                 movCon.turnClockwiseTo(finalHeading, false);
+                // the robot is only at the final heading if it wasn't interrupted by detecting a can
                 if (!Thread.interrupted()) {
                     atFinalHeading[0] = true;
                 }
@@ -240,8 +245,8 @@ public class CanSearch {
         rotT.start(); // start rotating
         float[] position = new float[2];
         while (!atFinalHeading[0]) {
-            double dist = (double) USData.getFilteredDistance();
-            if (dist <= SCAN_RADIUS) {
+            float dist = USData.getFilteredDistance();
+            if (dist <= scanRadius) {
                 double angle = odo.getXYT()[2];
                 position[0] = (float) (dist * Math.sin(Math.toRadians(angle)) + robotPos[0]);
                 position[1] = (float) (dist * Math.cos(Math.toRadians(angle)) + robotPos[1]);
