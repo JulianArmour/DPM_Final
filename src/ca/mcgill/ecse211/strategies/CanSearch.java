@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.function.IntPredicate;
 
 import ca.mcgill.ecse211.Main;
 import ca.mcgill.ecse211.navigators.MovementController;
@@ -22,13 +23,16 @@ public class CanSearch {
     private Odometer             odo;
     private MovementController   movCon;
     private MedianDistanceSensor USData;
-    private float[]              P_SZ_LL, P_SZ_UR, P_TUN_LL, P_TUN_UR, P_ISL_LL, P_ISL_UR;
+    private int []				 SZ_LL, SZ_UR;
+    private float[]               P_TUN_LL, P_TUN_UR, P_ISL_LL, P_ISL_UR;
     private int                  startCorner;
     private float                TILE_LENGTH;
     private float                deltaX, deltaY;
     private float                SCAN_RADIUS     = TILE_LENGTH * 3;
     private float[]              nextPos;
     private static List<float[]>  scanningPoints  = new LinkedList<float[]>();
+    private float[]				 P_SZ_LL = {SZ_LL[0]*TILE_LENGTH,SZ_LL[1]*TILE_LENGTH};
+    private float[]				 P_SZ_UR = {SZ_UR[0]*TILE_LENGTH,SZ_UR[1]*TILE_LENGTH}; 				
 
     /**
      * 
@@ -44,14 +48,14 @@ public class CanSearch {
      * @param TILE_LENGTH
      */
     public CanSearch(Odometer odometer, MovementController movementController, MedianDistanceSensor USData,
-            int[] searchzone_LL, int[] searchzone_UR, int[] tunnel_LL, int[] tunnel_UR, int[] ISLAND_LL,
-            int[] ISLAND_UR, int startingCorner, double tileLength) {
+    				int[] searchzone_LL, int[] searchzone_UR, int[] tunnel_LL, int[] tunnel_UR, int[] ISLAND_LL,
+    				int[] ISLAND_UR, int startingCorner, double tileLength) {
 
         this.odo = odometer;
         this.movCon = movementController;
         this.USData = USData;
-        this.P_SZ_LL = new float[] { (float) (searchzone_LL[0] * tileLength), (float) (searchzone_LL[1] * tileLength) };
-        this.P_SZ_UR = new float[] { (float) (searchzone_UR[0] * tileLength), (float) (searchzone_UR[1] * tileLength) };
+        this.SZ_LL = new int[] { (searchzone_LL[0] ), (searchzone_LL[1] ) };
+        this.SZ_UR = new int[] { (searchzone_UR[0] ),  (searchzone_UR[1] ) };
         this.P_TUN_LL = new float[] { (float) (tunnel_LL[0] * tileLength), (float) (tunnel_LL[1] * tileLength) };
         this.P_TUN_UR = new float[] { (float) (tunnel_UR[0] * tileLength), (float) (tunnel_UR[1] * tileLength) };
         this.P_ISL_LL = new float[] { (float) (ISLAND_LL[0] * tileLength), (float) (ISLAND_LL[1] * tileLength) };
@@ -68,50 +72,53 @@ public class CanSearch {
      */
     public void setScanPositions() {
         // TODO add all possibilities ST == 0,1,2,3
+    	
+    	//calculates the padded search area
+    	int[] paddedSearchZone_LL = {SZ_LL[0]-1 , SZ_LL[1]-1};
+    	int[] paddedSearchZone_UR = {SZ_UR[0]+1, SZ_UR[1]+1};
+    	
+    	
+    	//calculates the width and the height of the padded search area
+        deltaX = paddedSearchZone_UR[0] - paddedSearchZone_LL[0];
+        deltaY = paddedSearchZone_UR[1] - paddedSearchZone_LL[1];
 
-        deltaX = P_ISL_UR[0] - P_SZ_LL[0];
-        deltaY = P_ISL_UR[1] - P_ISL_LL[1];
-
+        //if starting from the RHP
         if (startCorner == 1 || startCorner == 2) {
-
-            // calculate positions as float[]
-            float[] firstPos = { P_ISL_UR[0] - TILE_LENGTH / 2, P_ISL_LL[1] + TILE_LENGTH / 2 };
-            scanningPoints.add(firstPos);
 
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
                     float[] nextPos = new float[2];
 
                     if (i == 0 && j == 0) {
-                        System.out.println("BOTH 0");
-                        nextPos[0] = P_ISL_UR[0] - TILE_LENGTH / 2;
-                        nextPos[1] = P_ISL_LL[1] + TILE_LENGTH / 2;
+                        
+                        nextPos[0] = paddedSearchZone_UR[0] - TILE_LENGTH / 2;
+                        nextPos[1] = paddedSearchZone_LL[1] + TILE_LENGTH / 2;
                     }
 
                     else if (i == 0) {
-                        System.out.println("i is 0");
-                        nextPos[0] = P_ISL_UR[0] - TILE_LENGTH / 2;
-                        nextPos[1] = P_ISL_LL[1] + j * (deltaY / SCAN_RADIUS) * TILE_LENGTH;
+                        
+                        nextPos[0] = paddedSearchZone_UR[0] - TILE_LENGTH / 2;
+                        nextPos[1] = paddedSearchZone_LL[1] + j * (deltaY / SCAN_RADIUS) * TILE_LENGTH;
                     }
 
                     else if (j == 0) {
-                        System.out.println("j is 0");
-                        nextPos[1] = P_ISL_LL[1] + TILE_LENGTH / 2;
-                        nextPos[0] = P_ISL_UR[0] - i * (deltaX / SCAN_RADIUS) * TILE_LENGTH;
+                        
+                        nextPos[1] = paddedSearchZone_LL[1] + TILE_LENGTH / 2;
+                        nextPos[0] = paddedSearchZone_UR[0] - i * (deltaX / SCAN_RADIUS) * TILE_LENGTH;
 
                     }
 
                     else {
-                        System.out.println("none of them are 0");
-                        nextPos[0] = P_ISL_UR[0] - i * (deltaX / SCAN_RADIUS) * TILE_LENGTH;
-
-                        nextPos[1] = P_ISL_LL[1] + j * (deltaY / SCAN_RADIUS) * TILE_LENGTH;
+                        
+                        nextPos[0] = paddedSearchZone_UR[0] - i * (deltaX / SCAN_RADIUS) * TILE_LENGTH;
+                        nextPos[1] = paddedSearchZone_LL[1] + j * (deltaY / SCAN_RADIUS) * TILE_LENGTH;
                     }
                     scanningPoints.add(nextPos);
                 }
             }
         }
 
+        //if starting from the LHP
         if (startCorner == 3 || startCorner == 0) {
 
             for (int i = 0; i < 3; i++) {
@@ -120,22 +127,22 @@ public class CanSearch {
 
                     if (i == 0 && j == 0) {
 
-                        nextPos[0] = P_ISL_LL[0] + TILE_LENGTH / 2;
-                        nextPos[1] = P_ISL_LL[1] + TILE_LENGTH / 2;
+                        nextPos[0] = paddedSearchZone_LL[0] + TILE_LENGTH / 2;
+                        nextPos[1] = paddedSearchZone_LL[1] + TILE_LENGTH / 2;
                     }
                     if (i == 0) {
 
-                        nextPos[0] = P_ISL_LL[0] + TILE_LENGTH / 2;
-                        nextPos[1] = P_ISL_LL[1] + j * (deltaY / SCAN_RADIUS) * TILE_LENGTH;
+                        nextPos[0] = paddedSearchZone_LL[0] + TILE_LENGTH / 2;
+                        nextPos[1] = paddedSearchZone_LL[1] + j * (deltaY / SCAN_RADIUS) * TILE_LENGTH;
                     }
                     if (j == 0) {
 
-                        nextPos[1] = P_ISL_LL[1] + TILE_LENGTH / 2;
-                        nextPos[0] = P_ISL_LL[0] + i * (deltaX / SCAN_RADIUS) * TILE_LENGTH;
+                        nextPos[1] = paddedSearchZone_LL[1] + TILE_LENGTH / 2;
+                        nextPos[0] = paddedSearchZone_LL[0] + i * (deltaX / SCAN_RADIUS) * TILE_LENGTH;
                     } else {
 
-                        nextPos[0] = P_ISL_LL[0] + i * (deltaX / SCAN_RADIUS) * TILE_LENGTH;
-                        nextPos[1] = P_ISL_LL[1] + j * (deltaY / SCAN_RADIUS) * TILE_LENGTH;
+                        nextPos[0] = paddedSearchZone_LL[0] + i * (deltaX / SCAN_RADIUS) * TILE_LENGTH;
+                        nextPos[1] = paddedSearchZone_LL[1] + j * (deltaY / SCAN_RADIUS) * TILE_LENGTH;
                     }
 
                     scanningPoints.add(nextPos);
