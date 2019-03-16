@@ -31,7 +31,7 @@ public class getAngleForClaw {
     private static EV3LargeRegulatedMotor clawMotor;
     private static WeightDetector         weightDetector;
     private static Claw					  claw;
-    private static int						  tachoCount;
+  //  private static int				      tachoCount;
 		
 	
    
@@ -39,8 +39,8 @@ public class getAngleForClaw {
     public static void main(String[] args) throws InterruptedException {
 
         // set up wheel motors
-        leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
-        rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
+        leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
+        rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
         // set up arm motors
       //  elbowMotor = new NXTRegulatedMotor(LocalEV3.get().getPort("C"));
        // elbowMotor.resetTachoCount();
@@ -63,7 +63,7 @@ public class getAngleForClaw {
         // start test
         while(true) {
         localEV3.getTextLCD().clear();
-        tachoCount = clawMotor.getTachoCount();
+        int  tachoCount = clawMotor.getTachoCount();
         System.out.println("Current tachoCount is:" + tachoCount);
         Button.waitForAnyPress();
         }

@@ -13,8 +13,8 @@ public class Claw {
 
     private EV3LargeRegulatedMotor claw;
     private static final int       CLAW_SPEED = 360;
-    private static int             RELEASED_ANGLE = 0;  // TODO
-    private static int             GRABBED_ANGLE  = 45; // TODO
+    private static int             RELEASED_ANGLE = 0;  
+    private static int             GRABBED_ANGLE  = 230; 
 
     /**
      * @param clawMotor
