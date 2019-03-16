@@ -514,8 +514,7 @@ public class Navigator {
 		odo.setXYT(posCorX*tileSize, posCorY*tileSize, thetaCor);
 		
 	}
-
-
+	
     public void goToStartingTile() {
 
         // if sc is 0, we want to go to (1,1)

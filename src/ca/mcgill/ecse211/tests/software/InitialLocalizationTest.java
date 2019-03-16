@@ -143,7 +143,7 @@ public class InitialLocalizationTest {
 
         // movementController.rotateAngle(360, true);
         // System.exit(0);
-         
+        
         localizer.initialUSLocalization();
         localizer.initialLightLocalization();
         System.out.println(
