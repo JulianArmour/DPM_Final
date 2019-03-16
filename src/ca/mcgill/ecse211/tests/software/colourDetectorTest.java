@@ -26,8 +26,9 @@ public class colourDetectorTest {
 
 	public static void main(String args[]) {
 		colourMotor = new EV3MediumRegulatedMotor(LocalEV3.get().getPort("B"));
+
 		arm = new ColourArm(colourMotor);
-		sideLSPort = LocalEV3.get().getPort("S3");
+		sideLSPort = LocalEV3.get().getPort("S1");
         canColourSensor = new EV3ColorSensor(sideLSPort);
         canRGBProvider = canColourSensor.getMode("RGB");
         colDet = new ColourDetector(arm, canRGBProvider);
