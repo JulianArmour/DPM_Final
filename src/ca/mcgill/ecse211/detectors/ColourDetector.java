@@ -20,21 +20,21 @@ import lejos.utility.TimerListener;
  */
 public class ColourDetector implements TimerListener {
 	
-	private static final float RCAN_RMEAN = 0.8920f;
-	private static final float RCAN_GMEAN = 0.3672f;
-	private static final float RCAN_BMEAN = 0.2668f;
+	private static final float RCAN_RMEAN = 0.9702f;
+	private static final float RCAN_GMEAN = 0.1848f;
+	private static final float RCAN_BMEAN = 0.1569f;
 	
-	private static final float BCAN_RMEAN = 0.4212f;
-	private static final float BCAN_GMEAN = 0.5010f;
-	private static final float BCAN_BMEAN = 0.7568f;
+	private static final float BCAN_RMEAN = 0.4144f;
+	private static final float BCAN_GMEAN = 0.6289f;
+	private static final float BCAN_BMEAN = 0.6579f;
 	
-	private static final float YCAN_RMEAN = 0.8515f;
-	private static final float YCAN_GMEAN = 0.5303f;
-	private static final float YCAN_BMEAN = 0.2114f;
+	private static final float YCAN_RMEAN = 0.8594f;
+	private static final float YCAN_GMEAN = 0.4627f;
+	private static final float YCAN_BMEAN = 0.2172f;
 	
-	private static final float GCAN_RMEAN = 0.5435f;
-	private static final float GCAN_GMEAN = 0.7849f; 
-	private static final float GCAN_BMEAN = 0.4489f;
+	private static final float GCAN_RMEAN = 0.4958f;
+	private static final float GCAN_GMEAN = 0.7284f; 
+	private static final float GCAN_BMEAN = 0.4729f;
 
     private static final int COLOUR_POLL_PERIOD = 50;
     private ColourArm    colourArm;
@@ -116,13 +116,13 @@ public class ColourDetector implements TimerListener {
 		float GMean = 0.0f;
 		float BMean = 0.0f;
 		float NRMean, NGMean, NBMean;
-		float[][] data = new float[colourSamples.size()][3];
+		float[] data = new float[3];
 	
 		for(int i = 0; i < colourSamples.size(); i++) {
-			data[i] = (float[]) colourSamples.get(i);
-			RMean += data[i][0];
-			GMean += data[i][1];
-			BMean += data[i][2];
+			data = (float[]) colourSamples.get(i);
+			RMean += data[0];
+			GMean += data[1];
+			BMean += data[2];
 		}
 		RMean /= data.length;
 		GMean /= data.length;
