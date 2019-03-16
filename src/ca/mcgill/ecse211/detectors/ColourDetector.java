@@ -116,13 +116,13 @@ public class ColourDetector implements TimerListener {
 		float GMean = 0.0f;
 		float BMean = 0.0f;
 		float NRMean, NGMean, NBMean;
-		float[][] data = new float[colourSamples.size()][3];
+		float[] data = new float[3];
 	
 		for(int i = 0; i < colourSamples.size(); i++) {
-			data[i] = (float[]) colourSamples.get(i);
-			RMean += data[i][0];
-			GMean += data[i][1];
-			BMean += data[i][2];
+			data = (float[]) colourSamples.get(i);
+			RMean += data[0];
+			GMean += data[1];
+			BMean += data[2];
 		}
 		RMean /= data.length;
 		GMean /= data.length;

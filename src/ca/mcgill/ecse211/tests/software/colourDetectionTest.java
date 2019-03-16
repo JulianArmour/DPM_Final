@@ -11,7 +11,7 @@ import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.SensorMode;
 
-public class colourDetectorTest {
+public class colourDetectionTest {
 	
 	private static ColourArm arm;
 	private static EV3MediumRegulatedMotor colourMotor;
@@ -20,9 +20,6 @@ public class colourDetectorTest {
     private static EV3ColorSensor canColourSensor;
     private static SensorMode canRGBProvider;
     private static final int numberOfScans = 1;
-    
-    
-    private static List<float[]> colourData;
 
 
 	public static void main(String args[]) {
@@ -36,12 +33,7 @@ public class colourDetectorTest {
         Button.waitForAnyPress();
         
         colDet.collectColourData(numberOfScans);
-        colourData = colDet.getColourSamples();
+        System.out.println(colDet.getCanColour(colDet.getColourSamples()));
         
-        float[] tempArray;
-        for(int i = 0; i < colourData.size(); i++) {
-        	tempArray = colourData.get(i);
-        	System.out.println(tempArray[0] + " 	" + tempArray[1] + " 	" + tempArray[2]);
-        }
 	}
 }
