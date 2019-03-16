@@ -156,6 +156,11 @@ public class InitialLocalizationTest {
         Button.waitForAnyPress();
         navigator.travelToTunnel(true);
         navigator.throughTunnel(true);
+        navigator.travelToSearchZoneLL();
+        for (int i = 0; i < 10; i++) {
+            Sound.systemSound(true, 0);
+        }
+        navigator.travelToSearchZoneUR();
 
         System.out.println(
                 odometer.getXYT()[0] / TILE_LENGTH + "," + odometer.getXYT()[1] / TILE_LENGTH + ","
