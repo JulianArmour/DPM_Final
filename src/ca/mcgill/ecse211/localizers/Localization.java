@@ -157,6 +157,7 @@ public class Localization {
         movCon.driveDistance(-1 * Main.LT_SENSOR_TO_WHEELBASE, false);
         movCon.rotateAngle(90, false, false);
         quickLocalization();
+        movCon.driveDistance(-1 * Main.LT_SENSOR_TO_WHEELBASE, false);
     }
 
     /**

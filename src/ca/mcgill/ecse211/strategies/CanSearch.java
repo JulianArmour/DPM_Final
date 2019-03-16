@@ -18,7 +18,7 @@ import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
  */
 public class CanSearch {
 
-    protected static final long  CAN_SCAN_PERIOD = 100;
+    private static final long  CAN_SCAN_PERIOD = 100;
     private Odometer             odo;
     private MovementController   movCon;
     private MedianDistanceSensor USData;
@@ -28,8 +28,7 @@ public class CanSearch {
     private float                deltaX, deltaY;
     private float                SCAN_RADIUS     = TILE_LENGTH * 3;
     private float[]              nextPos;
-    private LinkedList<float[]>  scanningPoints  = new LinkedList<float[]>();             // TODO implement as queue or
-                                                                                          // stack
+    private static List<float[]>  scanningPoints  = new LinkedList<float[]>();
 
     /**
      * 
@@ -145,6 +144,10 @@ public class CanSearch {
             }
 
         }
+    }
+
+    public static List<float[]> getScanningPoints() {
+        return scanningPoints;
     }
 
     /**
