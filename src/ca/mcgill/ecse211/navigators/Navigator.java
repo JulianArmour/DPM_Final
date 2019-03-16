@@ -143,7 +143,7 @@ public class Navigator {
 	 * Travel to the tunnel from either the starting point or any point on the island
 	 * @param direction Boolean, if true, robot is going to the tunnel from the starting zone, if false the robot is going to the tunnel from the search zone
 	 */
-	public void travelToTunnel1(boolean direction) {
+	public void travelToTunnel(boolean direction) {
 
 		boolean OP1 = true;
 		int turnToTunnel = 0;
@@ -296,7 +296,7 @@ public class Navigator {
 	 * Travel across the tunnel from front to back or from back to front
 	 * @param direction Boolean: if true, the robot is going from starting zone to search zone, if false, the robot is going from search zone to starting zone
 	 */
-	public void throughTunnel1(boolean direction) {
+	public void throughTunnel(boolean direction) {
 		//TODO close the arm while travelling inside of the tunnel
 		int posCorX = 0, posCorY = 0;
 		int thetaCor = 0;

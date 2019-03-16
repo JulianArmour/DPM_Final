@@ -143,7 +143,7 @@ public class InitialLocalizationTest {
 
          movementController.rotateAngle(360, true);
          System.exit(0);
-         /**
+         
         localizer.initialUSLocalization();
         localizer.initialLightLocalization();
         System.out.println(
@@ -162,7 +162,7 @@ public class InitialLocalizationTest {
                         + odometer.getXYT()[2]
                 );
                 System.exit(0);
-                **/
+                
 
     }
 }
