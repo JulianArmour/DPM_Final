@@ -32,9 +32,9 @@ public class GrabCanTest {
         leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
         rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
         // set up arm motors
-        elbowMotor = new NXTRegulatedMotor(LocalEV3.get().getPort("C"));
-        elbowMotor.resetTachoCount();
-        clawMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("B"));
+      //  elbowMotor = new NXTRegulatedMotor(LocalEV3.get().getPort("C"));
+      //  elbowMotor.resetTachoCount();
+        clawMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("C"));
         clawMotor.resetTachoCount();
         // starts odometer
         try {
