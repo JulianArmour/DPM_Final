@@ -36,4 +36,5 @@ public class colourDetectionTest {
         System.out.println(colDet.getCanColour(colDet.getColourSamples()));
         
 	}
+	
 }

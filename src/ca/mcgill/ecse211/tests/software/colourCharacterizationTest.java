@@ -11,6 +11,7 @@ import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.SensorMode;
 
+
 public class colourCharacterizationTest {
 	
 	private static ColourArm arm;
