@@ -273,18 +273,18 @@ public class Navigator {
 			move.turnTo(move.calculateAngle(odo.getXYT()[0], odo.getXYT()[1], odo.getXYT()[0], tunnelTilePosYOP1 * tileSize));
 			localizer.quickLocalization();
 			//Move the to y position on the grid line in the middle of the tile in front of the tunnel
-			move.travelTo(odo.getXYT()[0], tunnelTilePosYOP1*tileSize*1.07, false); 
+			move.travelTo(odo.getXYT()[0], tunnelTilePosYOP1*tileSize*1.01, false); 
 			move.turnTo(turnToTunnel);
 			localizer.quickLocalization(); //Make sure we are well facing the tunnel
 			//TODO the robot will hit the right side of the tunnel, come up with a way to avoid this
 		}
 		else { //Path 2 to tunnel depending on position: if tunnel is on the north or south side of the starting zone
-			move.travelTo(odo.getXYT()[0], tunnelTilePosYOP2*tileSize, false);
+			move.travelTo(odo.getXYT()[0], tunnelTilePosYOP2*tileSize*1.01, false);
 			localizer.quickThetaCorrection();
 			odo.setTheta(move.roundAngle());
 			move.driveDistance(-lightSensorToWheelbase);
 			
-			move.travelTo(tunnelTilePosXOP2*tileSize*1.07, odo.getXYT()[1], false);
+			move.travelTo(tunnelTilePosXOP2*tileSize, odo.getXYT()[1], false);
 			move.turnTo(turnToTunnel);
 			localizer.quickThetaCorrection();
 			odo.setTheta(move.roundAngle());
@@ -512,11 +512,9 @@ public class Navigator {
 		
 		thetaCor = move.roundAngle(); //Update the odometer
 		odo.setXYT(posCorX*tileSize, posCorY*tileSize, thetaCor);
-		move.driveDistance(0.5*tileSize);
-		move.rotateAngle(90, !turnLoc);
+		
 	}
-
-
+	
     public void goToStartingTile() {
 
         // if sc is 0, we want to go to (1,1)

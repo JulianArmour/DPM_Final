@@ -13,8 +13,9 @@ public class Claw {
 
     private EV3LargeRegulatedMotor claw;
     private static final int       CLAW_SPEED = 360;
-    private static int             RELEASED_ANGLE = 0;  
-    private static int             GRABBED_ANGLE  = 230; 
+    private static int             RELEASED_ANGLE = 0;
+    private static int             GRABBED_ANGLE  = 230;
+    private static int             NEUTRAL_ANGLE = 200; //TODO
 
     
     /**
@@ -35,6 +36,17 @@ public class Claw {
     public void closeClaw() {
         claw.setSpeed(CLAW_SPEED);
         claw.rotateTo(GRABBED_ANGLE, false);
+    }
+    
+    /**
+     * Causes the claw to rest in front of a can for weight detection.
+     * 
+     * @author Julian Armour
+     * @since March 16, 2019
+     */
+    public void closeClawForWeighing() {
+        claw.setSpeed(CLAW_SPEED);
+        claw.rotateTo(NEUTRAL_ANGLE, false);
     }
 
     /**
