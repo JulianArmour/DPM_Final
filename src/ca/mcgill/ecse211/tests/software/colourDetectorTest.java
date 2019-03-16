@@ -24,9 +24,9 @@ public class colourDetectorTest {
     
     private static List<float[]> colourData;
 
-	static void main(String args[]) {
+	public static void main(String args[]) {
 		arm = new ColourArm(colourMotor);
-		sideLSPort = LocalEV3.get().getPort("S3");
+		sideLSPort = LocalEV3.get().getPort("S1");
         canColourSensor = new EV3ColorSensor(sideLSPort);
         canRGBProvider = canColourSensor.getMode("RGB");
         colDet = new ColourDetector(arm, canRGBProvider);
