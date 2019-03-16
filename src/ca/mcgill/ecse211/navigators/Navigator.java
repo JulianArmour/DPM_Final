@@ -23,12 +23,14 @@ public class Navigator {
     private int                 bridgeTileLength;
     private int                 SC;
     private double lightSensorToWheelbase;
+    private int[] searchZoneLL;
+    private int[] searchZoneUR;
 
 	/**
 	 * @param move
 	 * @param odo
 	 * @param localizer
-	 * @param TLL
+	 * @param tunnelLL
 	 * @param TUR
 	 * @param STZLL
 	 * @param STZUR
@@ -38,12 +40,12 @@ public class Navigator {
 	 * @param tileSize
 	 */
     public Navigator(
-            MovementController move, Odometer odo, Localization localizer, int[] TLL, int TUR[], int STZLL[],
-            int STZUR[], int SC, int ILL[], int IUR[], double tileSize) {
+            MovementController move, Odometer odo, Localization localizer, int[] tunnelLL, int TUR[], int STZLL[],
+            int STZUR[], int SC, int ILL[], int IUR[],int[] searchZoneLL, int[] searchZoneUR,  double tileSize) {
         this.move = move;
         this.odo = odo;
-        this.TLLX = TLL[0]; // Set tunnel coordinates
-        this.TLLY = TLL[1];
+        this.TLLX = tunnelLL[0]; // Set tunnel coordinates
+        this.TLLY = tunnelLL[1];
         this.TURX = TUR[0];
         this.TURY = TUR[1];
         this.STZLLX = STZLL[0]; // Set starting zone coordinates
@@ -54,6 +56,9 @@ public class Navigator {
         this.ILLY = ILL[1];
         this.IURX = IUR[0];
         this.IURY = IUR[1];
+        // set search zone coordinates
+        this.searchZoneLL = searchZoneLL;
+        this.searchZoneUR = searchZoneUR;
         this.localizer = localizer;
         this.SC = SC;
         this.lightSensorToWheelbase = Main.LT_SENSOR_TO_WHEELBASE;
@@ -62,6 +67,40 @@ public class Navigator {
                                  Math.abs(TLLX - TURX) : Math.abs(TLLY - TURY);
         this.tileSize = tileSize;
 
+    }
+    
+    /**
+     * Causes the robot to travel to the lower left corner of the search zone.
+     * This method should be called after the robot crosses the tunnel and localizes.
+     * 
+     * @author Julian Armour
+     * @since March 16, 2019
+     */
+    public void travelToSearchZoneLL() {
+        double[] curPos = odo.getXYT();
+        // travel to half a tile under searchZoneLL's y-coordinate
+        move.travelTo(curPos[0], (searchZoneLL[1])*tileSize, false);
+        localizer.quickLocalization();
+        move.travelTo(curPos[0], (searchZoneLL[1] - 0.5)*tileSize, false);
+        // at this point the robot is half a tile bellow the searchZoneLL's y-coordinate
+        // now travel to searchZoneLL's x-coordinate
+        curPos = odo.getXYT();
+        // move left or right?
+        if (curPos[0] < searchZoneLL[0]*tileSize) {
+            // face right
+            move.turnTo(90);
+        } else {
+            // face left
+            move.turnTo(270);
+        }
+        // fast localization to straighten
+        localizer.quickLocalization();
+        // now go 
+        move.travelTo(searchZoneLL[0]*tileSize, (searchZoneLL[1]-0.5)*tileSize, false);
+        // now to move up half a tile in the y-direction
+        move.travelTo(searchZoneLL[0]*tileSize, searchZoneLL[1]*tileSize, false);
+        // at this point the robot should be at searchzone's lower left. Localize to make sure
+        localizer.completeQuickLocalization();
     }
 	
 	/**

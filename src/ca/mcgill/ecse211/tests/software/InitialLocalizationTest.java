@@ -19,11 +19,10 @@ import lejos.hardware.sensor.SensorMode;
 
 public class InitialLocalizationTest {
 
-    public static final double             WHEEL_RAD = 2.2;
-    public static final double             TRACK     = 9.765;
-    public static final int                SC        = 3;
-    public static final double 			   TILE_LENGTH = Main.TILE_SIZE;
-	
+    public static final double             WHEEL_RAD     = 2.2;
+    public static final double             TRACK         = 9.765;
+    public static final int                SC            = 0;
+    public static final double             TILE_LENGTH   = Main.TILE_SIZE;
 
     private static Port                    USPort;
     private static EV3UltrasonicSensor     ultrasonicSensor;
@@ -46,51 +45,49 @@ public class InitialLocalizationTest {
     private static SensorMode              rightLSProvider;
     private static float[]                 rightLSSample;
     private static LightDifferentialFilter rightLightDiff;
-    private static Navigator			   navigator;
-    
-    
-    public static int Red_LL_x = 0;
-    public static int Red_LL_y = 0;
-    public static int Red_UR_x = 4;
-    public static int Red_UR_y = 9;
-    
-    public static int[] startzone_LL = {Red_LL_x, Red_LL_y};
-    public static int[] startzone_UR = {Red_UR_x, Red_UR_y};
-    
-    public static int Island_LL_x = 6;
-    public static int Island_LL_y = 0;
-    public static int Island_UR_x = 15;
-    public static int Island_UR_y = 9;
-    
-    public static int [] ILL = {Island_LL_x,Island_LL_y};
-    public static int [] IUR = {Island_UR_x,Island_UR_y};
-    
-    public static int TNR_LL_x = 4;
-    public static int TNR_LL_y = 7;
-    public static int TNR_UR_x = 6;
-    public static int TNR_UR_y = 8;
-    
-    public static int [] TLL = {TNR_LL_x,TNR_LL_y};
-    public static int[] TUR = {TNR_UR_x,TNR_UR_y};
-    
-    public static int TNG_LL_x;
-    public static int TNG_LL_y;
-    public static int TNG_UR_x;
-    public static int TNG_UR_y;
-    
-   public static int SZR_LL_x = 12;
-   public static int SZR_LL_y = 2;
-   public static int SRZ_UR_x = 14;
-   public static int SRZ_UR_y = 5;
-   
-   public static int[] SZLL = {SZR_LL_x,SZR_LL_y};
-   public static int [] SZUR = {SRZ_UR_x,SRZ_UR_y};
-   
-   public static int SZG_LL_x;
-   public static int SZG_LL_y;
-   public static int SZG_UR_x;
-   public static int SZG_UR_y;
-    
+    private static Navigator               navigator;
+
+    public static int                      Red_LL_x      = 0;
+    public static int                      Red_LL_y      = 0;
+    public static int                      Red_UR_x      = 4;
+    public static int                      Red_UR_y      = 9;
+
+    public static int[]                    startzone_LL  = { Red_LL_x, Red_LL_y };
+    public static int[]                    startzone_UR  = { Red_UR_x, Red_UR_y };
+
+    public static int                      Island_LL_x   = 6;
+    public static int                      Island_LL_y   = 0;
+    public static int                      Island_UR_x   = 15;
+    public static int                      Island_UR_y   = 9;
+
+    public static int[]                    ILL           = { Island_LL_x, Island_LL_y };
+    public static int[]                    IUR           = { Island_UR_x, Island_UR_y };
+
+    public static int                      TNR_LL_x      = 4;
+    public static int                      TNR_LL_y      = 2;
+    public static int                      TNR_UR_x      = 6;
+    public static int                      TNR_UR_y      = 3;
+
+    public static int[]                    TLL           = { TNR_LL_x, TNR_LL_y };
+    public static int[]                    TUR           = { TNR_UR_x, TNR_UR_y };
+
+    public static int                      TNG_LL_x;
+    public static int                      TNG_LL_y;
+    public static int                      TNG_UR_x;
+    public static int                      TNG_UR_y;
+
+    public static int                      SZR_LL_x      = 12;
+    public static int                      SZR_LL_y      = 2;
+    public static int                      SRZ_UR_x      = 14;
+    public static int                      SRZ_UR_y      = 5;
+
+    public static int[]                    searchzone_LL = { SZR_LL_x, SZR_LL_y };
+    public static int[]                    searchzone_UR = { SRZ_UR_x, SRZ_UR_y };
+
+    public static int                      SZG_LL_x;
+    public static int                      SZG_LL_y;
+    public static int                      SZG_UR_x;
+    public static int                      SZG_UR_y;
 
     public static void main(String[] args) {
         // set up side ultrasonic sensor
@@ -128,34 +125,43 @@ public class InitialLocalizationTest {
         leftLightDiff = new LightDifferentialFilter(leftLSProvider, leftLSSample);
         rightLightDiff = new LightDifferentialFilter(rightLSProvider, rightLSSample);
         localizer = new Localization(
-                movementController, odometer, medianDistanceSensor, leftLightDiff, rightLightDiff, SC);
-        
-        navigator = new Navigator(movementController, odometer, localizer, TLL, TUR, startzone_LL, startzone_UR, SC, ILL, IUR, TILE_LENGTH);
-        
+                movementController, odometer, medianDistanceSensor, leftLightDiff, rightLightDiff, SC
+        );
+
+        navigator = new Navigator(
+                movementController, odometer, localizer, TLL, TUR, startzone_LL, startzone_UR, SC, ILL, IUR,
+                searchzone_LL, searchzone_UR, TILE_LENGTH
+        );
+
         localEV3 = (LocalEV3) LocalEV3.get();
 
         // start test
         localEV3.getTextLCD().clear();
-//        System.out.println("Press any button to start.");
-//        Button.waitForAnyPress();
-//        movementController.rotateAngle(360, true, false);
-        
-//        movementController.rotateAngle(360, true);
-//        System.exit(0);
-        
+        // System.out.println("Press any button to start.");
+        // Button.waitForAnyPress();
+        // movementController.rotateAngle(360, true, false);
+
+        // movementController.rotateAngle(360, true);
+        // System.exit(0);
+
         localizer.initialUSLocalization();
         localizer.initialLightLocalization();
-        System.out.println(odometer.getXYT()[0]/TILE_LENGTH+","+odometer.getXYT()[1]/TILE_LENGTH+","+odometer.getXYT()[2]);
-        
-        Sound.beep();
-//        System.exit(0);
+        System.out.println(
+                odometer.getXYT()[0] / TILE_LENGTH + "," + odometer.getXYT()[1] / TILE_LENGTH + ","
+                        + odometer.getXYT()[2]
+                );
+
+                Sound.beep();
+        // System.exit(0);
         Button.waitForAnyPress();
         navigator.travelToTunnel(true);
         navigator.throughTunnel(true);
-        
-        
-        System.out.println(odometer.getXYT()[0]/TILE_LENGTH+","+odometer.getXYT()[1]/TILE_LENGTH+","+odometer.getXYT()[2]);
-        System.exit(0);
-        
+
+        System.out.println(
+                odometer.getXYT()[0] / TILE_LENGTH + "," + odometer.getXYT()[1] / TILE_LENGTH + ","
+                        + odometer.getXYT()[2]
+                );
+                System.exit(0);
+
     }
 }

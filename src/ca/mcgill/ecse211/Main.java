@@ -148,14 +148,17 @@ public class Main {
         medianDistanceSensor = new MedianDistanceSensor(DistanceProvider, USSample, odometer, MEDIAN_FILTER_WINDOW);
         localization = new Localization(
                 movementController, odometer, medianDistanceSensor, leftLightDifferentialFilter,
-                rightLightDifferentialFilter, startingCorner);
+                rightLightDifferentialFilter, startingCorner
+        );
         movementController = new MovementController(leftMotor, rightMotor, WHEEL_RAD, TRACK, odometer);
         navigator = new Navigator(
                 movementController, odometer, localization, tunnel_LL, tunnel_UR, startzone_LL, startzone_UR,
-                startingCorner, island_LL, island_UR, TILE_SIZE);
+                startingCorner, island_LL, island_UR, searchzone_LL, searchzone_UR, TILE_SIZE
+        );
         canSearch = new CanSearch(
                 odometer, movementController, medianDistanceSensor, searchzone_LL, searchzone_UR, tunnel_LL, tunnel_UR,
-                island_LL, island_UR, startingCorner, TILE_SIZE);
+                island_LL, island_UR, startingCorner, TILE_SIZE
+        );
         claw = new Claw(clawMotor);
         weightDetector = new WeightDetector(clawMotor, movementController, TILE_SIZE);
 
@@ -176,7 +179,7 @@ public class Main {
             int tunnel_LL_x, tunnel_LL_y, tunnel_UR_x, tunnel_UR_y;
             int searchzone_LL_y, searchzone_LL_x, searchzone_UR_x, searchzone_UR_y;
             int startzone_LL_x, startzone_LL_y, startzone_UR_x, startzone_UR_y;
-            
+
             if (redTeam == TEAM_NUMBER) {
                 startingCorner = ((Long) data.get("RedCorner")).intValue();
                 canColour = CanColour.RED;
@@ -206,17 +209,17 @@ public class Main {
                 island_LL_y = ((Long) data.get("Island_LL_y")).intValue();
                 island_UR_x = ((Long) data.get("Island_UR_x")).intValue();
                 island_UR_y = ((Long) data.get("Island_UR_y")).intValue();
-                
+
                 tunnel_LL_x = ((Long) data.get("TNG_LL_x")).intValue();
                 tunnel_LL_y = ((Long) data.get("TNG_LL_y")).intValue();
                 tunnel_UR_x = ((Long) data.get("TNG_UR_x")).intValue();
                 tunnel_UR_y = ((Long) data.get("TNG_UR_y")).intValue();
-                
+
                 searchzone_LL_x = ((Long) data.get("SZG_LL_x")).intValue();
                 searchzone_LL_y = ((Long) data.get("SZG_LL_y")).intValue();
                 searchzone_UR_x = ((Long) data.get("SZG_UR_x")).intValue();
                 searchzone_UR_y = ((Long) data.get("SZG_UR_y")).intValue();
-                
+
                 startzone_LL_x = ((Long) data.get("Red_LL_x")).intValue();
                 startzone_LL_y = ((Long) data.get("Red_LL_y")).intValue();
                 startzone_UR_x = ((Long) data.get("Red_UR_x")).intValue();
@@ -224,13 +227,13 @@ public class Main {
             }
             island_LL = new int[] { island_LL_x, island_LL_y };
             island_UR = new int[] { island_UR_x, island_UR_y };
-            
+
             tunnel_LL = new int[] { tunnel_LL_x, tunnel_LL_y };
             tunnel_UR = new int[] { tunnel_UR_x, tunnel_UR_y };
-            
+
             searchzone_LL = new int[] { searchzone_LL_x, searchzone_LL_y };
             searchzone_UR = new int[] { searchzone_UR_x, searchzone_UR_y };
-            
+
             startzone_LL = new int[] { startzone_LL_x, startzone_LL_y };
             startzone_UR = new int[] { startzone_UR_x, startzone_UR_y };
         } catch (Exception e) {
