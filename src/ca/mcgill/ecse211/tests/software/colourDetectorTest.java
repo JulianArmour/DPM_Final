@@ -21,6 +21,7 @@ public class colourDetectorTest {
     private static SensorMode canRGBProvider;
     private static final int numberOfScans = 100;
     
+    
     private static List<float[]> colourData;
 
 	static void main(String args[]) {
