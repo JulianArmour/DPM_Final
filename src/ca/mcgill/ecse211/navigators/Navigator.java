@@ -155,13 +155,11 @@ public class Navigator {
 				break;
 			case 3:
 				if(TURX > STZURX) {
-				    System.out.println("SC = 3, OP1 = true");
 					OP1 = true;
 					turnToTunnel = 90;
 					tunnelTilePosXOP1 = TLLX-1;
 					tunnelTilePosYOP1 = TLLY + 0.5;
 				} else {
-				    System.out.println("SC = 3, OP1 = false");
 					OP1 = false;
 					tunnelTilePosYOP2 = TURY + 1;
 					tunnelTilePosXOP2 = TURX - 0.5;
@@ -239,7 +237,7 @@ public class Navigator {
 			move.turnTo(move.calculateAngle(odo.getXYT()[0], odo.getXYT()[1], odo.getXYT()[0], tunnelTilePosYOP1 * tileSize));
 			localizer.quickLocalization();
 			//Move the to y position on the grid line in the middle of the tile in front of the tunnel
-			move.travelTo(odo.getXYT()[0], tunnelTilePosYOP1 * tileSize, false); 
+			move.travelTo(odo.getXYT()[0], tunnelTilePosYOP1*tileSize*1.07, false); 
 			move.turnTo(turnToTunnel);
 			localizer.quickLocalization(); //Make sure we are well facing the tunnel
 			//TODO the robot will hit the right side of the tunnel, come up with a way to avoid this
@@ -250,7 +248,7 @@ public class Navigator {
 			odo.setTheta(move.roundAngle());
 			move.driveDistance(-lightSensorToWheelbase);
 			
-			move.travelTo(tunnelTilePosXOP2*tileSize, odo.getXYT()[1], false);
+			move.travelTo(tunnelTilePosXOP2*tileSize*1.07, odo.getXYT()[1], false);
 			move.turnTo(turnToTunnel);
 			localizer.quickThetaCorrection();
 			odo.setTheta(move.roundAngle());
