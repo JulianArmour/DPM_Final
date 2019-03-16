@@ -1,8 +1,5 @@
 package ca.mcgill.ecse211;
 
-import java.net.MalformedURLException;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
 import java.util.Map;
 
 import ca.mcgill.ecse211.WiFiClient.WifiConnection;
@@ -25,8 +22,6 @@ import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.hardware.sensor.SensorMode;
-import lejos.remote.ev3.RMISampleProvider;
-import lejos.remote.ev3.RemoteEV3;
 
 public class Main {
     private static final String            SERVER_IP               = "192.168.43.112";
@@ -37,9 +32,9 @@ public class Main {
 
     public static final double             TILE_SIZE               = 30.48;
     public static final double             WHEEL_RAD               = 2.2;
-    public static final double             TRACK                   = 9.12;
+    public static final double             TRACK                   = 9.765;
     // distance from the light back light sensors to the wheel-base
-    public static double                   LT_SENSOR_TO_WHEELBASE  = 9.6;
+    public static double                   LT_SENSOR_TO_WHEELBASE  = 10.0;
     // distance from the ultrasonic sensor to the "thumb" of the claw
     public static double                   US_SENSOR_TO_CLAW       = 6.0;
     // median filter window width

@@ -21,8 +21,8 @@ public class Localization {
     private static int              LIGHT_POLLING_PERIOD        = 20;
     private static float            FIRST_DIFFERENCE_THRESHOLD  = 4.0f;
     private static float            SECOND_DIFFERENCE_THRESHOLD = 1.5f;
-    private static final int 		SLOW_SPEED					= 300;
-    private static final int 		FAST_SPEED					= 100;
+    private static final int 		SLOW_SPEED					= 45;
+    private static final int 		FAST_SPEED					= 140;
 
     private MovementController      movCon;
     private Odometer                odo;
@@ -110,6 +110,7 @@ public class Localization {
                 }
 
             }
+            movCon.stopMotors();
             // System.out.println("left: "+deltaL+" right: "+deltaR);
             if (i < 1) {
                 movCon.driveDistance(-2.5);
@@ -183,7 +184,7 @@ public class Localization {
             break;
         }
 
-        movCon.driveDistance(-1 * Main.LT_SENSOR_TO_WHEELBASE, false);
+        movCon.driveDistance(-1 * Main.LT_SENSOR_TO_WHEELBASE, FAST_SPEED, 1000, false);
         movCon.rotateAngle(90, true, false);
         quickThetaCorrection();
 
@@ -204,6 +205,7 @@ public class Localization {
         default:
             break;
         }
+        movCon.driveDistance(-1 * Main.LT_SENSOR_TO_WHEELBASE, FAST_SPEED, 1000, false);
     }
 
     /**
@@ -263,7 +265,7 @@ public class Localization {
         double dTheta;
 
         if (alpha <= beta) {
-            dTheta = 246 - (alpha + beta) / 2;
+            dTheta = 255 - (alpha + beta) / 2;
             System.out.println("alpha <= beta");
         } else {
             dTheta = 85 - (alpha + beta) / 2; // increase in ccw direction

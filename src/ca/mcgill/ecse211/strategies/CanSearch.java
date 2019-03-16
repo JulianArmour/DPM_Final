@@ -162,7 +162,8 @@ public class CanSearch {
             float[] canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 359, SCAN_RADIUS);
 
             if (canPos != null) {
-                travelToCan(canPos);
+                boolean foundTheCan = travelToCan(canPos);
+                //TODO if foundTheCan = true then grab it and do stuffs
             } else {
                 currentPos += 1;
                 scanCurrentZone();
@@ -175,8 +176,9 @@ public class CanSearch {
      * 
      * @param canPos
      *            the general position of a can, which the robot will travel to.
-     * @author Julian Armour
      * @return <code>true</code> if it found and traveled to a can, <code>false</code> if it didn't find a can.
+     * 
+     * @author Julian Armour
      * @since March 5, 2019
      */
     public boolean travelToCan(float[] canPos) {
@@ -213,7 +215,7 @@ public class CanSearch {
      * @param searchUR
      *            upper right of the search zone
      * @param sweepAngle
-     *            the angle the robot will rotate
+     *            the angle the robot will rotate. 0-359
      * @param scanRadius
      *            the maximum distance for detecting a can
      * @return the position of a can in the scan radius, or <code>null</code> if a

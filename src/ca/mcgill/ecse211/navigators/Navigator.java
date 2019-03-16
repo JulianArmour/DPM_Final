@@ -1,4 +1,5 @@
 package ca.mcgill.ecse211.navigators;
+import ca.mcgill.ecse211.Main;
 import ca.mcgill.ecse211.localizers.Localization;
 import ca.mcgill.ecse211.odometer.*;
 
@@ -10,7 +11,7 @@ import ca.mcgill.ecse211.odometer.*;
  */
 public class Navigator {
     // constants
-    private static final double VERT_SENSOR_OFFSET = 5;
+    
     // dependencies
     private MovementController  move;
     private Odometer            odo;
@@ -21,6 +22,7 @@ public class Navigator {
     private int                 dumpingSpotX, dumpingSpotY;
     private int                 bridgeTileLength;
     private int                 SC;
+    private double lightSensorToWheelbase;
 
 	/**
 	 * @param move
@@ -54,6 +56,7 @@ public class Navigator {
         this.IURY = IUR[1];
         this.localizer = localizer;
         this.SC = SC;
+        this.lightSensorToWheelbase = Main.LT_SENSOR_TO_WHEELBASE;
         // Calculate bridge length from coordinates
         this.bridgeTileLength = (Math.abs(TLLX - TURX) > Math.abs(TLLY - TURY)) ? 
                                  Math.abs(TLLX - TURX) : Math.abs(TLLY - TURY);
@@ -113,11 +116,13 @@ public class Navigator {
 				break;
 			case 3:
 				if(TURX > STZURX) {
+				    System.out.println("SC = 3, OP1 = true");
 					OP1 = true;
 					turnToTunnel = 90;
 					tunnelTilePosXOP1 = TLLX-1;
 					tunnelTilePosYOP1 = TLLY + 0.5;
 				} else {
+				    System.out.println("SC = 3, OP1 = false");
 					OP1 = false;
 					tunnelTilePosYOP2 = TURY + 1;
 					tunnelTilePosXOP2 = TURX - 0.5;
@@ -186,22 +191,25 @@ public class Navigator {
 			}
 		}
 		if(OP1) { //Path 1 to tunnel depending on tunnel position: if the tunnel is on the east or west side of the starting zone
-			move.travelTo(tunnelTilePosXOP1*tileSize, odo.getXYT()[1], false); //Move to the x position on the grid line before the tunnel
-			localizer.quickThetaCorrection();
-			odo.setTheta(move.roundAngle());
-			move.driveDistance(-VERT_SENSOR_OFFSET);
-			
-			move.travelTo(odo.getXYT()[0], tunnelTilePosYOP1 * tileSize, false); //Move the to y position on the grid line in the middle of the tile in front of the tunnel
+			System.out.println("Moving to: "+tunnelTilePosXOP1*tileSize+", "+odo.getXYT()[1]);
+		    //Move to the x position on the grid line before the tunnel
+			move.travelTo(tunnelTilePosXOP1*tileSize, odo.getXYT()[1], false); 
+		    localizer.quickLocalization();
+			move.driveDistance(-lightSensorToWheelbase);
+			//Move to the y position between gridlines before the tunnel
+			move.turnTo(move.calculateAngle(odo.getXYT()[0], odo.getXYT()[1], odo.getXYT()[0], tunnelTilePosYOP1 * tileSize));
+			localizer.quickLocalization();
+			//Move the to y position on the grid line in the middle of the tile in front of the tunnel
+			move.travelTo(odo.getXYT()[0], tunnelTilePosYOP1 * tileSize, false); 
 			move.turnTo(turnToTunnel);
-			localizer.quickThetaCorrection(); //Make sure we are well facing the tunnel
-			odo.setTheta(move.roundAngle());
-			
+			localizer.quickLocalization(); //Make sure we are well facing the tunnel
+			//TODO the robot will hit the right side of the tunnel, come up with a way to avoid this
 		}
 		else { //Path 2 to tunnel depending on position: if tunnel is on the north or south side of the starting zone
 			move.travelTo(odo.getXYT()[0], tunnelTilePosYOP2*tileSize, false);
 			localizer.quickThetaCorrection();
 			odo.setTheta(move.roundAngle());
-			move.driveDistance(-VERT_SENSOR_OFFSET);
+			move.driveDistance(-lightSensorToWheelbase);
 			
 			move.travelTo(tunnelTilePosXOP2*tileSize, odo.getXYT()[1], false);
 			move.turnTo(turnToTunnel);
@@ -215,7 +223,7 @@ public class Navigator {
 	 * @param direction Boolean: if true, the robot is going from starting zone to search zone, if false, the robot is going from search zone to starting zone
 	 */
 	public void throughTunnel(boolean direction) {
-		//TODO close the calm while travelling inside of the tunnel
+		//TODO close the arm while travelling inside of the tunnel
 		int posCorX = 0, posCorY = 0;
 		int thetaCor = 0;
 		boolean turnLoc = true;
@@ -417,14 +425,16 @@ public class Navigator {
 			}
 		}
 		
-		move.driveDistance((bridgeTileLength+2)*tileSize - VERT_SENSOR_OFFSET); //Cross tunnel
+		
+		
+		move.driveDistance((bridgeTileLength+2)*tileSize - lightSensorToWheelbase); //Cross tunnel
 
 		localizer.quickThetaCorrection(); //Correct angle and x position 
-		move.driveDistance(-VERT_SENSOR_OFFSET); 
+		move.driveDistance(-lightSensorToWheelbase); 
 		move.rotateAngle(90, turnLoc);
 
 		localizer.quickThetaCorrection(); //Correct y position
-		move.driveDistance(-VERT_SENSOR_OFFSET);
+		move.driveDistance(-lightSensorToWheelbase);
 		
 		thetaCor = move.roundAngle(); //Update the odometer
 		odo.setXYT(posCorX*tileSize, posCorY*tileSize, thetaCor);
