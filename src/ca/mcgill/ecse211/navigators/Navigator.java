@@ -138,397 +138,384 @@ public class Navigator {
         // make sure
         localizer.completeQuickLocalization();
     }
+	
+	/**
+	 * Travel to the tunnel from either the starting point or any point on the island
+	 * @param direction Boolean, if true, robot is going to the tunnel from the starting zone, if false the robot is going to the tunnel from the search zone
+	 */
+	public void travelToTunnel(boolean direction) {
 
-    /**
-     * Travel to the tunnel from either the starting point or any point on the
-     * island
-     * 
-     * @param direction
-     *            Boolean, if true, robot is going to the tunnel from the starting
-     *            zone, if false the robot is going to the tunnel from the search
-     *            zone
-     */
-    public void travelToTunnel(boolean direction) {
+		boolean OP1 = true;
+		int turnToTunnel = 0;
+		double tunnelTilePosYOP2 = 0, tunnelTilePosXOP2 = 0, tunnelTilePosXOP1 = 0, tunnelTilePosYOP1 = 0;
+		if(direction) { //If robot is going to tunnel in starting zone, use these parameters
+			switch(SC) {
+			case 0:
+				if(TURX > STZURX) {
+					OP1 = true;
+					turnToTunnel = 90;
+					tunnelTilePosXOP1 = TLLX-1;
+					tunnelTilePosYOP1 = TLLY + 0.5;
+				} else {
+					OP1 = false;
+					tunnelTilePosYOP2 = TLLY - 1;
+					tunnelTilePosXOP2 = TURX - 0.5;
+					turnToTunnel = 0;
+				}
+				break;
+			case 1:
+				if(TLLX < STZLLX) {
+					OP1 = true;
+					tunnelTilePosXOP1 = TURX + 1;
+					tunnelTilePosYOP1 = TURY - 0.5;
+					turnToTunnel = 270;
+				} else { 
+					OP1 = false;
+					tunnelTilePosXOP2 = TURX - 0.5;
+					tunnelTilePosYOP2 = TLLY - 1;
+					turnToTunnel = 0;
+				}
+				break;
+			case 2:
+				if(TLLX < STZLLX) {
+					OP1 = true;
+					tunnelTilePosXOP1 = TURX + 1;
+					tunnelTilePosYOP1 = TURY - 0.5;
+					turnToTunnel = 270;
+				} else {
+					OP1 = false;
+					tunnelTilePosYOP2 = TURY + 1;
+					tunnelTilePosXOP2 = TURX - 0.5;
+					turnToTunnel = 180;
+				}
+				break;
+			case 3:
+				if(TURX > STZURX) {
+					OP1 = true;
+					turnToTunnel = 90;
+					tunnelTilePosXOP1 = TLLX-1;
+					tunnelTilePosYOP1 = TLLY + 0.5;
+				} else {
+					OP1 = false;
+					tunnelTilePosYOP2 = TURY + 1;
+					tunnelTilePosXOP2 = TURX - 0.5;
+					turnToTunnel = 180;
+				}
+				break;
+			default:
+				break;
+			}
+		} else { //If robot is going to tunnel from search zone, use these parameters
+			switch(SC) {
+			case 0:
+				if(TURX > STZURX) {
+					OP1 = true;
+					turnToTunnel = 270;
+					tunnelTilePosXOP1 = TURX + 1;
+					tunnelTilePosYOP1 = TURY - 0.5;
+				} else {
+					OP1 = false;
+					tunnelTilePosYOP2 = TURY - 0.5;
+					tunnelTilePosXOP2 = TURX + 1;
+					turnToTunnel = 180;
+				}
+				break;
+			case 1:
+				if(TLLX < STZLLX) {
+					OP1 = true;
+					tunnelTilePosXOP1 = TLLX - 1;
+					tunnelTilePosYOP1 = TURY + 0.5;
+					turnToTunnel = 90;
+				} else { 
+					OP1 = false;
+					tunnelTilePosXOP2 = TURX - 0.5;
+					tunnelTilePosYOP2 = TURY + 1;
+					turnToTunnel = 180;
+				}
+				break;
+			case 2:
+				if(TLLX < STZLLX) {
+					OP1 = true;
+					tunnelTilePosXOP1 = TLLX - 1;
+					tunnelTilePosYOP1 = TLLY + 0.5;
+					turnToTunnel = 90;
+				} else {
+					OP1 = false;
+					tunnelTilePosYOP2 = TLLY - 1;
+					tunnelTilePosXOP2 = TLLX + 0.5;
+					turnToTunnel = 0;
+				}
+				break;
+			case 3:
+				if(TURX > STZURX) {
+					OP1 = true;
+					turnToTunnel = 270;
+					tunnelTilePosXOP1 = TURX + 1;
+					tunnelTilePosYOP1 = TURY - 0.5;
+				} else {
+					OP1 = false;
+					tunnelTilePosYOP2 = TLLY - 1;
+					tunnelTilePosXOP2 = TLLX + 0.5;
+					turnToTunnel = 0;
+				}
+				break;
+			default:
+				break;
+			}
+		}
+		if(OP1) { //Path 1 to tunnel depending on tunnel position: if the tunnel is on the east or west side of the starting zone
+			System.out.println("Moving to: "+tunnelTilePosXOP1*tileSize+", "+odo.getXYT()[1]);
+		    //Move to the x position on the grid line before the tunnel
+			move.travelTo(tunnelTilePosXOP1*tileSize, odo.getXYT()[1], false); 
+		    localizer.quickLocalization();
+			move.driveDistance(-lightSensorToWheelbase);
+			//Move to the y position between gridlines before the tunnel
+			move.turnTo(move.calculateAngle(odo.getXYT()[0], odo.getXYT()[1], odo.getXYT()[0], tunnelTilePosYOP1 * tileSize));
+			localizer.quickLocalization();
+			//Move the to y position on the grid line in the middle of the tile in front of the tunnel
+			move.travelTo(odo.getXYT()[0], tunnelTilePosYOP1*tileSize*1.07, false); 
+			move.turnTo(turnToTunnel);
+			localizer.quickLocalization(); //Make sure we are well facing the tunnel
+			//TODO the robot will hit the right side of the tunnel, come up with a way to avoid this
+		}
+		else { //Path 2 to tunnel depending on position: if tunnel is on the north or south side of the starting zone
+			move.travelTo(odo.getXYT()[0], tunnelTilePosYOP2*tileSize, false);
+			localizer.quickThetaCorrection();
+			odo.setTheta(move.roundAngle());
+			move.driveDistance(-lightSensorToWheelbase);
+			
+			move.travelTo(tunnelTilePosXOP2*tileSize*1.07, odo.getXYT()[1], false);
+			move.turnTo(turnToTunnel);
+			localizer.quickThetaCorrection();
+			odo.setTheta(move.roundAngle());
+		}
+	}
+	
+	
+	/**
+	 * Travel across the tunnel from front to back or from back to front
+	 * @param direction Boolean: if true, the robot is going from starting zone to search zone, if false, the robot is going from search zone to starting zone
+	 */
+	public void throughTunnel(boolean direction) {
+		//TODO close the arm while travelling inside of the tunnel
+		int posCorX = 0, posCorY = 0;
+		int thetaCor = 0;
+		boolean turnLoc = true;
+		if (direction) { //If robot is going from starting zone to search zone, these are the parameters to use
+			switch(SC) {
+			case 0:
+				if(TURX > STZURX) {
+					if(TURY == IURY) {
+						turnLoc = true;
+						posCorX = TURX + 1;
+						posCorY = TURY - 1;
+					} else {
+						turnLoc = false;
+						posCorX = TURX + 1;
+						posCorY = TURY;
+					}
+				} else {
+					if(TURX == IURX) {
+						turnLoc = false;
+						posCorX = TURX - 1;
+						posCorY = TURY + 1;
+					} else {
+						turnLoc = true;
+						posCorX = TURX;
+						posCorY = TURY + 1;
+					}
+				}
+				break;
+			case 1:
+				if(TLLX < STZLLX) {
+					if(TURY == IURY) {
+						turnLoc = false;
+						posCorX = TLLX - 1;
+						posCorY = TLLY;
+					} else {
+						turnLoc = true;
+						posCorX = TLLX - 1;
+						posCorY = TLLY + 1;
+					}
+				} else { 
+					if(TLLX == ILLX) {
+						turnLoc = true; 
+						posCorX = TURX;
+						posCorY = TURY + 1;
+					} else {
+						turnLoc = false;
+						posCorX = TURX - 1;
+						posCorY = TURY + 1;
+					}
+					
+				}
+				break;
+			case 2:
+				if(TLLX < STZLLX) {
+					if(TLLY == ILLY) {
+						turnLoc = true; 
+						posCorX = TLLX - 1;
+						posCorY = TLLY + 1;
+					} else {
+						turnLoc = false;
+						posCorX = TLLX - 1;
+						posCorY = TLLY;
+					}
+				} else {
+					if(TLLX == ILLX) {
+						turnLoc = false;
+						posCorX = TLLX + 1;
+						posCorY = TLLY - 1;
+					} else {
+						turnLoc = true;
+						posCorX = TLLX;
+						posCorY = TLLY - 1;
+					}
+				}
+				break;
+			case 3:
+				if(TURX > STZURX) {
+					if(TURY == IURY) {
+						turnLoc = true;
+						posCorX = TURX + 1;
+						posCorY = TURY - 1;
+					} else {
+						turnLoc = false;
+						posCorX = TURX + 1;
+						posCorY = TURY;
+					}
+				} else {
+					if(TLLX == ILLX) {
+						turnLoc = false;
+						posCorX = TLLX + 1;
+						posCorY = TLLY - 1;
+					} else {
+						turnLoc = true;
+						posCorX = TLLX;
+						posCorY = TLLY - 1;
+					}
+				}
+				break;
+				default:
+					break;
+			}
+		} else { //If robot is going from search zone to starting zone, these are the parameters to use
+			switch(SC) {
+			case 0:
+				if(TURX > STZURX) {
+					if(TLLY == STZLLY) {
+						turnLoc = true;
+						posCorX = TLLX - 1;
+						posCorY = TLLY + 1;
+					} else {
+						turnLoc = false;
+						posCorX = TLLX - 1;
+						posCorY = TLLY;
+					}
+				} else {
+					if(TLLX == STZLLX) {
+						turnLoc = false;
+						posCorX = TLLX + 1;
+						posCorY = TLLY - 1;
+					} else {
+						turnLoc = true;
+						posCorX = TLLX;
+						posCorY = TURY - 1;
+					}
+				}
+				break;
+			case 1:
+				if(TLLX < STZLLX) {
+					if(TLLY == ILLY) {
+						turnLoc = false;
+						posCorX = TURX + 1;
+						posCorY = TURY;
+					} else {
+						turnLoc = true;
+						posCorX = TURX + 1;
+						posCorY = TLLY - 1;
+					}
+				} else { 
+					if(TURX == IURX) {
+						turnLoc = true; 
+						posCorX = TLLX;
+						posCorY = TLLY - 1;
+					} else {
+						turnLoc = false;
+						posCorX = TLLX + 1;
+						posCorY = TLLY - 1;
+					}
+					
+				}
+				break;
+			case 2:
+				if(TLLX < STZLLX) {
+					if(TURY == STZURY) {
+						turnLoc = true; 
+						posCorX = TURX + 1;
+						posCorY = TURY - 1;
+					} else {
+						turnLoc = false;
+						posCorX = TURX + 1;
+						posCorY = TURY;
+					}
+				} else {
+					if(TURX == STZURX) {
+						turnLoc = false;
+						posCorX = TURX - 1;
+						posCorY = TURY + 1;
+					} else {
+						turnLoc = true;
+						posCorX = TURX;
+						posCorY = TURY + 1;
+					}
+				}
+				break;
+			case 3:
+				if(TURX > STZURX) {
+					if(TURY == STZURY) {
+						turnLoc = false;
+						posCorX = TLLX - 1;
+						posCorY = TLLY;
+					} else {
+						turnLoc = true;
+						posCorX = TLLX - 1;
+						posCorY = TLLY + 1;
+					}
+				} else {
+					if(TLLX == STZLLX) {
+						turnLoc = true;
+						posCorX = TURX;
+						posCorY = TLLY + 1;
+					} else {
+						turnLoc = false;
+						posCorX = TURX - 1;
+						posCorY = TURY + 1;
+					}
+				}
+				break;
+				default:
+					break;
+			}
+		}
+		
+		
+		
+		move.driveDistance((bridgeTileLength+2)*tileSize - lightSensorToWheelbase); //Cross tunnel
 
-        boolean OP1 = true;
-        int turnToTunnel = 0;
-        double tunnelTilePosYOP2 = 0, tunnelTilePosXOP2 = 0, tunnelTilePosXOP1 = 0, tunnelTilePosYOP1 = 0;
-        if (direction) { // If robot is going to tunnel in starting zone, use these parameters
-            switch (SC) {
-            case 0:
-                if (TURX > STZURX) {
-                    OP1 = true;
-                    turnToTunnel = 90;
-                    tunnelTilePosXOP1 = TLLX - 1;
-                    tunnelTilePosYOP1 = TLLY + 0.5;
-                } else {
-                    OP1 = false;
-                    tunnelTilePosYOP2 = TLLY - 1;
-                    tunnelTilePosXOP2 = TURX - 0.5;
-                    turnToTunnel = 0;
-                }
-                break;
-            case 1:
-                if (TLLX < STZLLX) {
-                    OP1 = true;
-                    tunnelTilePosXOP1 = TURX + 1;
-                    tunnelTilePosYOP1 = TURY - 0.5;
-                    turnToTunnel = 270;
-                } else {
-                    OP1 = false;
-                    tunnelTilePosXOP2 = TURX - 0.5;
-                    tunnelTilePosYOP2 = TLLY - 1;
-                    turnToTunnel = 0;
-                }
-                break;
-            case 2:
-                if (TLLX < STZLLX) {
-                    OP1 = true;
-                    tunnelTilePosXOP1 = TURX + 1;
-                    tunnelTilePosYOP1 = TURY - 0.5;
-                    turnToTunnel = 270;
-                } else {
-                    OP1 = false;
-                    tunnelTilePosYOP2 = TURY + 1;
-                    tunnelTilePosXOP2 = TURX - 0.5;
-                    turnToTunnel = 180;
-                }
-                break;
-            case 3:
-                if (TURX > STZURX) {
-                    System.out.println("SC = 3, OP1 = true");
-                    OP1 = true;
-                    turnToTunnel = 90;
-                    tunnelTilePosXOP1 = TLLX - 1;
-                    tunnelTilePosYOP1 = TLLY + 0.5;
-                } else {
-                    System.out.println("SC = 3, OP1 = false");
-                    OP1 = false;
-                    tunnelTilePosYOP2 = TURY + 1;
-                    tunnelTilePosXOP2 = TURX - 0.5;
-                    turnToTunnel = 180;
-                }
-                break;
-            default:
-                break;
-            }
-        } else { // If robot is going to tunnel from search zone, use these parameters
-            switch (SC) {
-            case 0:
-                if (TURX > STZURX) {
-                    OP1 = true;
-                    turnToTunnel = 270;
-                    tunnelTilePosXOP1 = TURX + 1;
-                    tunnelTilePosYOP1 = TURY - 0.5;
-                } else {
-                    OP1 = false;
-                    tunnelTilePosYOP2 = TURY - 0.5;
-                    tunnelTilePosXOP2 = TURX + 1;
-                    turnToTunnel = 180;
-                }
-                break;
-            case 1:
-                if (TLLX < STZLLX) {
-                    OP1 = true;
-                    tunnelTilePosXOP1 = TLLX - 1;
-                    tunnelTilePosYOP1 = TURY + 0.5;
-                    turnToTunnel = 90;
-                } else {
-                    OP1 = false;
-                    tunnelTilePosXOP2 = TURX - 0.5;
-                    tunnelTilePosYOP2 = TURY + 1;
-                    turnToTunnel = 180;
-                }
-                break;
-            case 2:
-                if (TLLX < STZLLX) {
-                    OP1 = true;
-                    tunnelTilePosXOP1 = TLLX - 1;
-                    tunnelTilePosYOP1 = TLLY + 0.5;
-                    turnToTunnel = 90;
-                } else {
-                    OP1 = false;
-                    tunnelTilePosYOP2 = TLLY - 1;
-                    tunnelTilePosXOP2 = TLLX + 0.5;
-                    turnToTunnel = 0;
-                }
-                break;
-            case 3:
-                if (TURX > STZURX) {
-                    OP1 = true;
-                    turnToTunnel = 270;
-                    tunnelTilePosXOP1 = TURX + 1;
-                    tunnelTilePosYOP1 = TURY - 0.5;
-                } else {
-                    OP1 = false;
-                    tunnelTilePosYOP2 = TLLY - 1;
-                    tunnelTilePosXOP2 = TLLX + 0.5;
-                    turnToTunnel = 0;
-                }
-                break;
-            default:
-                break;
-            }
-        }
-        if (OP1) { // Path 1 to tunnel depending on tunnel position: if the tunnel is on the east
-                   // or west side of the starting zone
-            System.out.println("Moving to: " + tunnelTilePosXOP1 * tileSize + ", " + odo.getXYT()[1]);
-            // Move to the x position on the grid line before the tunnel
-            move.travelTo(tunnelTilePosXOP1 * tileSize, odo.getXYT()[1], false);
-            localizer.quickLocalization();
-            move.driveDistance(-lightSensorToWheelbase);
-            // Move to the y position between gridlines before the tunnel
-            move.turnTo(
-                    move.calculateAngle(odo.getXYT()[0], odo.getXYT()[1], odo.getXYT()[0], tunnelTilePosYOP1 * tileSize));
-            localizer.quickLocalization();
-            // Move the to y position on the grid line in the middle of the tile in front of
-            // the tunnel
-            move.travelTo(odo.getXYT()[0], tunnelTilePosYOP1 * tileSize, false);
-            move.turnTo(turnToTunnel);
-            localizer.quickLocalization(); // Make sure we are well facing the tunnel
-            // TODO the robot will hit the right side of the tunnel, come up with a way to
-            // avoid this
-        } else { // Path 2 to tunnel depending on position: if tunnel is on the north or south
-                 // side of the starting zone
-            move.travelTo(odo.getXYT()[0], tunnelTilePosYOP2 * tileSize, false);
-            localizer.quickThetaCorrection();
-            odo.setTheta(move.roundAngle());
-            move.driveDistance(-lightSensorToWheelbase);
+		localizer.quickThetaCorrection(); //Correct angle and x position 
+		move.driveDistance(-lightSensorToWheelbase); 
+		move.rotateAngle(90, turnLoc);
 
-            move.travelTo(tunnelTilePosXOP2 * tileSize, odo.getXYT()[1], false);
-            move.turnTo(turnToTunnel);
-            localizer.quickThetaCorrection();
-            odo.setTheta(move.roundAngle());
-        }
-    }
+		localizer.quickThetaCorrection(); //Correct y position
+		move.driveDistance(-lightSensorToWheelbase);
+		
+		thetaCor = move.roundAngle(); //Update the odometer
+		odo.setXYT(posCorX*tileSize, posCorY*tileSize, thetaCor);
+		move.driveDistance(0.5*tileSize);
+		move.rotateAngle(90, !turnLoc);
+	}
 
-    /**
-     * Travel across the tunnel from front to back or from back to front
-     * 
-     * @param direction
-     *            Boolean: if true, the robot is going from starting zone to search
-     *            zone, if false, the robot is going from search zone to starting
-     *            zone
-     */
-    public void throughTunnel(boolean direction) {
-        // TODO close the arm while travelling inside of the tunnel
-        int posCorX = 0, posCorY = 0;
-        int thetaCor = 0;
-        boolean turnLoc = true;
-        if (direction) { // If robot is going from starting zone to search zone, these are the parameters
-                         // to use
-            switch (SC) {
-            case 0:
-                if (TURX > STZURX) {
-                    if (TURY == IURY) {
-                        turnLoc = true;
-                        posCorX = TURX + 1;
-                        posCorY = TURY - 1;
-                    } else {
-                        turnLoc = false;
-                        posCorX = TURX + 1;
-                        posCorY = TURY;
-                    }
-                } else {
-                    if (TURX == IURX) {
-                        turnLoc = false;
-                        posCorX = TURX - 1;
-                        posCorY = TURY + 1;
-                    } else {
-                        turnLoc = true;
-                        posCorX = TURX;
-                        posCorY = TURY + 1;
-                    }
-                }
-                break;
-            case 1:
-                if (TLLX < STZLLX) {
-                    if (TURY == IURY) {
-                        turnLoc = false;
-                        posCorX = TLLX - 1;
-                        posCorY = TLLY;
-                    } else {
-                        turnLoc = true;
-                        posCorX = TLLX - 1;
-                        posCorY = TLLY + 1;
-                    }
-                } else {
-                    if (TLLX == ILLX) {
-                        turnLoc = true;
-                        posCorX = TURX;
-                        posCorY = TURY + 1;
-                    } else {
-                        turnLoc = false;
-                        posCorX = TURX - 1;
-                        posCorY = TURY + 1;
-                    }
-
-                }
-                break;
-            case 2:
-                if (TLLX < STZLLX) {
-                    if (TLLY == ILLY) {
-                        turnLoc = true;
-                        posCorX = TLLX - 1;
-                        posCorY = TLLY + 1;
-                    } else {
-                        turnLoc = false;
-                        posCorX = TLLX - 1;
-                        posCorY = TLLY;
-                    }
-                } else {
-                    if (TLLX == ILLX) {
-                        turnLoc = false;
-                        posCorX = TLLX + 1;
-                        posCorY = TLLY - 1;
-                    } else {
-                        turnLoc = true;
-                        posCorX = TLLX;
-                        posCorY = TLLY - 1;
-                    }
-                }
-                break;
-            case 3:
-                if (TURX > STZURX) {
-                    if (TURY == IURY) {
-                        turnLoc = true;
-                        posCorX = TURX + 1;
-                        posCorY = TURY - 1;
-                    } else {
-                        turnLoc = false;
-                        posCorX = TURX + 1;
-                        posCorY = TURY;
-                    }
-                } else {
-                    if (TLLX == ILLX) {
-                        turnLoc = false;
-                        posCorX = TLLX + 1;
-                        posCorY = TLLY - 1;
-                    } else {
-                        turnLoc = true;
-                        posCorX = TLLX;
-                        posCorY = TLLY - 1;
-                    }
-                }
-                break;
-            default:
-                break;
-            }
-        } else { // If robot is going from search zone to starting zone, these are the parameters
-                 // to use
-            switch (SC) {
-            case 0:
-                if (TURX > STZURX) {
-                    if (TLLY == STZLLY) {
-                        turnLoc = true;
-                        posCorX = TLLX - 1;
-                        posCorY = TLLY + 1;
-                    } else {
-                        turnLoc = false;
-                        posCorX = TLLX - 1;
-                        posCorY = TLLY;
-                    }
-                } else {
-                    if (TLLX == STZLLX) {
-                        turnLoc = false;
-                        posCorX = TLLX + 1;
-                        posCorY = TLLY - 1;
-                    } else {
-                        turnLoc = true;
-                        posCorX = TLLX;
-                        posCorY = TURY - 1;
-                    }
-                }
-                break;
-            case 1:
-                if (TLLX < STZLLX) {
-                    if (TLLY == ILLY) {
-                        turnLoc = false;
-                        posCorX = TURX + 1;
-                        posCorY = TURY;
-                    } else {
-                        turnLoc = true;
-                        posCorX = TURX + 1;
-                        posCorY = TLLY - 1;
-                    }
-                } else {
-                    if (TURX == IURX) {
-                        turnLoc = true;
-                        posCorX = TLLX;
-                        posCorY = TLLY - 1;
-                    } else {
-                        turnLoc = false;
-                        posCorX = TLLX + 1;
-                        posCorY = TLLY - 1;
-                    }
-
-                }
-                break;
-            case 2:
-                if (TLLX < STZLLX) {
-                    if (TURY == STZURY) {
-                        turnLoc = true;
-                        posCorX = TURX + 1;
-                        posCorY = TURY - 1;
-                    } else {
-                        turnLoc = false;
-                        posCorX = TURX + 1;
-                        posCorY = TURY;
-                    }
-                } else {
-                    if (TURX == STZURX) {
-                        turnLoc = false;
-                        posCorX = TURX - 1;
-                        posCorY = TURY + 1;
-                    } else {
-                        turnLoc = true;
-                        posCorX = TURX;
-                        posCorY = TURY + 1;
-                    }
-                }
-                break;
-            case 3:
-                if (TURX > STZURX) {
-                    if (TURY == STZURY) {
-                        turnLoc = false;
-                        posCorX = TLLX - 1;
-                        posCorY = TLLY;
-                    } else {
-                        turnLoc = true;
-                        posCorX = TLLX - 1;
-                        posCorY = TLLY + 1;
-                    }
-                } else {
-                    if (TLLX == STZLLX) {
-                        turnLoc = true;
-                        posCorX = TURX;
-                        posCorY = TLLY + 1;
-                    } else {
-                        turnLoc = false;
-                        posCorX = TURX - 1;
-                        posCorY = TURY + 1;
-                    }
-                }
-                break;
-            default:
-                break;
-            }
-        }
-
-        move.driveDistance((bridgeTileLength + 2) * tileSize - lightSensorToWheelbase); // Cross tunnel
-
-        localizer.quickThetaCorrection(); // Correct angle and x position
-        move.driveDistance(-lightSensorToWheelbase);
-        move.rotateAngle(90, turnLoc);
-
-        localizer.quickThetaCorrection(); // Correct y position
-        move.driveDistance(-lightSensorToWheelbase);
-
-        thetaCor = move.roundAngle(); // Update the odometer
-        odo.setXYT(posCorX * tileSize, posCorY * tileSize, thetaCor);
-        move.driveDistance(0.5 * tileSize);
-        move.rotateAngle(90, !turnLoc);
-    }
 
     public void goToStartingTile() {
 
