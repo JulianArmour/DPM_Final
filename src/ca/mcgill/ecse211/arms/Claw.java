@@ -16,6 +16,7 @@ public class Claw {
     private static int             RELEASED_ANGLE = 0;  
     private static int             GRABBED_ANGLE  = 230; 
 
+    
     /**
      * @param clawMotor
      *            the motor used for the claw that grabs the cans
