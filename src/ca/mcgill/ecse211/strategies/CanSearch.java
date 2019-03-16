@@ -90,26 +90,26 @@ public class CanSearch {
                     float[] nextPos = new float[2];
 
                     if (i == 0 && j == 0) {
-                        System.out.println("BOTH 0");
+                        
                         nextPos[0] = paddedSearchZone_UR[0] - TILE_LENGTH / 2;
                         nextPos[1] = paddedSearchZone_LL[1] + TILE_LENGTH / 2;
                     }
 
                     else if (i == 0) {
-                        System.out.println("i is 0");
+                        
                         nextPos[0] = paddedSearchZone_UR[0] - TILE_LENGTH / 2;
                         nextPos[1] = paddedSearchZone_LL[1] + j * (deltaY / SCAN_RADIUS) * TILE_LENGTH;
                     }
 
                     else if (j == 0) {
-                        System.out.println("j is 0");
+                        
                         nextPos[1] = paddedSearchZone_LL[1] + TILE_LENGTH / 2;
                         nextPos[0] = paddedSearchZone_UR[0] - i * (deltaX / SCAN_RADIUS) * TILE_LENGTH;
 
                     }
 
                     else {
-                        System.out.println("none of them are 0");
+                        
                         nextPos[0] = paddedSearchZone_UR[0] - i * (deltaX / SCAN_RADIUS) * TILE_LENGTH;
                         nextPos[1] = paddedSearchZone_LL[1] + j * (deltaY / SCAN_RADIUS) * TILE_LENGTH;
                     }
