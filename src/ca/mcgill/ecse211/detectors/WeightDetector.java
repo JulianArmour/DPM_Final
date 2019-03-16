@@ -48,7 +48,7 @@ public class WeightDetector {
     public boolean canIsHeavy() {
         int initTacho = clawMotor.getTachoCount();
         clawMotor.flt();
-        movementController.driveDistance(tileLength / 2, DETECT_SPEED, DETECT_ACC, false);
+        movementController.driveDistance(-tileLength / 2, DETECT_SPEED, DETECT_ACC, false);
         int dTacho = Math.abs(clawMotor.getTachoCount() - initTacho);
         movementController.driveDistance(tileLength / 2, false);
         return (dTacho > HEAVY_CAN_THRESHOLD);

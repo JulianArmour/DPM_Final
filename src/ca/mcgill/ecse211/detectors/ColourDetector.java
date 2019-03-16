@@ -59,8 +59,6 @@ public class ColourDetector implements TimerListener {
     /**
      * This is the main entry point for starting the colour detection routine.
      * <p>
-     * It should be called after {@link ColourArm#scan(int)}
-     * <p>
      * The colour data can then be retrieved with {@link #getColourSamples()}
      * 
      * @param numberOfScans
