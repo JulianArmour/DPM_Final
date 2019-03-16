@@ -20,9 +20,9 @@ import lejos.utility.TimerListener;
  */
 public class ColourDetector implements TimerListener {
 	
-	private static final float RCAN_RMEAN = 0.8920f;
-	private static final float RCAN_GMEAN = 0.3672f;
-	private static final float RCAN_BMEAN = 0.2668f;
+	private static final float RCAN_RMEAN = 0.9702f;
+	private static final float RCAN_GMEAN = 0.1848f;
+	private static final float RCAN_BMEAN = 0.1569f;
 	
 	private static final float BCAN_RMEAN = 0.4212f;
 	private static final float BCAN_GMEAN = 0.5010f;
