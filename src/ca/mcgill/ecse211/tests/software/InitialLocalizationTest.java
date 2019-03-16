@@ -20,7 +20,7 @@ import lejos.hardware.sensor.SensorMode;
 public class InitialLocalizationTest {
 
     public static final double             WHEEL_RAD     = 2.2;
-    public static final double             TRACK         = 9.765;
+    public static final double             TRACK         = Main.TRACK;
     public static final int                SC            = 0;
     public static final double             TILE_LENGTH   = Main.TILE_SIZE;
 
@@ -141,9 +141,9 @@ public class InitialLocalizationTest {
         // Button.waitForAnyPress();
         // movementController.rotateAngle(360, true, false);
 
-        // movementController.rotateAngle(360, true);
-        // System.exit(0);
-
+         movementController.rotateAngle(360, true);
+         System.exit(0);
+         /**
         localizer.initialUSLocalization();
         localizer.initialLightLocalization();
         System.out.println(
@@ -162,6 +162,7 @@ public class InitialLocalizationTest {
                         + odometer.getXYT()[2]
                 );
                 System.exit(0);
+                **/
 
     }
 }
