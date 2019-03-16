@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.function.IntPredicate;
 
 import ca.mcgill.ecse211.Main;
 import ca.mcgill.ecse211.navigators.MovementController;
@@ -30,6 +31,8 @@ public class CanSearch {
     private float                SCAN_RADIUS     = TILE_LENGTH * 3;
     private float[]              nextPos;
     private static List<float[]>  scanningPoints  = new LinkedList<float[]>();
+    private float[]				 P_SZ_LL = {SZ_LL[0]*TILE_LENGTH,SZ_LL[1]*TILE_LENGTH};
+    private float[]				 P_SZ_UR = {SZ_UR[0]*TILE_LENGTH,SZ_UR[1]*TILE_LENGTH}; 				
 
     /**
      * 
@@ -95,21 +98,20 @@ public class CanSearch {
                     else if (i == 0) {
                         System.out.println("i is 0");
                         nextPos[0] = paddedSearchZone_UR[0] - TILE_LENGTH / 2;
-                        nextPos[1] = P_ISL_LL[1] + j * (deltaY / SCAN_RADIUS) * TILE_LENGTH;
+                        nextPos[1] = paddedSearchZone_LL[1] + j * (deltaY / SCAN_RADIUS) * TILE_LENGTH;
                     }
 
                     else if (j == 0) {
                         System.out.println("j is 0");
-                        nextPos[1] = P_ISL_LL[1] + TILE_LENGTH / 2;
-                        nextPos[0] = P_ISL_UR[0] - i * (deltaX / SCAN_RADIUS) * TILE_LENGTH;
+                        nextPos[1] = paddedSearchZone_LL[1] + TILE_LENGTH / 2;
+                        nextPos[0] = paddedSearchZone_UR[0] - i * (deltaX / SCAN_RADIUS) * TILE_LENGTH;
 
                     }
 
                     else {
                         System.out.println("none of them are 0");
-                        nextPos[0] = P_ISL_UR[0] - i * (deltaX / SCAN_RADIUS) * TILE_LENGTH;
-
-                        nextPos[1] = P_ISL_LL[1] + j * (deltaY / SCAN_RADIUS) * TILE_LENGTH;
+                        nextPos[0] = paddedSearchZone_UR[0] - i * (deltaX / SCAN_RADIUS) * TILE_LENGTH;
+                        nextPos[1] = paddedSearchZone_LL[1] + j * (deltaY / SCAN_RADIUS) * TILE_LENGTH;
                     }
                     scanningPoints.add(nextPos);
                 }
