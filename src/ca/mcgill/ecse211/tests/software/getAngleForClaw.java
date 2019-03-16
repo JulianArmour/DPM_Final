@@ -1,9 +1,6 @@
 package ca.mcgill.ecse211.tests.software;
 
 
-import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
-
-
 
 import ca.mcgill.ecse211.Main;
 import ca.mcgill.ecse211.arms.Claw;
@@ -70,7 +67,6 @@ public class getAngleForClaw {
         System.out.println("Current tachoCount is:" + tachoCount);
         Button.waitForAnyPress();
         }
-        
         
     }
 }
