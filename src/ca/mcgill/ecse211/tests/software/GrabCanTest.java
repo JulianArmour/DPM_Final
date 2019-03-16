@@ -1,5 +1,6 @@
 package ca.mcgill.ecse211.tests.software;
 
+import ca.mcgill.ecse211.arms.Claw;
 import ca.mcgill.ecse211.detectors.WeightDetector;
 import ca.mcgill.ecse211.navigators.MovementController;
 import ca.mcgill.ecse211.odometer.Odometer;
@@ -25,6 +26,7 @@ public class GrabCanTest {
     private static NXTRegulatedMotor      elbowMotor;
     private static EV3LargeRegulatedMotor clawMotor;
     private static WeightDetector         weightDetector;
+    private static Claw					  claw;
 
     public static void main(String[] args) throws InterruptedException {
 
@@ -48,18 +50,26 @@ public class GrabCanTest {
         movementController = new MovementController(leftMotor, rightMotor, WHEEL_RAD, TRACK, odometer);
         localEV3 = (LocalEV3) LocalEV3.get();
         weightDetector = new WeightDetector(clawMotor, movementController, TILE_LENGTH);
+        claw = new Claw(clawMotor);
 
         // start test
         localEV3.getTextLCD().clear();
 
-        while (true) {
-            Button.waitForAnyPress();
+        
+         //   Button.waitForAnyPress();
             Thread.sleep(2000);
+            claw.closeClaw();
+            Thread.sleep(2000);
+            claw.openClaw();
+            Thread.sleep(2000);
+            claw.closeClawForWeighing();
             if (weightDetector.canIsHeavy()) {
                 Sound.twoBeeps();
             } else {
                 Sound.beep();
             }
-        }
+            
+            System.exit(0);
+        
     }
 }
