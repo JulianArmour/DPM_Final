@@ -170,6 +170,7 @@ public class Main {
 
     }
 
+    
     @SuppressWarnings("rawtypes")
     private static void getWifiData() {
         // Initialize WifiConnection class
