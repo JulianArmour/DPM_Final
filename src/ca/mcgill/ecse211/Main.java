@@ -4,7 +4,9 @@ import java.util.Map;
 
 import ca.mcgill.ecse211.WiFiClient.WifiConnection;
 import ca.mcgill.ecse211.arms.Claw;
+import ca.mcgill.ecse211.arms.ColourArm;
 import ca.mcgill.ecse211.detectors.CanColour;
+import ca.mcgill.ecse211.detectors.ColourDetector;
 import ca.mcgill.ecse211.detectors.WeightDetector;
 import ca.mcgill.ecse211.localizers.Localization;
 import ca.mcgill.ecse211.navigators.MovementController;
@@ -100,6 +102,8 @@ public class Main {
     private static CanSearch               canSearch;
     private static WeightDetector          weightDetector;
     private static Claw                    claw;
+    private static ColourArm               colourArm;
+    private static ColourDetector          colourDetector;
 
     public static void main(String[] args) {
         getWifiData();
@@ -116,7 +120,7 @@ public class Main {
         USSample = new float[DistanceProvider.sampleSize()];
 
         // set up back-left light sensor
-        backLeftLSPort = LocalEV3.get().getPort("S1");
+        backLeftLSPort = LocalEV3.get().getPort("S3");
         backLeftLS = new EV3ColorSensor(backLeftLSPort);
         backLeftLSProvider = backLeftLS.getMode("Red");
         backLeftLSSample = new float[backLeftLSProvider.sampleSize()];
@@ -127,8 +131,8 @@ public class Main {
         backRightLSProvider = backRightLS.getMode("Red");
         backRightLSSample = new float[backRightLSProvider.sampleSize()];
 
-        // set up side light sensor
-        sideLSPort = LocalEV3.get().getPort("S3");
+        // set up colour light sensor
+        sideLSPort = LocalEV3.get().getPort("S1");
         canColourSensor = new EV3ColorSensor(sideLSPort);
         canRGBProvider = canColourSensor.getMode("RGB");
         canRGBBuffer = new float[canRGBProvider.sampleSize()];
@@ -155,9 +159,11 @@ public class Main {
                 movementController, odometer, localization, tunnel_LL, tunnel_UR, startzone_LL, startzone_UR,
                 startingCorner, island_LL, island_UR, searchzone_LL, searchzone_UR, TILE_SIZE
         );
+        colourArm = new ColourArm(colourMotor);
+        colourDetector = new ColourDetector(colourArm, canRGBProvider);
         canSearch = new CanSearch(
-                odometer, movementController, medianDistanceSensor, searchzone_LL, searchzone_UR, tunnel_LL, tunnel_UR,
-                island_LL, island_UR, startingCorner, TILE_SIZE
+                odometer, movementController, navigator, medianDistanceSensor, claw, weightDetector, colourDetector, canColour,
+                searchzone_LL, searchzone_UR, tunnel_LL, tunnel_UR, island_LL, island_UR, startingCorner, TILE_SIZE
         );
         claw = new Claw(clawMotor);
         weightDetector = new WeightDetector(clawMotor, movementController, TILE_SIZE);

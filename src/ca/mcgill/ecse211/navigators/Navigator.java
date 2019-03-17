@@ -4,6 +4,7 @@ import ca.mcgill.ecse211.Main;
 import ca.mcgill.ecse211.localizers.Localization;
 import ca.mcgill.ecse211.odometer.*;
 import ca.mcgill.ecse211.strategies.CanSearch;
+import lejos.hardware.Sound;
 
 /**
  * Provides the methods for navigation tasks
@@ -115,7 +116,9 @@ public class Navigator {
         double[] curPos = odo.getXYT();
         // travel to half a tile under searchZoneLL's y-coordinate
         move.travelTo(curPos[0], (searchZoneLL[1]) * tileSize, false);
+        System.out.println("ODO:\t"+"X:"+odo.getXYT()[0]/tileSize+" Y:"+odo.getXYT()[1]/tileSize);
         localizer.quickLocalization();
+        System.out.println("ODO:\t"+"X:"+odo.getXYT()[0]/tileSize+" Y:"+odo.getXYT()[1]/tileSize);
         move.travelTo(curPos[0], (searchZoneLL[1] - 0.5) * tileSize, false);
         // at this point the robot is half a tile bellow the searchZoneLL's y-coordinate
         // now travel to searchZoneLL's x-coordinate
@@ -594,5 +597,18 @@ public class Navigator {
         dumpingWaypoint[1] = dumpingSpotY;
         return dumpingWaypoint;
 
+    }
+
+    //TODO: this is setup for the beta demo, it should be changed after the demo for the actual project
+    // for the demo: it beeps 10 times then travels to the upper right of the search zone
+    public void travelBackToStartingCorner() {
+        for (int i = 0; i < 10; i++) {
+            Sound.systemSound(true, 0);
+        }
+        travelToSearchZoneUR();
+        for (int i = 0; i < 5; i++) {
+            Sound.systemSound(true, 0);
+        }
+        System.exit(0);
     }
 }

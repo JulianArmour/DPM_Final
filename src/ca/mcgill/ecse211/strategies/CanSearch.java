@@ -3,13 +3,16 @@ package ca.mcgill.ecse211.strategies;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
-import java.util.function.IntPredicate;
-
 import ca.mcgill.ecse211.Main;
+import ca.mcgill.ecse211.arms.Claw;
+import ca.mcgill.ecse211.detectors.CanColour;
+import ca.mcgill.ecse211.detectors.ColourDetector;
+import ca.mcgill.ecse211.detectors.WeightDetector;
 import ca.mcgill.ecse211.navigators.MovementController;
+import ca.mcgill.ecse211.navigators.Navigator;
 import ca.mcgill.ecse211.odometer.Odometer;
 import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
+import lejos.hardware.Sound;
 
 /**
  * This class contains the search algorithm used to find the cans in the search
@@ -19,20 +22,26 @@ import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
  */
 public class CanSearch {
 
-    private static final long  CAN_SCAN_PERIOD = 100;
+    private static final long    CAN_SCAN_PERIOD = 100;
     private Odometer             odo;
     private MovementController   movCon;
+    private Navigator            navigator;
     private MedianDistanceSensor USData;
-    private int []				 SZ_LL, SZ_UR;
-    private float[]               P_TUN_LL, P_TUN_UR, P_ISL_LL, P_ISL_UR;
+    private Claw                 claw;
+    private WeightDetector       weightDetector;
+    private ColourDetector       colourDetector;
+    private int[]                SZ_LL, SZ_UR;
+    private float[]              P_TUN_LL, P_TUN_UR, P_ISL_LL, P_ISL_UR;
     private int                  startCorner;
     private float                TILE_LENGTH;
     private float                deltaX, deltaY;
-    private float                SCAN_RADIUS     = TILE_LENGTH * 3;
+    private float                SCAN_RADIUS;
     private float[]              nextPos;
-    private static List<float[]>  scanningPoints  = new LinkedList<float[]>();
-    private float[]				 P_SZ_LL = {SZ_LL[0]*TILE_LENGTH,SZ_LL[1]*TILE_LENGTH};
-    private float[]				 P_SZ_UR = {SZ_UR[0]*TILE_LENGTH,SZ_UR[1]*TILE_LENGTH}; 				
+    private static List<float[]> scanningPoints  = new LinkedList<float[]>();
+    private float[]              P_SZ_LL;
+    private float[]              P_SZ_UR;
+    private int                  currentPos;
+    private CanColour            searchCanColour;
 
     /**
      * 
@@ -47,21 +56,32 @@ public class CanSearch {
      * @param startingCorner
      * @param TILE_LENGTH
      */
-    public CanSearch(Odometer odometer, MovementController movementController, MedianDistanceSensor USData,
-    				int[] searchzone_LL, int[] searchzone_UR, int[] tunnel_LL, int[] tunnel_UR, int[] ISLAND_LL,
-    				int[] ISLAND_UR, int startingCorner, double tileLength) {
-
+    public CanSearch(
+            Odometer odometer, MovementController movementController, Navigator navigator, MedianDistanceSensor USData,
+            Claw claw, WeightDetector weightDetector, ColourDetector colourDetector, CanColour searchCanColour,
+            int[] searchzone_LL, int[] searchzone_UR, int[] tunnel_LL, int[] tunnel_UR, int[] ISLAND_LL,
+            int[] ISLAND_UR, int startingCorner, double tileLength
+    ) {
         this.odo = odometer;
         this.movCon = movementController;
+        this.navigator = navigator;
         this.USData = USData;
-        this.SZ_LL = new int[] { (searchzone_LL[0] ), (searchzone_LL[1] ) };
-        this.SZ_UR = new int[] { (searchzone_UR[0] ),  (searchzone_UR[1] ) };
+        this.claw = claw;
+        this.weightDetector = weightDetector;
+        this.colourDetector = colourDetector;
+        this.SZ_LL = searchzone_LL;
+        this.SZ_UR = searchzone_UR;
+        this.P_SZ_LL = new float[] { (float) (SZ_LL[0] * tileLength), (float) (SZ_LL[1] * tileLength) };
+        this.P_SZ_UR = new float[] { (float) (SZ_UR[0] * tileLength), (float) (SZ_UR[1] * tileLength) };
         this.P_TUN_LL = new float[] { (float) (tunnel_LL[0] * tileLength), (float) (tunnel_LL[1] * tileLength) };
         this.P_TUN_UR = new float[] { (float) (tunnel_UR[0] * tileLength), (float) (tunnel_UR[1] * tileLength) };
         this.P_ISL_LL = new float[] { (float) (ISLAND_LL[0] * tileLength), (float) (ISLAND_LL[1] * tileLength) };
         this.P_ISL_UR = new float[] { (float) (ISLAND_UR[0] * tileLength), (float) (ISLAND_UR[1] * tileLength) };
         this.startCorner = startingCorner;
+        this.searchCanColour = searchCanColour;
         this.TILE_LENGTH = (float) tileLength;
+        this.SCAN_RADIUS = TILE_LENGTH * 3;
+        this.currentPos = 0;
     }
 
     /**
@@ -72,17 +92,16 @@ public class CanSearch {
      */
     public void setScanPositions() {
         // TODO add all possibilities ST == 0,1,2,3
-    	
-    	//calculates the padded search area
-    	int[] paddedSearchZone_LL = {SZ_LL[0]-1 , SZ_LL[1]-1};
-    	int[] paddedSearchZone_UR = {SZ_UR[0]+1, SZ_UR[1]+1};
-    	
-    	
-    	//calculates the width and the height of the padded search area
+
+        // calculates the padded search area
+        float[] paddedSearchZone_LL = { (SZ_LL[0] - 1)*TILE_LENGTH, (SZ_LL[1] - 1)*TILE_LENGTH };
+        float[] paddedSearchZone_UR = { (SZ_UR[0] + 1)*TILE_LENGTH, (SZ_UR[1] + 1)*TILE_LENGTH };
+
+        // calculates the width and the height of the padded search area
         deltaX = paddedSearchZone_UR[0] - paddedSearchZone_LL[0];
         deltaY = paddedSearchZone_UR[1] - paddedSearchZone_LL[1];
 
-        //if starting from the RHP
+        // if starting from the RHP
         if (startCorner == 1 || startCorner == 2) {
 
             for (int i = 0; i < 3; i++) {
@@ -90,26 +109,26 @@ public class CanSearch {
                     float[] nextPos = new float[2];
 
                     if (i == 0 && j == 0) {
-                        
+
                         nextPos[0] = paddedSearchZone_UR[0] - TILE_LENGTH / 2;
                         nextPos[1] = paddedSearchZone_LL[1] + TILE_LENGTH / 2;
                     }
 
                     else if (i == 0) {
-                        
+
                         nextPos[0] = paddedSearchZone_UR[0] - TILE_LENGTH / 2;
                         nextPos[1] = paddedSearchZone_LL[1] + j * (deltaY / SCAN_RADIUS) * TILE_LENGTH;
                     }
 
                     else if (j == 0) {
-                        
+
                         nextPos[1] = paddedSearchZone_LL[1] + TILE_LENGTH / 2;
                         nextPos[0] = paddedSearchZone_UR[0] - i * (deltaX / SCAN_RADIUS) * TILE_LENGTH;
 
                     }
 
                     else {
-                        
+
                         nextPos[0] = paddedSearchZone_UR[0] - i * (deltaX / SCAN_RADIUS) * TILE_LENGTH;
                         nextPos[1] = paddedSearchZone_LL[1] + j * (deltaY / SCAN_RADIUS) * TILE_LENGTH;
                     }
@@ -118,7 +137,7 @@ public class CanSearch {
             }
         }
 
-        //if starting from the LHP
+        // if starting from the LHP
         if (startCorner == 3 || startCorner == 0) {
 
             for (int i = 0; i < 3; i++) {
@@ -158,35 +177,95 @@ public class CanSearch {
     }
 
     /**
-     * Goes to current scan position and scans to detect a can
+     * Scans for remaining cans
      * 
-     * @author Alice Kazarine
+     * @return true if it all the zones have been scanned
+     * @author Alice Kazarine, Julian Armour
      */
-    public void scanCurrentZone() {
-        int currentPos = 0;
-
-        if (startCorner == 1) {
-
+    public boolean scanZones() {
+        while (currentPos < scanningPoints.size()) {
             movCon.travelTo(scanningPoints.get(currentPos)[0], scanningPoints.get(currentPos)[1], false);
-            movCon.turnTo(90);
             float[] canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 359, SCAN_RADIUS);
-
             if (canPos != null) {
                 boolean foundTheCan = travelToCan(canPos);
-                //TODO if foundTheCan = true then grab it and do stuffs
+                // TODO if foundTheCan = true then grab it and do stuffs
+                if (foundTheCan) {
+                    claw.closeClawForWeighing();
+                    claw.openClaw();
+                    colourDetector.collectColourData(1);
+                    CanColour canColour = colourDetector.getCanColour(colourDetector.getColourSamples());
+                    claw.closeClawForWeighing();
+                    boolean canIsHeavy = weightDetector.canIsHeavy();
+                    claw.openClaw();
+                    // beep depending on canColour and canIsHeavy
+                    if (canIsHeavy) {
+                        switch (canColour) {
+                        case RED:
+                            for (int i = 0; i < 4; i++) {
+                                Sound.systemSound(true, 4);
+                            }
+                            break;
+                        case YELLOW:
+                            for (int i = 0; i < 3; i++) {
+                                Sound.systemSound(true, 4);
+                            }
+                            break;
+                        case GREEN:
+                            for (int i = 0; i < 2; i++) {
+                                Sound.systemSound(true, 4);
+                            }
+                            break;
+                        case BLUE:
+                            Sound.systemSound(true, 4);
+                            break;
+                        }
+                    } else {
+                        switch (canColour) {
+                        case RED:
+                            for (int i = 0; i < 4; i++) {
+                                Sound.systemSound(true, 0);
+                            }
+                            break;
+                        case YELLOW:
+                            for (int i = 0; i < 3; i++) {
+                                Sound.systemSound(true, 0);
+                            }
+                            break;
+                        case GREEN:
+                            for (int i = 0; i < 2; i++) {
+                                Sound.systemSound(true, 0);
+                            }
+                            break;
+                        case BLUE:
+                            Sound.systemSound(true, 0);
+                            break;
+                        }
+                    }
+                    // if this is the can colour we're looking for
+                    if (canColour == searchCanColour) {
+                        navigator.travelBackToStartingCorner();
+                    }
+                } else {
+                    // TODO
+                }
             } else {
                 currentPos += 1;
-                scanCurrentZone();
             }
         }
+        if (currentPos >= scanningPoints.size()) {
+            return true;
+        } else {
+            return false;
+        }
     }
-	
+
     /**
      * Causes the robot to travel to the general location of a detected can.
      * 
      * @param canPos
      *            the general position of a can, which the robot will travel to.
-     * @return <code>true</code> if it found and traveled to a can, <code>false</code> if it didn't find a can.
+     * @return <code>true</code> if it found and traveled to a can,
+     *         <code>false</code> if it didn't find a can.
      * 
      * @author Julian Armour
      * @since March 5, 2019
@@ -234,7 +313,7 @@ public class CanSearch {
      * @author Julian Armour
      * @since March 15, 2019
      */
-    public float[] fastCanScan(float[] searchLL, float[] searchUR, double sweepAngle, float scanRadius) {//TODO
+    public float[] fastCanScan(float[] searchLL, float[] searchUR, double sweepAngle, float scanRadius) {// TODO
         double[] robotPos = odo.getXYT();
         // start rotating clockwise
         // scan for positions that are within the search zone
@@ -245,7 +324,8 @@ public class CanSearch {
             @Override
             public void run() {
                 movCon.turnClockwiseTo(finalHeading, false);
-                // the robot is only at the final heading if it wasn't interrupted by detecting a can
+                // the robot is only at the final heading if it wasn't interrupted by detecting
+                // a can
                 if (!Thread.interrupted()) {
                     atFinalHeading[0] = true;
                 }
