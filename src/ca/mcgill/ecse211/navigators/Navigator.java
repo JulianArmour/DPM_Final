@@ -87,6 +87,8 @@ public class Navigator {
         float[] safePoint = CanSearch.getScanningPoints().get(0);
         move.travelTo(safePoint[0], safePoint[1], false);
         // face north and correct odometer
+        move.turnTo(270);
+        localizer.quickLocalization();
         move.turnTo(0);
         localizer.quickLocalization();
         // now move to the searchzone upper right's y-coordinate + half a tile
@@ -114,6 +116,17 @@ public class Navigator {
      */
     public void travelToSearchZoneLL() {
         double[] curPos = odo.getXYT();
+        /**int halfwayX, halfwayY;
+        if((searchZoneLL[0] - curPos[0]) >= 0) {
+        	halfwayX = (int) (searchZoneLL[0] - Math.ceil((searchZoneLL[0] - curPos[0])/2));
+        } else {
+        	halfwayX = (int) (searchZoneLL[0] + Math.ceil((curPos[0] - searchZoneLL[0])/2));
+        }
+        if((searchZoneLL[1] - curPos[1]) >= 0) {
+        	halfwayY = (int) (searchZoneLL[1] - Math.ceil((searchZoneLL[1] - curPos[1])/2));
+        } else {
+        	halfwayY = (int) (searchZoneLL[0] + Math.ceil((curPos[1] - searchZoneLL[1])/2));
+        }**/
         // travel to half a tile under searchZoneLL's y-coordinate
         move.travelTo(curPos[0], (searchZoneLL[1]) * tileSize, false);
         System.out.println("ODO:\t"+"X:"+odo.getXYT()[0]/tileSize+" Y:"+odo.getXYT()[1]/tileSize);
@@ -136,6 +149,7 @@ public class Navigator {
         // now go
         move.travelTo(searchZoneLL[0] * tileSize, (searchZoneLL[1] - 0.5) * tileSize, false);
         // now to move up half a tile in the y-direction
+        
         move.travelTo(searchZoneLL[0] * tileSize, searchZoneLL[1] * tileSize, false);
         // at this point the robot should be at searchzone's lower left. Localize to
         // make sure
@@ -276,13 +290,13 @@ public class Navigator {
 			move.turnTo(move.calculateAngle(odo.getXYT()[0], odo.getXYT()[1], odo.getXYT()[0], tunnelTilePosYOP1 * tileSize));
 			localizer.quickLocalization();
 			//Move the to y position on the grid line in the middle of the tile in front of the tunnel
-			move.travelTo(odo.getXYT()[0], tunnelTilePosYOP1*tileSize*1.01, false); 
+			move.travelTo(odo.getXYT()[0], tunnelTilePosYOP1*tileSize, false); 
 			move.turnTo(turnToTunnel);
 			localizer.quickLocalization(); //Make sure we are well facing the tunnel
 			//TODO the robot will hit the right side of the tunnel, come up with a way to avoid this
 		}
 		else { //Path 2 to tunnel depending on position: if tunnel is on the north or south side of the starting zone
-			move.travelTo(odo.getXYT()[0], tunnelTilePosYOP2*tileSize*1.01, false);
+			move.travelTo(odo.getXYT()[0], tunnelTilePosYOP2*tileSize, false);
 			localizer.quickThetaCorrection();
 			odo.setTheta(move.roundAngle());
 			move.driveDistance(-lightSensorToWheelbase);
@@ -378,14 +392,14 @@ public class Navigator {
 				break;
 			case 3:
 				if(TURX > STZURX) {
-					if(TURY == IURY) {
-						turnLoc = true;
-						posCorX = TURX + 1;
-						posCorY = TURY - 1;
-					} else {
+					if(TLLY == ILLY) {
 						turnLoc = false;
 						posCorX = TURX + 1;
 						posCorY = TURY;
+					} else {
+						turnLoc = true;
+						posCorX = TURX + 1;
+						posCorY = TURY - 1;
 					}
 				} else {
 					if(TLLX == ILLX) {

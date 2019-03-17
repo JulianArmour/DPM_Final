@@ -26,7 +26,7 @@ import lejos.hardware.sensor.SensorMode;
 
 public class InitialLocalizationTest {
 
-    public static final double             WHEEL_RAD     = 2.2;
+    public static final double             WHEEL_RAD     = Main.WHEEL_RAD;
     public static final double             TRACK         = Main.TRACK;
     public static final int                SC            = 3;
     public static final double             TILE_LENGTH   = Main.TILE_SIZE;
@@ -180,7 +180,6 @@ public class InitialLocalizationTest {
         // movementController.rotateAngle(360, true);
         // System.exit(0);
         
-        
         canSearch.setScanPositions();
         localizer.initialUSLocalization();
         localizer.initialLightLocalization();
@@ -197,12 +196,17 @@ public class InitialLocalizationTest {
         navigator.throughTunnel(true);
         System.out.println("ODO:\t"+"X:"+odometer.getXYT()[0]/TILE_LENGTH+" Y:"+odometer.getXYT()[1]/TILE_LENGTH);
         navigator.travelToSearchZoneLL();
+        odometer.setXYT(SZR_LL_x*TILE_LENGTH, SZR_LL_y*TILE_LENGTH, movementController.roundAngle());
+        System.out.println("LL: " + 
+                odometer.getXYT()[0] / TILE_LENGTH + "," + odometer.getXYT()[1] / TILE_LENGTH + ","
+                        + odometer.getXYT()[2]
+                );
         for (int i = 0; i < 10; i++) {
             Sound.systemSound(true, 0);
         }
         navigator.travelToSearchZoneUR();
 
-        System.out.println(
+        System.out.println("UR: " + 
                 odometer.getXYT()[0] / TILE_LENGTH + "," + odometer.getXYT()[1] / TILE_LENGTH + ","
                         + odometer.getXYT()[2]
                 );

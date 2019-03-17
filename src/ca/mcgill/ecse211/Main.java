@@ -34,9 +34,9 @@ public class Main {
 
     public static final double             TILE_SIZE               = 30.48;
     public static final double             WHEEL_RAD               = 2.07;
-    public static final double             TRACK                   = 8.8;
+    public static final double             TRACK                   = 9.1;
     // distance from the light back light sensors to the wheel-base
-    public static double                   LT_SENSOR_TO_WHEELBASE  = 10.0;
+    public static double                   LT_SENSOR_TO_WHEELBASE  = 9.2;
     // distance from the ultrasonic sensor to the "thumb" of the claw
     public static double                   US_SENSOR_TO_CLAW       = 6.0;
     // median filter window width
