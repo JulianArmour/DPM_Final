@@ -33,8 +33,8 @@ public class Main {
     private static final boolean           ENABLE_DEBUG_WIFI_PRINT = true;
 
     public static final double             TILE_SIZE               = 30.48;
-    public static final double             WHEEL_RAD               = 2.2;
-    public static final double             TRACK                   = 9.42;
+    public static final double             WHEEL_RAD               = 2.07;
+    public static final double             TRACK                   = 8.8;
     // distance from the light back light sensors to the wheel-base
     public static double                   LT_SENSOR_TO_WHEELBASE  = 10.0;
     // distance from the ultrasonic sensor to the "thumb" of the claw
