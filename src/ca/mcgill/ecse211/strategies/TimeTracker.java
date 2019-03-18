@@ -10,6 +10,26 @@ package ca.mcgill.ecse211.strategies;
  */
 public class TimeTracker {
     private long startTime;
+    private int  outOfTimeThreshold;
+    private int  timeLimit;
+
+    /**
+     * 
+     * @param outOfTimeThreshold
+     *            The time threshold (in seconds) for when to go to the final
+     *            destination (e.g. starting square) at the end of the competition
+     *            run.
+     *            <p>
+     *            For example, outOfTimeThreshold = 45 means the robot should go to
+     *            the final destination when there are less than 45 seconds
+     *            remaining.
+     * @param timeLimit
+     *            how long the competition run lasts.
+     */
+    public TimeTracker(int outOfTimeThreshold, int timeLimit) {
+        this.outOfTimeThreshold = outOfTimeThreshold;
+        this.timeLimit = timeLimit;
+    }
 
     /**
      * Starts the clock for tracking time.
@@ -29,5 +49,13 @@ public class TimeTracker {
      */
     public int elapsedSeconds() {
         return (int) ((System.currentTimeMillis() - startTime) / 1000);
+    }
+
+    public boolean outOfTime() {
+        if (timeLimit - elapsedSeconds() < outOfTimeThreshold) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

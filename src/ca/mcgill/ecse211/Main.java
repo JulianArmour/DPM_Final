@@ -16,6 +16,7 @@ import ca.mcgill.ecse211.odometer.OdometerExceptions;
 import ca.mcgill.ecse211.sensors.LightDifferentialFilter;
 import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
 import ca.mcgill.ecse211.strategies.CanSearch;
+import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
@@ -107,6 +108,9 @@ public class Main {
 
     public static void main(String[] args) {
         getWifiData();
+        System.out.println("GOT WIFI DATA OwO!");
+        Sound.beep();
+        System.out.println("Looking for can colour: "+canColour);
         // init motors
         leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
         rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
@@ -189,7 +193,22 @@ public class Main {
 
             if (redTeam == TEAM_NUMBER) {
                 startingCorner = ((Long) data.get("RedCorner")).intValue();
-                canColour = CanColour.RED;
+//                canColour = CanColour.RED;
+                //TODO this switch is to be changed after the beta demo
+                switch (((Long) data.get("GreenTeam")).intValue()) {
+                    case 1:
+                        canColour = CanColour.BLUE;
+                        break;
+                    case 2:
+                        canColour = CanColour.GREEN;
+                        break;
+                    case 3:
+                        canColour = CanColour.YELLOW;
+                        break;
+                    case 4:
+                        canColour = CanColour.RED;
+                        break;
+                }
                 island_LL_x = ((Long) data.get("Island_LL_x")).intValue();
                 island_LL_y = ((Long) data.get("Island_LL_y")).intValue();
                 island_UR_x = ((Long) data.get("Island_UR_x")).intValue();

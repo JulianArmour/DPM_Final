@@ -546,12 +546,10 @@ public class Navigator {
         // if SC =, we want to go to (14,8)
         else if (SC == 2) {
             move.travelTo(14 * tileSize, 8 * tileSize, false);
-
         }
         // if SC = 3, we want to go to (1,8)
         else {
             move.travelTo(tileSize, 8 * tileSize, false);
-
         }
     }
 

@@ -180,7 +180,9 @@ public class CanSearch {
      * Scans for remaining cans
      * 
      * @return true if it all the zones have been scanned
+     * 
      * @author Alice Kazarine, Julian Armour
+     * @since March 18, 2019
      */
     public boolean scanZones() {
         while (currentPos < scanningPoints.size()) {
@@ -198,55 +200,56 @@ public class CanSearch {
                     boolean canIsHeavy = weightDetector.canIsHeavy();
                     claw.openClaw();
                     // beep depending on canColour and canIsHeavy
-                    if (canIsHeavy) {
-                        switch (canColour) {
-                        case RED:
-                            for (int i = 0; i < 4; i++) {
-                                Sound.systemSound(true, 4);
-                            }
-                            break;
-                        case YELLOW:
-                            for (int i = 0; i < 3; i++) {
-                                Sound.systemSound(true, 4);
-                            }
-                            break;
-                        case GREEN:
-                            for (int i = 0; i < 2; i++) {
-                                Sound.systemSound(true, 4);
-                            }
-                            break;
-                        case BLUE:
-                            Sound.systemSound(true, 4);
-                            break;
-                        }
-                    } else {
-                        switch (canColour) {
-                        case RED:
-                            for (int i = 0; i < 4; i++) {
-                                Sound.systemSound(true, 0);
-                            }
-                            break;
-                        case YELLOW:
-                            for (int i = 0; i < 3; i++) {
-                                Sound.systemSound(true, 0);
-                            }
-                            break;
-                        case GREEN:
-                            for (int i = 0; i < 2; i++) {
-                                Sound.systemSound(true, 0);
-                            }
-                            break;
-                        case BLUE:
-                            Sound.systemSound(true, 0);
-                            break;
-                        }
-                    }
+//                    if (canIsHeavy) {
+//                        switch (canColour) {
+//                        case RED:
+//                            for (int i = 0; i < 4; i++) {
+//                                Sound.systemSound(true, 4);
+//                            }
+//                            break;
+//                        case YELLOW:
+//                            for (int i = 0; i < 3; i++) {
+//                                Sound.systemSound(true, 4);
+//                            }
+//                            break;
+//                        case GREEN:
+//                            for (int i = 0; i < 2; i++) {
+//                                Sound.systemSound(true, 4);
+//                            }
+//                            break;
+//                        case BLUE:
+//                            Sound.systemSound(true, 4);
+//                            break;
+//                        }
+//                    } else {
+//                        switch (canColour) {
+//                        case RED:
+//                            for (int i = 0; i < 4; i++) {
+//                                Sound.systemSound(true, 0);
+//                            }
+//                            break;
+//                        case YELLOW:
+//                            for (int i = 0; i < 3; i++) {
+//                                Sound.systemSound(true, 0);
+//                            }
+//                            break;
+//                        case GREEN:
+//                            for (int i = 0; i < 2; i++) {
+//                                Sound.systemSound(true, 0);
+//                            }
+//                            break;
+//                        case BLUE:
+//                            Sound.systemSound(true, 0);
+//                            break;
+//                        }
+//                    }
                     // if this is the can colour we're looking for
                     if (canColour == searchCanColour) {
+                        claw.closeClaw();
                         navigator.travelBackToStartingCorner();
                     }
                 } else {
-                    // TODO
+                    continue;
                 }
             } else {
                 currentPos += 1;
@@ -314,6 +317,7 @@ public class CanSearch {
      * @since March 15, 2019
      */
     public float[] fastCanScan(float[] searchLL, float[] searchUR, double sweepAngle, float scanRadius) {// TODO
+        claw.openClaw();
         double[] robotPos = odo.getXYT();
         // start rotating clockwise
         // scan for positions that are within the search zone
@@ -391,6 +395,8 @@ public class CanSearch {
      * @author Julian Armour
      */
     public List<float[]> canScan(float[] searchLL, float[] searchUR) {
+        claw.openClaw();
+        
         double[] robotPos = odo.getXYT();
 
         final List<float[]> angleDistData = new LinkedList<float[]>();
