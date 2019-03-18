@@ -87,8 +87,6 @@ public class Navigator {
         float[] safePoint = CanSearch.getScanningPoints().get(0);
         move.travelTo(safePoint[0], safePoint[1], false);
         // face north and correct odometer
-        move.turnTo(270);
-        localizer.quickLocalization();
         move.turnTo(0);
         localizer.quickLocalization();
         // now move to the searchzone upper right's y-coordinate + half a tile
@@ -546,12 +544,10 @@ public class Navigator {
         // if SC =, we want to go to (14,8)
         else if (SC == 2) {
             move.travelTo(14 * tileSize, 8 * tileSize, false);
-
         }
         // if SC = 3, we want to go to (1,8)
         else {
             move.travelTo(tileSize, 8 * tileSize, false);
-
         }
     }
 

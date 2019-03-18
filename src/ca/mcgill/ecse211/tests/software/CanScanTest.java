@@ -24,7 +24,7 @@ import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.hardware.sensor.SensorMode;
 
-public class InitialLocalizationTest {
+public class CanScanTest {
 
     public static final double             WHEEL_RAD     = Main.WHEEL_RAD;
     public static final double             TRACK         = Main.TRACK;
@@ -166,52 +166,39 @@ public class InitialLocalizationTest {
         colourDetector = new ColourDetector(colourArm, canRGBProvider);
         canSearch = new CanSearch(
                 odometer, movementController, navigator, medianDistanceSensor, claw, weightDetector, colourDetector,
-                canColour, searchzone_LL, searchzone_UR, TLL, TUR, ILL, IUR, SC, (float) (2 * TILE_LENGTH), TILE_LENGTH
+                canColour, searchzone_LL, searchzone_UR, TLL, TUR, ILL, IUR, SC, (float) (2*TILE_LENGTH), TILE_LENGTH
         );
 
         localEV3 = (LocalEV3) LocalEV3.get();
 
         // start test
         localEV3.getTextLCD().clear();
-        // System.out.println("Press any button to start.");
-        // Button.waitForAnyPress();
-        // movementController.rotateAngle(360, true, false);
-
-        // movementController.rotateAngle(360, true);
-        // System.exit(0);
         
         canSearch.setScanPositions();
-        localizer.initialUSLocalization();
-        localizer.initialLightLocalization();
-        System.out.println(
-                odometer.getXYT()[0] / TILE_LENGTH + "," + odometer.getXYT()[1] / TILE_LENGTH + ","
-                        + odometer.getXYT()[2]
-                );
-
-                Sound.beep();
-        // System.exit(0);
-//        Button.waitForAnyPress();
-        claw.closeClaw();
-        navigator.travelToTunnel(true);
-        navigator.throughTunnel(true);
-        System.out.println("ODO:\t"+"X:"+odometer.getXYT()[0]/TILE_LENGTH+" Y:"+odometer.getXYT()[1]/TILE_LENGTH);
-        navigator.travelToSearchZoneLL();
-        //odometer.setXYT(SZR_LL_x*TILE_LENGTH, SZR_LL_y*TILE_LENGTH, movementController.roundAngle());
-        System.out.println("LL: " + 
-                odometer.getXYT()[0] / TILE_LENGTH + "," + odometer.getXYT()[1] / TILE_LENGTH + ","
-                        + odometer.getXYT()[2]
-                );
-        for (int i = 0; i < 10; i++) {
-            Sound.systemSound(true, 0);
+        
+        odometer.setXYT(searchzone_LL[0] * TILE_LENGTH, searchzone_LL[1] * TILE_LENGTH, 270);
+        
+        float[] P_SZ_LL = new float[] { (float) (searchzone_LL[0] * TILE_LENGTH),
+                (float) (searchzone_LL[1] * TILE_LENGTH) };
+        float[] P_SZ_UR = new float[] { (float) (searchzone_UR[0] * TILE_LENGTH),
+                (float) (searchzone_UR[1] * TILE_LENGTH) };
+        
+        float[] possiblePos = canSearch.fastCanScan(P_SZ_LL, P_SZ_UR, (double)355, (float) (2*TILE_LENGTH));
+        if(possiblePos == null) {
+        	System.out.println("NOT FOUND");
+        } else {
+        	boolean foundCan = canSearch.travelToCan(possiblePos);
+    		if (foundCan) {
+                System.out.println("Found the can!");
+                claw.closeClaw();
+                claw.openClaw();
+                colourDetector.collectColourData(1);
+                CanColour canColour = colourDetector.getCanColour(colourDetector.getColourSamples());
+                System.out.println(canColour);
+            }
+    		
         }
-        navigator.travelToSearchZoneUR();
-
-        System.out.println("UR: " + 
-                odometer.getXYT()[0] / TILE_LENGTH + "," + odometer.getXYT()[1] / TILE_LENGTH + ","
-                        + odometer.getXYT()[2]
-                );
-                System.exit(0);
-		
+        
         System.exit(0);
     }
 }

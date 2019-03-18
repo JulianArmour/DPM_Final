@@ -16,6 +16,7 @@ import ca.mcgill.ecse211.odometer.OdometerExceptions;
 import ca.mcgill.ecse211.sensors.LightDifferentialFilter;
 import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
 import ca.mcgill.ecse211.strategies.CanSearch;
+import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
@@ -38,7 +39,7 @@ public class Main {
     // distance from the light back light sensors to the wheel-base
     public static double                   LT_SENSOR_TO_WHEELBASE  = 9.2;
     // distance from the ultrasonic sensor to the "thumb" of the claw
-    public static double                   US_SENSOR_TO_CLAW       = 6.0;
+    public static double                   US_SENSOR_TO_CLAW       = 1.0;
     // median filter window width
     private static int                     MEDIAN_FILTER_WINDOW    = 5;
 
@@ -107,6 +108,9 @@ public class Main {
 
     public static void main(String[] args) {
         getWifiData();
+        System.out.println("GOT WIFI DATA OwO!");
+        Sound.beep();
+        System.out.println("Looking for can colour: "+canColour);
         // init motors
         leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
         rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
@@ -162,8 +166,9 @@ public class Main {
         colourArm = new ColourArm(colourMotor);
         colourDetector = new ColourDetector(colourArm, canRGBProvider);
         canSearch = new CanSearch(
-                odometer, movementController, navigator, medianDistanceSensor, claw, weightDetector, colourDetector, canColour,
-                searchzone_LL, searchzone_UR, tunnel_LL, tunnel_UR, island_LL, island_UR, startingCorner, TILE_SIZE
+                odometer, movementController, navigator, medianDistanceSensor, claw, weightDetector, colourDetector,
+                canColour, searchzone_LL, searchzone_UR, tunnel_LL, tunnel_UR, island_LL, island_UR, startingCorner,
+                (float) (2 * TILE_SIZE), TILE_SIZE
         );
         claw = new Claw(clawMotor);
         weightDetector = new WeightDetector(clawMotor, movementController, TILE_SIZE);
@@ -179,7 +184,7 @@ public class Main {
         // Connect to server and get the data, catching any errors that might occur
         try {
             Map data = conn.getData();
-
+            
             // set starting corner and can colour being searched for
             int redTeam = ((Long) data.get("RedTeam")).intValue();
             int island_LL_x, island_LL_y, island_UR_x, island_UR_y;
@@ -189,7 +194,22 @@ public class Main {
 
             if (redTeam == TEAM_NUMBER) {
                 startingCorner = ((Long) data.get("RedCorner")).intValue();
-                canColour = CanColour.RED;
+//                canColour = CanColour.RED;
+                //TODO this switch is to be changed after the beta demo
+                switch (((Long) data.get("GreenTeam")).intValue()) {
+                    case 1:
+                        canColour = CanColour.BLUE;
+                        break;
+                    case 2:
+                        canColour = CanColour.GREEN;
+                        break;
+                    case 3:
+                        canColour = CanColour.YELLOW;
+                        break;
+                    case 4:
+                        canColour = CanColour.RED;
+                        break;
+                }
                 island_LL_x = ((Long) data.get("Island_LL_x")).intValue();
                 island_LL_y = ((Long) data.get("Island_LL_y")).intValue();
                 island_UR_x = ((Long) data.get("Island_UR_x")).intValue();
