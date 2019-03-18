@@ -280,7 +280,7 @@ public class CanSearch {
         double[] robotPos = odo.getXYT();
         // travel robot 10 cm in front of can
         movCon.turnTo(movCon.calculateAngle(robotPos[0], robotPos[1], canPos[0], canPos[1]));
-        movCon.driveDistance(movCon.calculateDistance(robotPos[0], robotPos[1], canPos[0], canPos[1]) - 10, false);
+        movCon.driveDistance(movCon.calculateDistance(robotPos[0], robotPos[1], canPos[0], canPos[1]) - 12, false);
         // rotate counter-clockwise 45 degrees
         movCon.rotateAngle(45, false, false);
         canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 90, 15);
@@ -289,7 +289,7 @@ public class CanSearch {
             return false;
         } else {
             // rotate back 15 degrees to account for ultrasonic arc (30-deg)
-            movCon.rotateAngle(15, true, false);
+//            movCon.rotateAngle(15, true, false);
             // move forward until to appropriate distance for gripping the can
             USData.flush();
             float dist = USData.getFilteredDistance();
