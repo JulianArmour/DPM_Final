@@ -17,7 +17,9 @@ import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
  * This class contains the search algorithm used to find the cans in the search
  * zone and approach them in such a way that it is easy to grab onto them.
  * 
- * 
+ * @author Julian Armour, Alice Kazarine
+ * @since March 5, 2019
+ * @version 2
  */
 public class CanSearch {
 
@@ -40,21 +42,27 @@ public class CanSearch {
     private float[]              P_SZ_UR;
     private int                  currentPos;
     private CanColour            searchCanColour;
-
+    
     /**
      * 
      * @param odometer
      * @param movementController
+     * @param navigator
      * @param USData
+     * @param claw
+     * @param weightDetector
+     * @param colourDetector
+     * @param searchCanColour
      * @param searchzone_LL
      * @param searchzone_UR
      * @param tunnel_LL
+     * @param tunnel_UR
      * @param ISLAND_LL
      * @param ISLAND_UR
      * @param startingCorner
-     * @param TILE_LENGTH
+     * @param scanRadius the maximum distance (in cm) for detecting a can when scanning
+     * @param tileLength the length of a tile (in cm)
      */
-    
     public CanSearch(
             Odometer odometer, MovementController movementController, Navigator navigator, MedianDistanceSensor USData,
             Claw claw, WeightDetector weightDetector, ColourDetector colourDetector, CanColour searchCanColour,
@@ -198,9 +206,9 @@ public class CanSearch {
                     claw.openClaw();
                     colourDetector.collectColourData(1);
                     CanColour canColour = colourDetector.getCanColour(colourDetector.getColourSamples());
-                    claw.closeClawForWeighing();
-                    boolean canIsHeavy = weightDetector.canIsHeavy();
-                    claw.openClaw();
+//                    claw.closeClawForWeighing();
+//                    boolean canIsHeavy = weightDetector.canIsHeavy();
+//                    claw.openClaw();
                     // beep depending on canColour and canIsHeavy
 //                    if (canIsHeavy) {
 //                        switch (canColour) {
@@ -249,6 +257,14 @@ public class CanSearch {
                     if (canColour == searchCanColour) {
                         claw.closeClaw();
                         navigator.travelBackToStartingCorner();
+                    } else { // wrong colour, discard it outside the search zone
+                        navigator.travelToSafeZone();
+                        navigator.goToDumpPoint();
+                        claw.openClaw();
+                        movCon.driveDistance(-TILE_LENGTH);
+                        // TODO for demo only
+                        navigator.travelToSearchZoneLL();
+                        continue;
                     }
                 } else {
                     continue;
