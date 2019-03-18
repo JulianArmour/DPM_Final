@@ -12,7 +12,6 @@ import ca.mcgill.ecse211.navigators.MovementController;
 import ca.mcgill.ecse211.navigators.Navigator;
 import ca.mcgill.ecse211.odometer.Odometer;
 import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
-import lejos.hardware.Sound;
 
 /**
  * This class contains the search algorithm used to find the cans in the search
@@ -36,7 +35,6 @@ public class CanSearch {
     private float                TILE_LENGTH;
     private float                deltaX, deltaY;
     private float                SCAN_RADIUS;
-    private float[]              nextPos;
     private static List<float[]> scanningPoints  = new LinkedList<float[]>();
     private float[]              P_SZ_LL;
     private float[]              P_SZ_UR;
@@ -61,7 +59,7 @@ public class CanSearch {
             Odometer odometer, MovementController movementController, Navigator navigator, MedianDistanceSensor USData,
             Claw claw, WeightDetector weightDetector, ColourDetector colourDetector, CanColour searchCanColour,
             int[] searchzone_LL, int[] searchzone_UR, int[] tunnel_LL, int[] tunnel_UR, int[] ISLAND_LL,
-            int[] ISLAND_UR, int startingCorner, double tileLength
+            int[] ISLAND_UR, int startingCorner, float scanRadius, double tileLength
     ) {
         this.odo = odometer;
         this.movCon = movementController;
@@ -81,7 +79,7 @@ public class CanSearch {
         this.startCorner = startingCorner;
         this.searchCanColour = searchCanColour;
         this.TILE_LENGTH = (float) tileLength;
-        this.SCAN_RADIUS = TILE_LENGTH * 3;
+        this.SCAN_RADIUS = scanRadius;
         this.currentPos = 0;
     }
 
@@ -279,18 +277,15 @@ public class CanSearch {
      */
     public boolean travelToCan(float[] canPos) {
         double[] robotPos = odo.getXYT();
-        // travel robot 10 cm in front of can
+        // travel robot ~12 cm in front of can
         movCon.turnTo(movCon.calculateAngle(robotPos[0], robotPos[1], canPos[0], canPos[1]));
         movCon.driveDistance(movCon.calculateDistance(robotPos[0], robotPos[1], canPos[0], canPos[1]) - 12, false);
         // rotate counter-clockwise 45 degrees
         movCon.rotateAngle(90, false, false);
         canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 180, 15);
-        // TODO return something if canPos = null or not
         if (canPos == null) {
             return false;
         } else {
-            // rotate back 15 degrees to account for ultrasonic arc (30-deg)
-//            movCon.rotateAngle(15, true, false);
             // move forward until to appropriate distance for gripping the can
             USData.flush();
             float dist = USData.getFilteredDistance();
@@ -320,7 +315,7 @@ public class CanSearch {
      * @author Julian Armour
      * @since March 15, 2019
      */
-    public float[] fastCanScan(float[] searchLL, float[] searchUR, double sweepAngle, float scanRadius) {// TODO
+    public float[] fastCanScan(float[] searchLL, float[] searchUR, double sweepAngle, float scanRadius) {
         claw.openClaw();
         double[] robotPos = odo.getXYT();
         // start rotating clockwise

@@ -166,7 +166,7 @@ public class CanScanTest {
         colourDetector = new ColourDetector(colourArm, canRGBProvider);
         canSearch = new CanSearch(
                 odometer, movementController, navigator, medianDistanceSensor, claw, weightDetector, colourDetector,
-                canColour, searchzone_LL, searchzone_UR, TLL, TUR, ILL, IUR, SC, TILE_LENGTH
+                canColour, searchzone_LL, searchzone_UR, TLL, TUR, ILL, IUR, SC, (float) (2*TILE_LENGTH), TILE_LENGTH
         );
 
         localEV3 = (LocalEV3) LocalEV3.get();
@@ -178,8 +178,10 @@ public class CanScanTest {
         
         odometer.setXYT(searchzone_LL[0] * TILE_LENGTH, searchzone_LL[1] * TILE_LENGTH, 270);
         
-        float[] P_SZ_LL = new float[] { (float) (searchzone_LL[0] * TILE_LENGTH), (float) (searchzone_LL[1] * TILE_LENGTH) };
-        float[] P_SZ_UR = new float[] { (float) (searchzone_UR[0] * TILE_LENGTH), (float) (searchzone_UR[1] * TILE_LENGTH) };
+        float[] P_SZ_LL = new float[] { (float) (searchzone_LL[0] * TILE_LENGTH),
+                (float) (searchzone_LL[1] * TILE_LENGTH) };
+        float[] P_SZ_UR = new float[] { (float) (searchzone_UR[0] * TILE_LENGTH),
+                (float) (searchzone_UR[1] * TILE_LENGTH) };
         
         float[] possiblePos = canSearch.fastCanScan(P_SZ_LL, P_SZ_UR, (double)355, (float) (2*TILE_LENGTH));
         if(possiblePos == null) {
