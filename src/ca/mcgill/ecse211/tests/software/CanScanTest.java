@@ -188,8 +188,14 @@ public class CanScanTest {
         	boolean foundCan = canSearch.travelToCan(possiblePos);
     		if (foundCan) {
                 System.out.println("Found the can!");
+                claw.closeClaw();
+                claw.openClaw();
+                colourDetector.collectColourData(1);
+                CanColour canColour = colourDetector.getCanColour(colourDetector.getColourSamples());
+                System.out.println(canColour);
             }
         }
+        
         System.exit(0);
     }
 }

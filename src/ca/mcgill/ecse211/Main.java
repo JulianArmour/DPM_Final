@@ -39,7 +39,7 @@ public class Main {
     // distance from the light back light sensors to the wheel-base
     public static double                   LT_SENSOR_TO_WHEELBASE  = 9.2;
     // distance from the ultrasonic sensor to the "thumb" of the claw
-    public static double                   US_SENSOR_TO_CLAW       = 6.0;
+    public static double                   US_SENSOR_TO_CLAW       = 1.0;
     // median filter window width
     private static int                     MEDIAN_FILTER_WINDOW    = 5;
 

@@ -22,7 +22,7 @@ import lejos.hardware.Sound;
  */
 public class CanSearch {
 
-    private static final long    CAN_SCAN_PERIOD = 100;
+    private static final long    CAN_SCAN_PERIOD = 30;
     private Odometer             odo;
     private MovementController   movCon;
     private Navigator            navigator;
@@ -282,8 +282,8 @@ public class CanSearch {
         movCon.turnTo(movCon.calculateAngle(robotPos[0], robotPos[1], canPos[0], canPos[1]));
         movCon.driveDistance(movCon.calculateDistance(robotPos[0], robotPos[1], canPos[0], canPos[1]) - 12, false);
         // rotate counter-clockwise 45 degrees
-        movCon.rotateAngle(45, false, false);
-        canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 90, 15);
+        movCon.rotateAngle(90, false, false);
+        canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 180, 15);
         // TODO return something if canPos = null or not
         if (canPos == null) {
             return false;
