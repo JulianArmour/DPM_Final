@@ -182,11 +182,14 @@ public class CanScanTest {
         float[] P_SZ_UR = new float[] { (float) (searchzone_UR[0] * TILE_LENGTH), (float) (searchzone_UR[1] * TILE_LENGTH) };
         
         float[] possiblePos = canSearch.fastCanScan(P_SZ_LL, P_SZ_UR, (double)355, (float) (2*TILE_LENGTH));
-		boolean foundCan = canSearch.travelToCan(possiblePos);
-		if (foundCan) {
-            System.out.println("Found the can!");
+        if(possiblePos == null) {
+        	System.out.println("NOT FOUND");
+        } else {
+        	boolean foundCan = canSearch.travelToCan(possiblePos);
+    		if (foundCan) {
+                System.out.println("Found the can!");
+            }
         }
-        
         System.exit(0);
     }
 }
