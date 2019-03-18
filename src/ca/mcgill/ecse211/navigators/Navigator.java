@@ -114,17 +114,6 @@ public class Navigator {
      */
     public void travelToSearchZoneLL() {
         double[] curPos = odo.getXYT();
-        /**int halfwayX, halfwayY;
-        if((searchZoneLL[0] - curPos[0]) >= 0) {
-        	halfwayX = (int) (searchZoneLL[0] - Math.ceil((searchZoneLL[0] - curPos[0])/2));
-        } else {
-        	halfwayX = (int) (searchZoneLL[0] + Math.ceil((curPos[0] - searchZoneLL[0])/2));
-        }
-        if((searchZoneLL[1] - curPos[1]) >= 0) {
-        	halfwayY = (int) (searchZoneLL[1] - Math.ceil((searchZoneLL[1] - curPos[1])/2));
-        } else {
-        	halfwayY = (int) (searchZoneLL[0] + Math.ceil((curPos[1] - searchZoneLL[1])/2));
-        }**/
         // travel to half a tile under searchZoneLL's y-coordinate
         move.travelTo(curPos[0], (searchZoneLL[1]) * tileSize, false);
         System.out.println("ODO:\t"+"X:"+odo.getXYT()[0]/tileSize+" Y:"+odo.getXYT()[1]/tileSize);
@@ -154,6 +143,16 @@ public class Navigator {
         localizer.completeQuickLocalization();
     }
 	
+    /**
+     * Travels the robot to the first scanning point
+     * 
+     * @author Julian Armour
+     * @since March 18, 2019
+     */
+    public void travelToSafeZone() {
+        move.travelTo(CanSearch.getScanningPoints().get(0)[0], CanSearch.getScanningPoints().get(0)[1], false);
+    }
+    
 	/**
 	 * Travel to the tunnel from either the starting point or any point on the island
 	 * @param direction Boolean, if true, robot is going to the tunnel from the starting zone, if false the robot is going to the tunnel from the search zone
