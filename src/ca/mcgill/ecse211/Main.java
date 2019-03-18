@@ -167,8 +167,8 @@ public class Main {
         colourDetector = new ColourDetector(colourArm, canRGBProvider);
         canSearch = new CanSearch(
                 odometer, movementController, navigator, medianDistanceSensor, claw, weightDetector, colourDetector,
-                canColour, searchzone_LL, searchzone_UR, tunnel_LL, tunnel_UR, island_LL, island_UR, startingCorner,
-                (float) (2 * TILE_SIZE), TILE_SIZE
+                localization, canColour, searchzone_LL, searchzone_UR, tunnel_LL, tunnel_UR, island_LL, island_UR,
+                startingCorner, (float) (2 * TILE_SIZE), TILE_SIZE
         );
         claw = new Claw(clawMotor);
         weightDetector = new WeightDetector(clawMotor, movementController, TILE_SIZE);

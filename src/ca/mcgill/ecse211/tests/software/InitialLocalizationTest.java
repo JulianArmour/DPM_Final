@@ -166,7 +166,8 @@ public class InitialLocalizationTest {
         colourDetector = new ColourDetector(colourArm, canRGBProvider);
         canSearch = new CanSearch(
                 odometer, movementController, navigator, medianDistanceSensor, claw, weightDetector, colourDetector,
-                canColour, searchzone_LL, searchzone_UR, TLL, TUR, ILL, IUR, SC, (float) (2 * TILE_LENGTH), TILE_LENGTH
+                localizer, canColour, searchzone_LL, searchzone_UR, TLL, TUR, ILL, IUR, SC, (float) (2 * TILE_LENGTH),
+                TILE_LENGTH
         );
 
         localEV3 = (LocalEV3) LocalEV3.get();

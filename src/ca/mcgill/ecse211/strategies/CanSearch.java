@@ -8,10 +8,12 @@ import ca.mcgill.ecse211.arms.Claw;
 import ca.mcgill.ecse211.detectors.CanColour;
 import ca.mcgill.ecse211.detectors.ColourDetector;
 import ca.mcgill.ecse211.detectors.WeightDetector;
+import ca.mcgill.ecse211.localizers.Localization;
 import ca.mcgill.ecse211.navigators.MovementController;
 import ca.mcgill.ecse211.navigators.Navigator;
 import ca.mcgill.ecse211.odometer.Odometer;
 import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
+import lejos.hardware.Sound;
 
 /**
  * This class contains the search algorithm used to find the cans in the search
@@ -31,6 +33,7 @@ public class CanSearch {
     private Claw                 claw;
     private WeightDetector       weightDetector;
     private ColourDetector       colourDetector;
+    private Localization         localizer;
     private int[]                SZ_LL, SZ_UR;
     private float[]              P_TUN_LL, P_TUN_UR, P_ISL_LL, P_ISL_UR;
     private int                  startCorner;
@@ -65,7 +68,7 @@ public class CanSearch {
      */
     public CanSearch(
             Odometer odometer, MovementController movementController, Navigator navigator, MedianDistanceSensor USData,
-            Claw claw, WeightDetector weightDetector, ColourDetector colourDetector, CanColour searchCanColour,
+            Claw claw, WeightDetector weightDetector, ColourDetector colourDetector, Localization localizer, CanColour searchCanColour,
             int[] searchzone_LL, int[] searchzone_UR, int[] tunnel_LL, int[] tunnel_UR, int[] ISLAND_LL,
             int[] ISLAND_UR, int startingCorner, float scanRadius, double tileLength
     ) {
@@ -76,6 +79,7 @@ public class CanSearch {
         this.claw = claw;
         this.weightDetector = weightDetector;
         this.colourDetector = colourDetector;
+        this.localizer = localizer;
         this.SZ_LL = searchzone_LL;
         this.SZ_UR = searchzone_UR;
         this.P_SZ_LL = new float[] { (float) (SZ_LL[0] * tileLength), (float) (SZ_LL[1] * tileLength) };
@@ -206,8 +210,12 @@ public class CanSearch {
                     claw.openClaw();
                     colourDetector.collectColourData(1);
                     CanColour canColour = colourDetector.getCanColour(colourDetector.getColourSamples());
-//                    claw.closeClawForWeighing();
-//                    boolean canIsHeavy = weightDetector.canIsHeavy();
+                    claw.closeClawForWeighing();
+                    boolean canIsHeavy = weightDetector.canIsHeavy();
+                    if (canIsHeavy) {
+                        Sound.systemSound(true, 3);
+                    }
+                    claw.closeClaw();
 //                    claw.openClaw();
                     // beep depending on canColour and canIsHeavy
 //                    if (canIsHeavy) {
@@ -262,8 +270,11 @@ public class CanSearch {
                         navigator.goToDumpPoint();
                         claw.openClaw();
                         movCon.driveDistance(-TILE_LENGTH);
+                        claw.closeClaw();
                         // TODO for demo only
-                        navigator.travelToSearchZoneLL();
+                        movCon.travelTo(P_SZ_LL[0], P_SZ_LL[1], false);
+                        localizer.completeQuickLocalization();
+                        claw.openClaw();
                         continue;
                     }
                 } else {
