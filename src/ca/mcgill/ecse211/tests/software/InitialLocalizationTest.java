@@ -85,10 +85,10 @@ public class InitialLocalizationTest {
     public static int                      TNG_UR_x;
     public static int                      TNG_UR_y;
 
-    public static int                      SZR_LL_x      = 12;
-    public static int                      SZR_LL_y      = 2;
-    public static int                      SRZ_UR_x      = 14;
-    public static int                      SRZ_UR_y      = 5;
+    public static int                      SZR_LL_x      = 8;
+    public static int                      SZR_LL_y      = 6;
+    public static int                      SRZ_UR_x      = 10;
+    public static int                      SRZ_UR_y      = 8;
 
     public static int[]                    searchzone_LL = { SZR_LL_x, SZR_LL_y };
     public static int[]                    searchzone_UR = { SRZ_UR_x, SRZ_UR_y };
@@ -196,7 +196,7 @@ public class InitialLocalizationTest {
         navigator.throughTunnel(true);
         System.out.println("ODO:\t"+"X:"+odometer.getXYT()[0]/TILE_LENGTH+" Y:"+odometer.getXYT()[1]/TILE_LENGTH);
         navigator.travelToSearchZoneLL();
-        odometer.setXYT(SZR_LL_x*TILE_LENGTH, SZR_LL_y*TILE_LENGTH, movementController.roundAngle());
+        //odometer.setXYT(SZR_LL_x*TILE_LENGTH, SZR_LL_y*TILE_LENGTH, movementController.roundAngle());
         System.out.println("LL: " + 
                 odometer.getXYT()[0] / TILE_LENGTH + "," + odometer.getXYT()[1] / TILE_LENGTH + ","
                         + odometer.getXYT()[2]

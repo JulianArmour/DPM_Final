@@ -130,7 +130,7 @@ public class Navigator {
         // travel to half a tile under searchZoneLL's y-coordinate
         move.travelTo(curPos[0], (searchZoneLL[1]) * tileSize, false);
         System.out.println("ODO:\t"+"X:"+odo.getXYT()[0]/tileSize+" Y:"+odo.getXYT()[1]/tileSize);
-        localizer.quickLocalization();
+        localizer.quickLocalizationV2();
         System.out.println("ODO:\t"+"X:"+odo.getXYT()[0]/tileSize+" Y:"+odo.getXYT()[1]/tileSize);
         move.travelTo(curPos[0], (searchZoneLL[1] - 0.5) * tileSize, false);
         // at this point the robot is half a tile bellow the searchZoneLL's y-coordinate
