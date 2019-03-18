@@ -12,7 +12,7 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
  */
 public class WeightDetector {
     // constants
-    private static final int       HEAVY_CAN_THRESHOLD = 25;   // TODO
+    private static final int       HEAVY_CAN_THRESHOLD = 25;   
     private static final int       DETECT_SPEED        = 500;
     private static final int       DETECT_ACC          = 8000;
     // dependencies
