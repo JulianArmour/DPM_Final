@@ -554,9 +554,6 @@ public class Navigator {
     // sets the dumping waypoint depending on the tunnel and startingzone
     public void goToDumpPoint() {
     	
-    	 float[] paddedSearchZone_LL = { (searchZoneLL[0] - 1)*tileSize, (searchZoneLL[1] - 1)*tileSize };
-         float[] paddedSearchZone_UR = { (searchZoneUR[0] + 1)*tileSize, (searchZoneUR[1] + 1)*tileSize };
-
        
         if (SC == 0 || SC == 3) {
         	move.turnTo(90);
