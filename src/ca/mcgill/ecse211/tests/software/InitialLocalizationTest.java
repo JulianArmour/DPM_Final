@@ -211,6 +211,7 @@ public class InitialLocalizationTest {
                         + odometer.getXYT()[2]
                 );
                 System.exit(0);
-
+		
+        System.exit(0);
     }
 }

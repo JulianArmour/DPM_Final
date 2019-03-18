@@ -148,13 +148,14 @@ public class CanSearch {
 
                         nextPos[0] = paddedSearchZone_LL[0] + TILE_LENGTH / 2;
                         nextPos[1] = paddedSearchZone_LL[1] + TILE_LENGTH / 2;
+                        System.out.println("Set safe point: " + nextPos[0] + " " + nextPos[1]);
                     }
-                    if (i == 0) {
+                    else if (i == 0) {
 
                         nextPos[0] = paddedSearchZone_LL[0] + TILE_LENGTH / 2;
                         nextPos[1] = paddedSearchZone_LL[1] + j * (deltaY / SCAN_RADIUS) * TILE_LENGTH;
                     }
-                    if (j == 0) {
+                    else if (j == 0) {
 
                         nextPos[1] = paddedSearchZone_LL[1] + TILE_LENGTH / 2;
                         nextPos[0] = paddedSearchZone_LL[0] + i * (deltaX / SCAN_RADIUS) * TILE_LENGTH;
@@ -165,10 +166,12 @@ public class CanSearch {
                     }
 
                     scanningPoints.add(nextPos);
-
                 }
             }
 
+        }
+        for(int i = 0; i < scanningPoints.size(); i++) {
+        	System.out.println("Scan point " + i + ": " + scanningPoints.get(i)[0] + " " + scanningPoints.get(i)[1]);
         }
     }
 
