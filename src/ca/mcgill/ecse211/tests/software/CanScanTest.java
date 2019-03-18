@@ -29,7 +29,7 @@ public class CanScanTest {
     public static final double             WHEEL_RAD     = Main.WHEEL_RAD;
     public static final double             TRACK         = Main.TRACK;
     public static final int                SC            = 3;
-    public static final double             TILE_LENGTH   = Main.TILE_SIZE;
+    public static final float             TILE_LENGTH   = Main.TILE_SIZE;
 
     private static Port                    USPort;
     private static EV3UltrasonicSensor     ultrasonicSensor;
