@@ -194,6 +194,7 @@ public class CanScanTest {
                 CanColour canColour = colourDetector.getCanColour(colourDetector.getColourSamples());
                 System.out.println(canColour);
             }
+    		
         }
         
         System.exit(0);

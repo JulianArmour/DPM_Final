@@ -56,6 +56,7 @@ public class CanSearch {
      * @param startingCorner
      * @param TILE_LENGTH
      */
+    
     public CanSearch(
             Odometer odometer, MovementController movementController, Navigator navigator, MedianDistanceSensor USData,
             Claw claw, WeightDetector weightDetector, ColourDetector colourDetector, CanColour searchCanColour,
