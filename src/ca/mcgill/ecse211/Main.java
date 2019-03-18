@@ -33,7 +33,7 @@ public class Main {
     // Enable/disable printing of debug info from the WiFi class
     private static final boolean           ENABLE_DEBUG_WIFI_PRINT = true;
 
-    public static final float             TILE_SIZE               = 30.48f;
+    public static final float              TILE_SIZE               = 30.48f;
     public static final double             WHEEL_RAD               = 2.07;
     public static final double             TRACK                   = 8.98;
     // distance from the light back light sensors to the wheel-base
