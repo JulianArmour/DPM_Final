@@ -20,7 +20,7 @@ import lejos.hardware.sensor.SensorMode;
 public class StraightLineMovementTest {
 
     public static final double             WHEEL_RAD = 2.07;
-    public static final double             TRACK     = 8.8;
+    public static final double             TRACK     = 8.98;
     public static final double 			   TILE_LENGTH = Main.TILE_SIZE;
 	
 

@@ -35,7 +35,7 @@ public class Main {
 
     public static final double             TILE_SIZE               = 30.48;
     public static final double             WHEEL_RAD               = 2.07;
-    public static final double             TRACK                   = 9.1;
+    public static final double             TRACK                   = 8.98;
     // distance from the light back light sensors to the wheel-base
     public static double                   LT_SENSOR_TO_WHEELBASE  = 9.2;
     // distance from the ultrasonic sensor to the "thumb" of the claw
@@ -183,7 +183,7 @@ public class Main {
         // Connect to server and get the data, catching any errors that might occur
         try {
             Map data = conn.getData();
-
+            
             // set starting corner and can colour being searched for
             int redTeam = ((Long) data.get("RedTeam")).intValue();
             int island_LL_x, island_LL_y, island_UR_x, island_UR_y;
@@ -265,5 +265,7 @@ public class Main {
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());
         }
+        
     }
+    
 }
