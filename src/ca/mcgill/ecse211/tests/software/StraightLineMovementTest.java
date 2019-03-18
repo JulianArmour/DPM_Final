@@ -46,8 +46,7 @@ public class StraightLineMovementTest {
         // initialize instances
         movementController = new MovementController(leftMotor, rightMotor, WHEEL_RAD, TRACK, odometer);
         
-        //movementController.driveDistance(TILE_LENGTH * 10);
-        movementController.rotateAngle(720, true);
+        movementController.driveDistance(TILE_LENGTH * 10);
         System.exit(0);
         
         
