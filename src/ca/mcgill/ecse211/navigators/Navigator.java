@@ -21,7 +21,7 @@ public class Navigator {
     private Odometer           odo;
     private Localization       localizer;
     // fields
-    private double             tileSize;
+    private float            tileSize;
     private int                TLLX, TLLY, TURX, TURY, STZLLX, STZLLY, STZURX, STZURY, ILLX, ILLY, IURX, IURY;
     private int                dumpingSpotX, dumpingSpotY;
     private int                bridgeTileLength;
@@ -45,7 +45,7 @@ public class Navigator {
      */
     public Navigator(
             MovementController move, Odometer odo, Localization localizer, int[] tunnelLL, int TUR[], int STZLL[],
-            int STZUR[], int SC, int ILL[], int IUR[], int[] searchZoneLL, int[] searchZoneUR, double tileSize
+            int STZUR[], int SC, int ILL[], int IUR[], int[] searchZoneLL, int[] searchZoneUR, float tileSize
     ) {
         this.move = move;
         this.odo = odo;
@@ -556,61 +556,21 @@ public class Navigator {
     }
 
     // sets the dumping waypoint depending on the tunnel and startingzone
-    public int[] setDumpingPoint() {
-        // TODO add the possibility that that spot is actually a wall or not
-        // accessible??
-        if (SC == 0) {
+    public void goToDumpPoint() {
+    	
+    	 float[] paddedSearchZone_LL = { (searchZoneLL[0] - 1)*tileSize, (searchZoneLL[1] - 1)*tileSize };
+         float[] paddedSearchZone_UR = { (searchZoneUR[0] + 1)*tileSize, (searchZoneUR[1] + 1)*tileSize };
 
-            if (TLLX == STZURX || TURX - TLLX == 2) { // if horizontal
-                dumpingSpotX = (int) (TURX + tileSize / 2);
-                dumpingSpotY = (int) (TURY - 1.5 * tileSize);
-
-            } else {
-                dumpingSpotX = (int) (TURX + tileSize / 2);
-                dumpingSpotY = (int) (TURY + tileSize / 2);
-            }
-
-        } else if (SC == 3) {
-
-            if (TLLX == STZURX || TURX - TLLX == 2) {
-                // its horizontal
-                dumpingSpotX = (int) (TLLX + tileSize / 2);
-                dumpingSpotY = (int) (TLLY - 1.5 * tileSize);
-            } else {
-                // its vertical
-                dumpingSpotX = (int) (TURX - 2.5 * tileSize);
-                dumpingSpotY = (int) (TURY + tileSize / 2);
-            }
-        } else if (SC == 1) {
-
-            if (TURX == STZLLX || TURX - TLLX == 2) {
-                // its horizontal
-                dumpingSpotX = (int) (TURX - 1.5 * tileSize);
-                dumpingSpotY = (int) (TURY - 1.5 * tileSize);
-            } else {
-                // its vertical
-                dumpingSpotX = (int) (TURX - 1.5 * tileSize);
-                dumpingSpotY = (int) (TURY + tileSize / 2);
-            }
-
-        } else { // if (SC == 2)
-
-            if (TURX == STZLLX || TURX - TLLX == 2) {
-                // its horizontal
-                dumpingSpotX = (int) (TURX - 1.5 * tileSize);
-                dumpingSpotY = (int) (TURY - 1.5 * tileSize);
-            } else {
-                // its vertical
-                dumpingSpotX = (int) (TURX - 1.5 * tileSize);
-                dumpingSpotY = (int) (TURY - 1.5 * tileSize);
-            }
+       
+        if (SC == 0 || SC == 3) {
+        	move.turnTo(90);
+        	move.driveDistance(tileSize, false);
+        	
         }
-        // puts the calculated X and Y into an array to return
-        int[] dumpingWaypoint = new int[2];
-        dumpingWaypoint[0] = dumpingSpotX;
-        dumpingWaypoint[1] = dumpingSpotY;
-        return dumpingWaypoint;
-
+        else {
+        	move.turnTo(270);
+        	move.driveDistance(tileSize, false);
+        }
     }
 
     //TODO: this is setup for the beta demo, it should be changed after the demo for the actual project
