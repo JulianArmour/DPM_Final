@@ -28,7 +28,8 @@ public class Beeper {
     
     private static void nBeeps(int n) {
         for (int i = 0; i < n; i++) {
-            Sound.systemSound(true, 4);
+            Sound.beep();
+            Sound.pause(100);
         }
     }
     
