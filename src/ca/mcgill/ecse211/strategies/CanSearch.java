@@ -358,7 +358,7 @@ public class CanSearch {
      *         can is not found
      * 
      * @author Julian Armour
-     * @since March 15, 2019
+     * @since March 19, 2019
      */
     public float[] fastCanScan(float[] searchLL, float[] searchUR, double sweepAngle, float scanRadius) {
         // let other threads have some time before we start polling a lot
@@ -415,6 +415,12 @@ public class CanSearch {
                     position[0] = (float) (meanDist * Math.sin(Math.toRadians(angle)) + robotPos[0]);
                     position[1] = (float) (meanDist * Math.cos(Math.toRadians(angle)) + robotPos[1]);
                     if (inSearchZone(position, searchLL, searchUR)) {
+                        // let other threads have some time before the next movement
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                         // true positive, return
                         return position;
                     } else {
@@ -432,12 +438,19 @@ public class CanSearch {
             }
         }
 
+        // let other threads have some time before the next movement
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
     /**
      * Scans for cans by rotating 360-degrees and returns all potential locations of
      * cans.
+     * @deprecated
      * 
      * @param searchLL
      * @param searchUR
