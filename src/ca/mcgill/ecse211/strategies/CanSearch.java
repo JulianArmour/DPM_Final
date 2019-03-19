@@ -327,12 +327,6 @@ public class CanSearch {
         movCon.driveDistance(movCon.calculateDistance(robotPos[0], robotPos[1], canPos[0], canPos[1]) - 12, false);
         // rotate counter-clockwise 45 degrees
         movCon.rotateAngle(90, false, false);
-        // let other threads have some time
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 180, 20);
         if (canPos == null) {
             return false;
@@ -367,6 +361,12 @@ public class CanSearch {
      * @since March 15, 2019
      */
     public float[] fastCanScan(float[] searchLL, float[] searchUR, double sweepAngle, float scanRadius) {
+        // let other threads have some time before we start polling a lot
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         claw.openClaw();
         double[] robotPos = odo.getXYT();
         // start rotating clockwise
