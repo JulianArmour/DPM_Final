@@ -41,7 +41,6 @@ public class TimeTracker {
     }
 
     /**
-     * calculates how many seconds have elapsed since start() was called.
      * 
      * @return how many seconds have elapsed since start() was called.
      * 
