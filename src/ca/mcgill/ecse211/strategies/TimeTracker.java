@@ -24,7 +24,7 @@ public class TimeTracker {
      *            the final destination when there are less than 45 seconds
      *            remaining.
      * @param timeLimit
-     *            how long the competition run lasts.
+     *            how long the competition run lasts (in sec).
      */
     public TimeTracker(int outOfTimeThreshold, int timeLimit) {
         this.outOfTimeThreshold = outOfTimeThreshold;

@@ -3,6 +3,7 @@ package ca.mcgill.ecse211.navigators;
 import ca.mcgill.ecse211.Main;
 import ca.mcgill.ecse211.localizers.Localization;
 import ca.mcgill.ecse211.odometer.*;
+import ca.mcgill.ecse211.strategies.Beeper;
 import ca.mcgill.ecse211.strategies.CanSearch;
 import lejos.hardware.Sound;
 
@@ -115,6 +116,8 @@ public class Navigator {
     public void travelToSearchZoneLL() {
         double[] curPos = odo.getXYT();
         // travel to half a tile under searchZoneLL's y-coordinate
+        move.turnTo(move.calculateAngle(curPos[0], curPos[1], curPos[0], (searchZoneLL[1]) * tileSize));
+        localizer.quickLocalizationV2();
         move.travelTo(curPos[0], (searchZoneLL[1]) * tileSize, false);
         System.out.println("ODO:\t"+"X:"+odo.getXYT()[0]/tileSize+" Y:"+odo.getXYT()[1]/tileSize);
         localizer.quickLocalizationV2();
@@ -550,31 +553,32 @@ public class Navigator {
         }
     }
 
-    // sets the dumping waypoint depending on the tunnel and startingzone
+    /**
+     *  sets the dumping waypoint depending on the tunnel and startingzone
+     *  
+     *  @author Alice Kazarine
+     */
     public void goToDumpPoint() {
-    	
+    	//TODO change the spot because the scanning points are in the way of the dumping
        
         if (SC == 0 || SC == 3) {
-        	move.turnTo(90);
+        	move.turnTo(270);
         	move.driveDistance(tileSize, false);
         	
         }
         else {
-        	move.turnTo(270);
+        	move.turnTo(90);
         	move.driveDistance(tileSize, false);
+        	
         }
     }
 
     //TODO: this is setup for the beta demo, it should be changed after the demo for the actual project
     // for the demo: it beeps 10 times then travels to the upper right of the search zone
     public void travelBackToStartingCorner() {
-        for (int i = 0; i < 10; i++) {
-            Sound.systemSound(true, 0);
-        }
+        Beeper.foundCan();
         travelToSearchZoneUR();
-        for (int i = 0; i < 5; i++) {
-            Sound.systemSound(true, 0);
-        }
+        Beeper.arrivedAtSearchUR();
         System.exit(0);
     }
 }

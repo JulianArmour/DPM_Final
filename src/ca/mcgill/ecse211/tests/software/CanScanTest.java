@@ -14,6 +14,7 @@ import ca.mcgill.ecse211.odometer.OdometerExceptions;
 import ca.mcgill.ecse211.sensors.LightDifferentialFilter;
 import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
 import ca.mcgill.ecse211.strategies.CanSearch;
+import ca.mcgill.ecse211.strategies.TimeTracker;
 import lejos.hardware.Button;
 import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
@@ -108,6 +109,7 @@ public class CanScanTest {
     private static SensorMode              canRGBProvider;
     private static float[]                 canRGBBuffer;
     private static CanSearch               canSearch;
+    private static TimeTracker timeTracker;
 
     public static void main(String[] args) {
         // set up side ultrasonic sensor
@@ -164,9 +166,10 @@ public class CanScanTest {
         colourArm = new ColourArm(colourMotor);
         weightDetector = new WeightDetector(clawMotor, movementController, TILE_LENGTH);
         colourDetector = new ColourDetector(colourArm, canRGBProvider);
+        timeTracker = new TimeTracker(45, 300);
         canSearch = new CanSearch(
                 odometer, movementController, navigator, medianDistanceSensor, claw, weightDetector, colourDetector,
-                localizer, canColour, searchzone_LL, searchzone_UR, TLL, TUR, ILL, IUR, SC, (float) (2 * TILE_LENGTH),
+                localizer, timeTracker, canColour, searchzone_LL, searchzone_UR, TLL, TUR, ILL, IUR, SC, (float) (2 * TILE_LENGTH),
                 TILE_LENGTH
         );
 
