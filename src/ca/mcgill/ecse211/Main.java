@@ -15,7 +15,9 @@ import ca.mcgill.ecse211.odometer.Odometer;
 import ca.mcgill.ecse211.odometer.OdometerExceptions;
 import ca.mcgill.ecse211.sensors.LightDifferentialFilter;
 import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
+import ca.mcgill.ecse211.strategies.Beeper;
 import ca.mcgill.ecse211.strategies.CanSearch;
+import ca.mcgill.ecse211.strategies.TimeTracker;
 import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
@@ -98,22 +100,19 @@ public class Main {
     private static LightDifferentialFilter leftLightDifferentialFilter;
     private static LightDifferentialFilter rightLightDifferentialFilter;
     private static MedianDistanceSensor    medianDistanceSensor;
-    private static Localization            localization;
+    private static Localization            localizer;
     private static Navigator               navigator;
     private static CanSearch               canSearch;
     private static WeightDetector          weightDetector;
     private static Claw                    claw;
     private static ColourArm               colourArm;
     private static ColourDetector          colourDetector;
+    private static TimeTracker timeTracker;
 
     public static void main(String[] args) {
-        getWifiData();
-        System.out.println("GOT WIFI DATA OwO!");
-        Sound.beep();
-        System.out.println("Looking for can colour: "+canColour);
         // init motors
-        leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
-        rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
+        leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
+        rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
         colourMotor = new EV3MediumRegulatedMotor(LocalEV3.get().getPort("B"));
         clawMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("C"));
 
@@ -154,26 +153,61 @@ public class Main {
         // set up of all the class instances
         leftLightDifferentialFilter = new LightDifferentialFilter(backLeftLSProvider, backLeftLSSample);
         rightLightDifferentialFilter = new LightDifferentialFilter(backRightLSProvider, backRightLSSample);
+        
         medianDistanceSensor = new MedianDistanceSensor(DistanceProvider, USSample, odometer, MEDIAN_FILTER_WINDOW);
-        localization = new Localization(
+        
+        movementController = new MovementController(leftMotor, rightMotor, WHEEL_RAD, TRACK, odometer);
+        
+        localizer = new Localization(
                 movementController, odometer, medianDistanceSensor, leftLightDifferentialFilter,
                 rightLightDifferentialFilter, startingCorner
         );
-        movementController = new MovementController(leftMotor, rightMotor, WHEEL_RAD, TRACK, odometer);
+        
+        
+        // At this point we need wifi data
+        getWifiData();
+        
         navigator = new Navigator(
-                movementController, odometer, localization, tunnel_LL, tunnel_UR, startzone_LL, startzone_UR,
+                movementController, odometer, localizer, tunnel_LL, tunnel_UR, startzone_LL, startzone_UR,
                 startingCorner, island_LL, island_UR, searchzone_LL, searchzone_UR, TILE_SIZE
         );
         colourArm = new ColourArm(colourMotor);
+        claw = new Claw(clawMotor);
         colourDetector = new ColourDetector(colourArm, canRGBProvider);
+        timeTracker = new TimeTracker(45, 300);// when 45 seconds are remaining, go to searchZone_UR
         canSearch = new CanSearch(
                 odometer, movementController, navigator, medianDistanceSensor, claw, weightDetector, colourDetector,
-                canColour, searchzone_LL, searchzone_UR, tunnel_LL, tunnel_UR, island_LL, island_UR, startingCorner,
-                (float) (2 * TILE_SIZE), TILE_SIZE
+                localizer, timeTracker, canColour, searchzone_LL, searchzone_UR, tunnel_LL, tunnel_UR, island_LL, island_UR,
+                startingCorner, (float) (2 * TILE_SIZE), TILE_SIZE
         );
-        claw = new Claw(clawMotor);
         weightDetector = new WeightDetector(clawMotor, movementController, TILE_SIZE);
-
+        
+        run();
+    }
+    
+    public static void run() {
+        // start the time tracker
+        timeTracker.start();
+        // clear the screen
+        lcd.clear();
+        // set the scan positions for the search zone
+        canSearch.setScanPositions();
+        // next, localize
+        localizer.initialUSLocalization();
+        localizer.initialLightLocalization();
+        Beeper.localized();
+        // go to the tunnel
+        claw.closeClaw();
+        navigator.travelToTunnel(true);
+        // travel through the tunnel
+        navigator.throughTunnel(true);
+        // travel to search zone LL
+        navigator.travelToSearchZoneLL();
+        Beeper.arrivedAtSearchLL();
+        // start scanning for cans
+        canSearch.scanZones();
+        // FYI: travel to searchzone_UR is incorporated in scanZones() !
+        System.exit(0);
     }
 
     

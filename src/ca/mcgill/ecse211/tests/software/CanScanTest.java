@@ -14,6 +14,7 @@ import ca.mcgill.ecse211.odometer.OdometerExceptions;
 import ca.mcgill.ecse211.sensors.LightDifferentialFilter;
 import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
 import ca.mcgill.ecse211.strategies.CanSearch;
+import ca.mcgill.ecse211.strategies.TimeTracker;
 import lejos.hardware.Button;
 import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
@@ -108,6 +109,7 @@ public class CanScanTest {
     private static SensorMode              canRGBProvider;
     private static float[]                 canRGBBuffer;
     private static CanSearch               canSearch;
+    private static TimeTracker timeTracker;
 
     public static void main(String[] args) {
         // set up side ultrasonic sensor
@@ -164,9 +166,11 @@ public class CanScanTest {
         colourArm = new ColourArm(colourMotor);
         weightDetector = new WeightDetector(clawMotor, movementController, TILE_LENGTH);
         colourDetector = new ColourDetector(colourArm, canRGBProvider);
+        timeTracker = new TimeTracker(45, 300);
         canSearch = new CanSearch(
                 odometer, movementController, navigator, medianDistanceSensor, claw, weightDetector, colourDetector,
-                canColour, searchzone_LL, searchzone_UR, TLL, TUR, ILL, IUR, SC, (float) (2*TILE_LENGTH), TILE_LENGTH
+                localizer, timeTracker, canColour, searchzone_LL, searchzone_UR, TLL, TUR, ILL, IUR, SC, (float) (2 * TILE_LENGTH),
+                TILE_LENGTH
         );
 
         localEV3 = (LocalEV3) LocalEV3.get();
@@ -182,6 +186,12 @@ public class CanScanTest {
                 (float) (searchzone_LL[1] * TILE_LENGTH) };
         float[] P_SZ_UR = new float[] { (float) (searchzone_UR[0] * TILE_LENGTH),
                 (float) (searchzone_UR[1] * TILE_LENGTH) };
+        
+        canSearch.scanZones();
+        
+        System.exit(0);
+        
+        // single scan below
         
         float[] possiblePos = canSearch.fastCanScan(P_SZ_LL, P_SZ_UR, (double)355, (float) (2*TILE_LENGTH));
         if(possiblePos == null) {

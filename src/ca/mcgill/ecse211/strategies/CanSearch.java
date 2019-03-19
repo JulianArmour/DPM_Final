@@ -8,10 +8,12 @@ import ca.mcgill.ecse211.arms.Claw;
 import ca.mcgill.ecse211.detectors.CanColour;
 import ca.mcgill.ecse211.detectors.ColourDetector;
 import ca.mcgill.ecse211.detectors.WeightDetector;
+import ca.mcgill.ecse211.localizers.Localization;
 import ca.mcgill.ecse211.navigators.MovementController;
 import ca.mcgill.ecse211.navigators.Navigator;
 import ca.mcgill.ecse211.odometer.Odometer;
 import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
+import lejos.hardware.Sound;
 
 /**
  * This class contains the search algorithm used to find the cans in the search
@@ -31,6 +33,8 @@ public class CanSearch {
     private Claw                 claw;
     private WeightDetector       weightDetector;
     private ColourDetector       colourDetector;
+    private Localization         localizer;
+    private TimeTracker          timeTracker;
     private int[]                SZ_LL, SZ_UR;
     private float[]              P_TUN_LL, P_TUN_UR, P_ISL_LL, P_ISL_UR;
     private int                  startCorner;
@@ -42,6 +46,7 @@ public class CanSearch {
     private float[]              P_SZ_UR;
     private int                  currentPos;
     private CanColour            searchCanColour;
+
     
     /**
      * 
@@ -65,7 +70,8 @@ public class CanSearch {
      */
     public CanSearch(
             Odometer odometer, MovementController movementController, Navigator navigator, MedianDistanceSensor USData,
-            Claw claw, WeightDetector weightDetector, ColourDetector colourDetector, CanColour searchCanColour,
+            Claw claw, WeightDetector weightDetector, ColourDetector colourDetector, Localization localizer, 
+            TimeTracker timeTracker, CanColour searchCanColour,
             int[] searchzone_LL, int[] searchzone_UR, int[] tunnel_LL, int[] tunnel_UR, int[] ISLAND_LL,
             int[] ISLAND_UR, int startingCorner, float scanRadius, double tileLength
     ) {
@@ -76,6 +82,8 @@ public class CanSearch {
         this.claw = claw;
         this.weightDetector = weightDetector;
         this.colourDetector = colourDetector;
+        this.localizer = localizer;
+        this.timeTracker = timeTracker;
         this.SZ_LL = searchzone_LL;
         this.SZ_UR = searchzone_UR;
         this.P_SZ_LL = new float[] { (float) (SZ_LL[0] * tileLength), (float) (SZ_LL[1] * tileLength) };
@@ -98,8 +106,6 @@ public class CanSearch {
      * @author Alice Kazarine
      */
     public void setScanPositions() {
-        // TODO add all possibilities ST == 0,1,2,3
-
         // calculates the padded search area
         float[] paddedSearchZone_LL = { (SZ_LL[0] - 1)*TILE_LENGTH, (SZ_LL[1] - 1)*TILE_LENGTH };
         float[] paddedSearchZone_UR = { (SZ_UR[0] + 1)*TILE_LENGTH, (SZ_UR[1] + 1)*TILE_LENGTH };
@@ -189,25 +195,37 @@ public class CanSearch {
     /**
      * Scans for remaining cans
      * 
-     * @return true if it all the zones have been scanned
+     * @return <code>true</code> if it all the zones have been scanned
      * 
      * @author Alice Kazarine, Julian Armour
      * @since March 18, 2019
      */
     public boolean scanZones() {
         while (currentPos < scanningPoints.size()) {
+            // check to see if there isn't still enough time left to look for cans
+            if (timeTracker.outOfTime()) {
+                System.out.println("RAN OUT OF TIME!");
+                navigator.travelToSearchZoneUR();
+                Beeper.arrivedAtSearchUR();
+                return true;
+            }
             movCon.travelTo(scanningPoints.get(currentPos)[0], scanningPoints.get(currentPos)[1], false);
+            claw.openClaw();
             float[] canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 359, SCAN_RADIUS);
             if (canPos != null) {
                 boolean foundTheCan = travelToCan(canPos);
-                // TODO if foundTheCan = true then grab it and do stuffs
                 if (foundTheCan) {
                     claw.closeClawForWeighing();
                     claw.openClaw();
                     colourDetector.collectColourData(1);
                     CanColour canColour = colourDetector.getCanColour(colourDetector.getColourSamples());
-//                    claw.closeClawForWeighing();
+                    claw.closeClaw();
+                    //TODO uncomment after demo
 //                    boolean canIsHeavy = weightDetector.canIsHeavy();
+//                    if (canIsHeavy) {
+//                        Sound.systemSound(true, 3);
+//                    }
+//                    claw.closeClaw();
 //                    claw.openClaw();
                     // beep depending on canColour and canIsHeavy
 //                    if (canIsHeavy) {
@@ -255,15 +273,24 @@ public class CanSearch {
 //                    }
                     // if this is the can colour we're looking for
                     if (canColour == searchCanColour) {
-                        claw.closeClaw();
                         navigator.travelBackToStartingCorner();
                     } else { // wrong colour, discard it outside the search zone
+                        // check to see if there is still enough time left to look for cans
+                        if (timeTracker.outOfTime()) {
+                            System.out.println("RAN OUT OF TIME!");
+                            navigator.travelToSearchZoneUR();
+                            Beeper.arrivedAtSearchUR();
+                            return true;
+                        }
                         navigator.travelToSafeZone();
                         navigator.goToDumpPoint();
                         claw.openClaw();
                         movCon.driveDistance(-TILE_LENGTH);
+                        claw.closeClaw();
                         // TODO for demo only
-                        navigator.travelToSearchZoneLL();
+                        movCon.travelTo(P_SZ_LL[0], P_SZ_LL[1], false);
+                        localizer.completeQuickLocalization();
+                        claw.openClaw();
                         continue;
                     }
                 } else {
@@ -274,6 +301,8 @@ public class CanSearch {
             }
         }
         if (currentPos >= scanningPoints.size()) {
+            movCon.travelTo(P_SZ_UR[0], P_SZ_UR[1], false);
+            Beeper.arrivedAtSearchUR();
             return true;
         } else {
             return false;
@@ -298,7 +327,7 @@ public class CanSearch {
         movCon.driveDistance(movCon.calculateDistance(robotPos[0], robotPos[1], canPos[0], canPos[1]) - 12, false);
         // rotate counter-clockwise 45 degrees
         movCon.rotateAngle(90, false, false);
-        canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 180, 15);
+        canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 180, 20);
         if (canPos == null) {
             return false;
         } else {
@@ -332,6 +361,12 @@ public class CanSearch {
      * @since March 15, 2019
      */
     public float[] fastCanScan(float[] searchLL, float[] searchUR, double sweepAngle, float scanRadius) {
+        // let other threads have some time before we start polling a lot
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         claw.openClaw();
         double[] robotPos = odo.getXYT();
         // start rotating clockwise
