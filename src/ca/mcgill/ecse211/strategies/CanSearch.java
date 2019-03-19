@@ -34,6 +34,7 @@ public class CanSearch {
     private WeightDetector       weightDetector;
     private ColourDetector       colourDetector;
     private Localization         localizer;
+    private TimeTracker          timeTracker;
     private int[]                SZ_LL, SZ_UR;
     private float[]              P_TUN_LL, P_TUN_UR, P_ISL_LL, P_ISL_UR;
     private int                  startCorner;
@@ -45,6 +46,7 @@ public class CanSearch {
     private float[]              P_SZ_UR;
     private int                  currentPos;
     private CanColour            searchCanColour;
+
     
     /**
      * 
@@ -68,7 +70,8 @@ public class CanSearch {
      */
     public CanSearch(
             Odometer odometer, MovementController movementController, Navigator navigator, MedianDistanceSensor USData,
-            Claw claw, WeightDetector weightDetector, ColourDetector colourDetector, Localization localizer, CanColour searchCanColour,
+            Claw claw, WeightDetector weightDetector, ColourDetector colourDetector, Localization localizer, 
+            TimeTracker timeTracker, CanColour searchCanColour,
             int[] searchzone_LL, int[] searchzone_UR, int[] tunnel_LL, int[] tunnel_UR, int[] ISLAND_LL,
             int[] ISLAND_UR, int startingCorner, float scanRadius, double tileLength
     ) {
@@ -80,6 +83,7 @@ public class CanSearch {
         this.weightDetector = weightDetector;
         this.colourDetector = colourDetector;
         this.localizer = localizer;
+        this.timeTracker = timeTracker;
         this.SZ_LL = searchzone_LL;
         this.SZ_UR = searchzone_UR;
         this.P_SZ_LL = new float[] { (float) (SZ_LL[0] * tileLength), (float) (SZ_LL[1] * tileLength) };
@@ -193,13 +197,20 @@ public class CanSearch {
     /**
      * Scans for remaining cans
      * 
-     * @return true if it all the zones have been scanned
+     * @return <code>true</code> if it all the zones have been scanned
      * 
      * @author Alice Kazarine, Julian Armour
      * @since March 18, 2019
      */
     public boolean scanZones() {
         while (currentPos < scanningPoints.size()) {
+            // check to see if there is still enough time left to look for cans
+            if (timeTracker.outOfTime()) {
+                System.out.println("RAN OUT OF TIME!");
+                navigator.travelToSearchZoneUR();
+                Beeper.arrivedAtSearchUR();
+                return true;
+            }
             movCon.travelTo(scanningPoints.get(currentPos)[0], scanningPoints.get(currentPos)[1], false);
             float[] canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 359, SCAN_RADIUS);
             if (canPos != null) {
@@ -210,12 +221,12 @@ public class CanSearch {
                     claw.openClaw();
                     colourDetector.collectColourData(1);
                     CanColour canColour = colourDetector.getCanColour(colourDetector.getColourSamples());
-                    claw.closeClawForWeighing();
-                    boolean canIsHeavy = weightDetector.canIsHeavy();
-                    if (canIsHeavy) {
-                        Sound.systemSound(true, 3);
-                    }
                     claw.closeClaw();
+//                    boolean canIsHeavy = weightDetector.canIsHeavy();
+//                    if (canIsHeavy) {
+//                        Sound.systemSound(true, 3);
+//                    }
+//                    claw.closeClaw();
 //                    claw.openClaw();
                     // beep depending on canColour and canIsHeavy
 //                    if (canIsHeavy) {
@@ -263,9 +274,15 @@ public class CanSearch {
 //                    }
                     // if this is the can colour we're looking for
                     if (canColour == searchCanColour) {
-                        claw.closeClaw();
                         navigator.travelBackToStartingCorner();
                     } else { // wrong colour, discard it outside the search zone
+                        // check to see if there is still enough time left to look for cans
+                        if (timeTracker.outOfTime()) {
+                            System.out.println("RAN OUT OF TIME!");
+                            navigator.travelToSearchZoneUR();
+                            Beeper.arrivedAtSearchUR();
+                            return true;
+                        }
                         navigator.travelToSafeZone();
                         navigator.goToDumpPoint();
                         claw.openClaw();
@@ -285,6 +302,8 @@ public class CanSearch {
             }
         }
         if (currentPos >= scanningPoints.size()) {
+            movCon.travelTo(P_SZ_UR[0], P_SZ_UR[1], false);
+            Beeper.arrivedAtSearchUR();
             return true;
         } else {
             return false;

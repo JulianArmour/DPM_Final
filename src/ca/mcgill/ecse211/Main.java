@@ -16,6 +16,7 @@ import ca.mcgill.ecse211.odometer.OdometerExceptions;
 import ca.mcgill.ecse211.sensors.LightDifferentialFilter;
 import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
 import ca.mcgill.ecse211.strategies.CanSearch;
+import ca.mcgill.ecse211.strategies.TimeTracker;
 import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
@@ -105,6 +106,7 @@ public class Main {
     private static Claw                    claw;
     private static ColourArm               colourArm;
     private static ColourDetector          colourDetector;
+    private static TimeTracker timeTracker;
 
     public static void main(String[] args) {
         getWifiData();
@@ -165,9 +167,10 @@ public class Main {
         );
         colourArm = new ColourArm(colourMotor);
         colourDetector = new ColourDetector(colourArm, canRGBProvider);
+        timeTracker = new TimeTracker(45, 300);
         canSearch = new CanSearch(
                 odometer, movementController, navigator, medianDistanceSensor, claw, weightDetector, colourDetector,
-                localization, canColour, searchzone_LL, searchzone_UR, tunnel_LL, tunnel_UR, island_LL, island_UR,
+                localization, timeTracker, canColour, searchzone_LL, searchzone_UR, tunnel_LL, tunnel_UR, island_LL, island_UR,
                 startingCorner, (float) (2 * TILE_SIZE), TILE_SIZE
         );
         claw = new Claw(clawMotor);
