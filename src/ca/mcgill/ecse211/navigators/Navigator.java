@@ -552,15 +552,15 @@ public class Navigator {
 
     // sets the dumping waypoint depending on the tunnel and startingzone
     public void goToDumpPoint() {
-    	
+    	//TODO change the spot because the scanning points are in the way of the dumping
        
         if (SC == 0 || SC == 3) {
-        	move.turnTo(90);
+        	move.turnTo(270);
         	move.driveDistance(tileSize, false);
         	
         }
         else {
-        	move.turnTo(270);
+        	move.turnTo(90);
         	move.driveDistance(tileSize, false);
         }
     }
