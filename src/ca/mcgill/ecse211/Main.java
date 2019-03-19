@@ -148,6 +148,7 @@ public class Main {
         }
         Thread odoThread = new Thread(odometer);
         odoThread.start();
+        
 
         // set up of all the class instances
         leftLightDifferentialFilter = new LightDifferentialFilter(backLeftLSProvider, backLeftLSSample);
@@ -300,6 +301,8 @@ public class Main {
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());
         }
+        
+        
         
     }
     
