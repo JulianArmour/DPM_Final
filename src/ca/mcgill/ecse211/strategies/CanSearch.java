@@ -106,8 +106,6 @@ public class CanSearch {
      * @author Alice Kazarine
      */
     public void setScanPositions() {
-        // TODO add all possibilities ST == 0,1,2,3
-
         // calculates the padded search area
         float[] paddedSearchZone_LL = { (SZ_LL[0] - 1)*TILE_LENGTH, (SZ_LL[1] - 1)*TILE_LENGTH };
         float[] paddedSearchZone_UR = { (SZ_UR[0] + 1)*TILE_LENGTH, (SZ_UR[1] + 1)*TILE_LENGTH };
@@ -204,7 +202,7 @@ public class CanSearch {
      */
     public boolean scanZones() {
         while (currentPos < scanningPoints.size()) {
-            // check to see if there is still enough time left to look for cans
+            // check to see if there isn't still enough time left to look for cans
             if (timeTracker.outOfTime()) {
                 System.out.println("RAN OUT OF TIME!");
                 navigator.travelToSearchZoneUR();
@@ -212,16 +210,17 @@ public class CanSearch {
                 return true;
             }
             movCon.travelTo(scanningPoints.get(currentPos)[0], scanningPoints.get(currentPos)[1], false);
+            claw.openClaw();
             float[] canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 359, SCAN_RADIUS);
             if (canPos != null) {
                 boolean foundTheCan = travelToCan(canPos);
-                // TODO if foundTheCan = true then grab it and do stuffs
                 if (foundTheCan) {
                     claw.closeClawForWeighing();
                     claw.openClaw();
                     colourDetector.collectColourData(1);
                     CanColour canColour = colourDetector.getCanColour(colourDetector.getColourSamples());
                     claw.closeClaw();
+                    //TODO uncomment after demo
 //                    boolean canIsHeavy = weightDetector.canIsHeavy();
 //                    if (canIsHeavy) {
 //                        Sound.systemSound(true, 3);
@@ -328,7 +327,13 @@ public class CanSearch {
         movCon.driveDistance(movCon.calculateDistance(robotPos[0], robotPos[1], canPos[0], canPos[1]) - 12, false);
         // rotate counter-clockwise 45 degrees
         movCon.rotateAngle(90, false, false);
-        canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 180, 15);
+        // let other threads have some time
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 180, 20);
         if (canPos == null) {
             return false;
         } else {

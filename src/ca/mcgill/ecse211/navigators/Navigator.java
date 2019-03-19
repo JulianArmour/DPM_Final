@@ -116,6 +116,8 @@ public class Navigator {
     public void travelToSearchZoneLL() {
         double[] curPos = odo.getXYT();
         // travel to half a tile under searchZoneLL's y-coordinate
+        move.turnTo(move.calculateAngle(curPos[0], curPos[1], curPos[0], (searchZoneLL[1]) * tileSize));
+        localizer.quickLocalizationV2();
         move.travelTo(curPos[0], (searchZoneLL[1]) * tileSize, false);
         System.out.println("ODO:\t"+"X:"+odo.getXYT()[0]/tileSize+" Y:"+odo.getXYT()[1]/tileSize);
         localizer.quickLocalizationV2();
