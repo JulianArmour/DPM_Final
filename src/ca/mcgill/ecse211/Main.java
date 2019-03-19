@@ -29,7 +29,7 @@ import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.hardware.sensor.SensorMode;
 
 public class Main {
-    private static final String            SERVER_IP               = "192.168.43.112";
+    private static final String            SERVER_IP               = "192.168.2.3";
     private static final int               TEAM_NUMBER             = 3;
 
     // Enable/disable printing of debug info from the WiFi class
@@ -227,6 +227,7 @@ public class Main {
             int searchzone_LL_y, searchzone_LL_x, searchzone_UR_x, searchzone_UR_y;
             int startzone_LL_x, startzone_LL_y, startzone_UR_x, startzone_UR_y;
 
+            redTeam = 3;//TODO Set for demo, remove later!
             if (redTeam == TEAM_NUMBER) {
                 startingCorner = ((Long) data.get("RedCorner")).intValue();
 //                canColour = CanColour.RED;
