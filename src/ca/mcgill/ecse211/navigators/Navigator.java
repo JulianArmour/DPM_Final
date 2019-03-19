@@ -569,6 +569,7 @@ public class Navigator {
         else {
         	move.turnTo(90);
         	move.driveDistance(tileSize, false);
+        	
         }
     }
 
