@@ -27,9 +27,11 @@ import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.hardware.sensor.SensorMode;
+import lejos.utility.Delay;
 
 public class Main {
-    private static final String            SERVER_IP               = "192.168.2.3";
+    private static final String            SERVER_IP               = "192.168.2.3"; // for beta and competition
+//    private static final String            SERVER_IP               = "192.168.43.112"; // for personal testing
     private static final int               TEAM_NUMBER             = 3;
 
     // Enable/disable printing of debug info from the WiFi class
@@ -158,6 +160,8 @@ public class Main {
         
         movementController = new MovementController(leftMotor, rightMotor, WHEEL_RAD, TRACK, odometer);
         
+        timeTracker = new TimeTracker(45, 600);// when 45 seconds are remaining, go to searchZone_UR
+        
         localizer = new Localization(
                 movementController, odometer, medianDistanceSensor, leftLightDifferentialFilter,
                 rightLightDifferentialFilter, startingCorner
@@ -167,6 +171,9 @@ public class Main {
         // At this point we need wifi data
         getWifiData();
         
+        // start the time tracker
+        timeTracker.start();
+        
         navigator = new Navigator(
                 movementController, odometer, localizer, tunnel_LL, tunnel_UR, startzone_LL, startzone_UR,
                 startingCorner, island_LL, island_UR, searchzone_LL, searchzone_UR, TILE_SIZE
@@ -174,7 +181,7 @@ public class Main {
         colourArm = new ColourArm(colourMotor);
         claw = new Claw(clawMotor);
         colourDetector = new ColourDetector(colourArm, canRGBProvider);
-        timeTracker = new TimeTracker(45, 300);// when 45 seconds are remaining, go to searchZone_UR
+        
         canSearch = new CanSearch(
                 odometer, movementController, navigator, medianDistanceSensor, claw, weightDetector, colourDetector,
                 localizer, timeTracker, canColour, searchzone_LL, searchzone_UR, tunnel_LL, tunnel_UR, island_LL, island_UR,
@@ -186,8 +193,7 @@ public class Main {
     }
     
     public static void run() {
-        // start the time tracker
-        timeTracker.start();
+
         // clear the screen
         lcd.clear();
         // set the scan positions for the search zone
