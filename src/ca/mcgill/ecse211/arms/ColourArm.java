@@ -20,6 +20,7 @@ public class ColourArm {
 
     public ColourArm(EV3MediumRegulatedMotor colourMotor) {
         this.colourMotor = colourMotor;
+        colourMotor.resetTachoCount();
     }
 
     /**

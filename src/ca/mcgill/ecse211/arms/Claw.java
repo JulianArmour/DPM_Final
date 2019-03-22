@@ -25,6 +25,7 @@ public class Claw {
      */
     public Claw(EV3LargeRegulatedMotor clawMotor) {
         this.claw = clawMotor;
+        clawMotor.resetTachoCount();
     }
 
     /**
