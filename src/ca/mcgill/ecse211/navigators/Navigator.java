@@ -117,10 +117,10 @@ public class Navigator {
         double[] curPos = odo.getXYT();
         // travel to half a tile under searchZoneLL's y-coordinate
         move.turnTo(move.calculateAngle(curPos[0], curPos[1], curPos[0], (searchZoneLL[1]) * tileSize));
-        localizer.quickLocalizationV2();
+        localizer.quickLocalization();
         move.travelTo(curPos[0], (searchZoneLL[1]) * tileSize, false);
         System.out.println("ODO:\t"+"X:"+odo.getXYT()[0]/tileSize+" Y:"+odo.getXYT()[1]/tileSize);
-        localizer.quickLocalizationV2();
+        localizer.quickLocalization();
         System.out.println("ODO:\t"+"X:"+odo.getXYT()[0]/tileSize+" Y:"+odo.getXYT()[1]/tileSize);
         move.travelTo(curPos[0], (searchZoneLL[1] - 0.5) * tileSize, false);
         // at this point the robot is half a tile bellow the searchZoneLL's y-coordinate
@@ -320,7 +320,6 @@ public class Navigator {
 	 * @param direction Boolean: if true, the robot is going from starting zone to search zone, if false, the robot is going from search zone to starting zone
 	 */
 	public void throughTunnel(boolean direction) {
-		//TODO close the arm while travelling inside of the tunnel
 		int posCorX = 0, posCorY = 0;
 		int thetaCor = 0;
 		boolean turnLoc = true;

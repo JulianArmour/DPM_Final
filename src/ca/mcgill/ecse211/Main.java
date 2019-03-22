@@ -30,8 +30,8 @@ import lejos.hardware.sensor.SensorMode;
 import lejos.utility.Delay;
 
 public class Main {
-    private static final String            SERVER_IP               = "192.168.2.3"; // for beta and competition
-//    private static final String            SERVER_IP               = "192.168.43.112"; // for personal testing
+//    private static final String            SERVER_IP               = "192.168.2.3"; // for beta and competition
+    private static final String            SERVER_IP               = "192.168.43.112"; // for personal testing
     private static final int               TEAM_NUMBER             = 3;
 
     // Enable/disable printing of debug info from the WiFi class
