@@ -161,7 +161,7 @@ public class CanSearch {
                     if (i == 0 && j == 0) {
 
                         nextPos[0] = paddedSearchZone_LL[0] + TILE_LENGTH / 2;
-                        nextPos[1] = paddedSearchZone_LL[1] + TILE_LENGTH / 2;
+                        nextPos[1] = paddedSearchZone_LL[1] + TILE_LENGTH;
                         System.out.println("Set safe point: " + nextPos[0] + " " + nextPos[1]);
                     }
                     else if (i == 0) {
@@ -323,9 +323,12 @@ public class CanSearch {
      */
     public boolean travelToCan(float[] canPos) {
         double[] robotPos = odo.getXYT();
-        // travel robot ~12 cm in front of can
+        // close claw before driving
+        claw.closeClaw();
+        // travel robot ~15 cm in front of can
         movCon.turnTo(movCon.calculateAngle(robotPos[0], robotPos[1], canPos[0], canPos[1]));
-        movCon.driveDistance(movCon.calculateDistance(robotPos[0], robotPos[1], canPos[0], canPos[1]) - 12, false);
+        movCon.driveDistance(movCon.calculateDistance(robotPos[0], robotPos[1], canPos[0], canPos[1]) - 15, false);
+        claw.openClaw();
         // rotate counter-clockwise 45 degrees
         movCon.rotateAngle(90, false, false);
         canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 180, 20);

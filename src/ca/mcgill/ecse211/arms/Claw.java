@@ -12,10 +12,10 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 public class Claw {
 
     private EV3LargeRegulatedMotor claw;
-    private static final int       CLAW_SPEED = 360;
+    private static final int       CLAW_SPEED = 180;
     private static int             RELEASED_ANGLE = 0;
     private static int             GRABBED_ANGLE  = 176;
-    private static int             NEUTRAL_ANGLE = 175; //TODO
+    private static int             WEIGHTING_ANGLE = 175; //TODO
 
     
     /**
@@ -47,7 +47,7 @@ public class Claw {
      */
     public void closeClawForWeighing() {
         claw.setSpeed(CLAW_SPEED);
-        claw.rotateTo(NEUTRAL_ANGLE, false);
+        claw.rotateTo(WEIGHTING_ANGLE, false);
     }
 
     /**
