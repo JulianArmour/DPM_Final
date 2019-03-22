@@ -160,7 +160,7 @@ public class Main {
         
         movementController = new MovementController(leftMotor, rightMotor, WHEEL_RAD, TRACK, odometer);
         
-        timeTracker = new TimeTracker(45, 600);// when 45 seconds are remaining, go to searchZone_UR
+        timeTracker = new TimeTracker(45, 300);// when 45 seconds are remaining, go to searchZone_UR
         
         localizer = new Localization(
                 movementController, odometer, medianDistanceSensor, leftLightDifferentialFilter,
