@@ -30,7 +30,7 @@ import lejos.hardware.sensor.SensorMode;
 import lejos.utility.Delay;
 
 public class Main {
-    private static final String            SERVER_IP               = "192.168.2.3"; // for beta and competition
+    private static final String            SERVER_IP               = "192.168.2.8"; // for beta and competition
 //    private static final String            SERVER_IP               = "192.168.43.112"; // for personal testing
     private static final int               TEAM_NUMBER             = 3;
 
@@ -252,6 +252,7 @@ public class Main {
                         canColour = CanColour.RED;
                         break;
                 }
+                canColour = CanColour.BLUE;
                 island_LL_x = ((Long) data.get("Island_LL_x")).intValue();
                 island_LL_y = ((Long) data.get("Island_LL_y")).intValue();
                 island_UR_x = ((Long) data.get("Island_UR_x")).intValue();
