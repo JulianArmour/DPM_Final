@@ -116,27 +116,17 @@ public class CanSearch {
         
         int nYPoints = (int) (deltaY/SCAN_RADIUS);
         int nXPoints = (int) (deltaX/SCAN_RADIUS);
-
-        // if starting from the RHP
-        if (startCorner == 1 || startCorner == 2) {
-            for (int i = 0; i <= nXPoints; i++) {
-                for (int j = 0; j <= nYPoints; j++) {
-                    float[] nextPos = new float[2];
+        
+        for (int i = 0; i <= nXPoints; i++) {
+            for (int j = 0; j <= nYPoints; j++) {
+                float[] nextPos = new float[2];
+                if (startCorner == 1 || startCorner == 2) {
                     nextPos[0] = SZ_LL[0] + (nXPoints-i)*SCAN_RADIUS;
-                    nextPos[1] = SZ_LL[1] + j*SCAN_RADIUS;
-                    scanningPoints.add(nextPos);
-                }
-            }
-        }
-        // if starting from the LHP
-        else if (startCorner == 3 || startCorner == 0) {
-            for (int i = 0; i <= nXPoints; i++) {
-                for (int j = 0; j <= nYPoints; j++) {
-                    float[] nextPos = new float[2];
+                } else {
                     nextPos[0] = SZ_LL[0] + i*SCAN_RADIUS;
-                    nextPos[1] = SZ_LL[1] + j*SCAN_RADIUS;
-                    scanningPoints.add(nextPos);
                 }
+                nextPos[1] = SZ_LL[1] + j*SCAN_RADIUS;
+                scanningPoints.add(nextPos);
             }
         }
     }
