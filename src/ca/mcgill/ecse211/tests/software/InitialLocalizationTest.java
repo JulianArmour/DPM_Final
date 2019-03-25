@@ -197,7 +197,7 @@ public class InitialLocalizationTest {
 //        Button.waitForAnyPress();
         claw.closeClaw();
         navigator.travelToTunnel(true);
-        navigator.throughTunnel(true);
+        navigator.travelThroughTunnel(true);
         System.out.println("ODO:\t"+"X:"+odometer.getXYT()[0]/TILE_LENGTH+" Y:"+odometer.getXYT()[1]/TILE_LENGTH);
         navigator.travelToSearchZoneLL();
         //odometer.setXYT(SZR_LL_x*TILE_LENGTH, SZR_LL_y*TILE_LENGTH, movementController.roundAngle());

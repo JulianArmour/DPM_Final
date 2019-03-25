@@ -1,18 +1,19 @@
 package ca.mcgill.ecse211.navigators;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import ca.mcgill.ecse211.Main;
 import ca.mcgill.ecse211.localizers.Localization;
 import ca.mcgill.ecse211.odometer.*;
-import ca.mcgill.ecse211.strategies.Beeper;
 import ca.mcgill.ecse211.strategies.CanSearch;
-import lejos.hardware.Sound;
 
 /**
  * Provides the methods for navigation tasks
  * 
- * @author Cedric
- * @since 5th of March 2019
- * @version 1
+ * @author Cedric Barre, Julian Armour
+ * @since 25th of March 2019
+ * @version 2
  */
 public class Navigator {
     // constants
@@ -22,9 +23,8 @@ public class Navigator {
     private Odometer           odo;
     private Localization       localizer;
     // fields
-    private float            tileSize;
+    private float              tileSize;
     private int                TLLX, TLLY, TURX, TURY, STZLLX, STZLLY, STZURX, STZURY, ILLX, ILLY, IURX, IURY;
-    private int                dumpingSpotX, dumpingSpotY;
     private int                bridgeTileLength;
     private int                SC;
     private double             lightSensorToWheelbase;
@@ -44,7 +44,7 @@ public class Navigator {
      * @param IUR
      * @param tileSize
      */
-    public Navigator(
+    public Navigator (
             MovementController move, Odometer odo, Localization localizer, int[] tunnelLL, int TUR[], int STZLL[],
             int STZUR[], int SC, int ILL[], int IUR[], int[] searchZoneLL, int[] searchZoneUR, float tileSize
     ) {
@@ -184,10 +184,15 @@ public class Navigator {
         move.travelTo(CanSearch.getScanningPoints().get(0)[0], CanSearch.getScanningPoints().get(0)[1], false);
     }
     
-	/**
-	 * Travel to the tunnel from either the starting point or any point on the island
-	 * @param direction Boolean, if true, robot is going to the tunnel from the starting zone, if false the robot is going to the tunnel from the search zone
-	 */
+    /**
+     * Travel to the tunnel from either the starting point or any point on the
+     * island
+     * 
+     * @param direction
+     *            Boolean, if true, robot is going to the tunnel from the starting
+     *            zone, if false the robot is going to the tunnel from the search
+     *            zone
+     */
 	public void travelToTunnel(boolean direction) {
 
 		boolean OP1 = true;
@@ -308,7 +313,8 @@ public class Navigator {
 				break;
 			}
 		}
-		if(OP1) { //Path 1 to tunnel depending on tunnel position: if the tunnel is on the east or west side of the starting zone
+		if(OP1) { 
+		    //Path 1 to tunnel depending on tunnel position: if the tunnel is on the east or west side of the starting zone
 		    //Move to the x position on the grid line before the tunnel
 			move.travelTo(tunnelTilePosXOP1*tileSize, odo.getXYT()[1], false); 
 		    localizer.quickLocalization();
@@ -326,7 +332,8 @@ public class Navigator {
 			move.turnTo(turnToTunnel);
 			localizer.quickLocalization(); //Make sure we are well facing the tunnel
 		}
-		else { //Path 2 to tunnel depending on position: if tunnel is on the north or south side of the starting zone
+		else { 
+		    //Path 2 to tunnel depending on position: if tunnel is on the north or south side of the starting zone
 			// move to y position on the grid line before the tunnel
 		    move.travelTo(odo.getXYT()[0], tunnelTilePosYOP2*tileSize, false);
 			localizer.quickLocalization();
@@ -335,10 +342,14 @@ public class Navigator {
 			move.turnTo(move.calculateAngle(odo.getXYT()[0], odo.getXYT()[1], tunnelTilePosXOP2*tileSize, odo.getXYT()[1]));
             localizer.quickLocalization();
             //Move the to x position on the grid line in front of the tunnel
-			move.travelTo(tunnelTilePosXOP2*tileSize, odo.getXYT()[1], false);
+			move.travelTo((tunnelTilePosXOP2 - 0.5)*tileSize, odo.getXYT()[1], false);
+			// correct odometer
+            localizer.quickLocalization();
+            //Move the to x position on the grid line in the middle of the tile in front of the tunnel
+            move.travelTo(tunnelTilePosXOP2*tileSize, odo.getXYT()[1], false);
 			// finally face the tunnel entrance
 			move.turnTo(turnToTunnel);
-			localizer.quickLocalization();
+			localizer.quickLocalization(); //Make sure we are well facing the tunnel
 		}
 	}
 	
@@ -347,7 +358,7 @@ public class Navigator {
 	 * Travel across the tunnel from front to back or from back to front
 	 * @param direction Boolean: if true, the robot is going from starting zone to search zone, if false, the robot is going from search zone to starting zone
 	 */
-	public void throughTunnel(boolean direction) {
+	public void travelThroughTunnel(boolean direction) {
 		int posCorX = 0, posCorY = 0;
 		int thetaCor = 0;
 		boolean turnLoc = true;
@@ -565,7 +576,7 @@ public class Navigator {
 		
 	}
 	
-    public void goToStartingTile() {
+    public void travelToStartingTile() {
 
         // if sc is 0, we want to go to (1,1)
         if (SC == 0) {
@@ -587,31 +598,15 @@ public class Navigator {
     }
 
     /**
-     *  sets the dumping waypoint depending on the tunnel and startingzone
-     *  
-     *  @author Alice Kazarine
+     * Makes the robot travel back to the first grid-point at the starting corner.
+     * This method should be called from within the search zone.
+     * 
+     * @author Julian Armour
+     * @since March 25, 2019
      */
-    public void goToDumpPoint() {
-    	//TODO change the spot because the scanning points are in the way of the dumping
-       
-        if (SC == 0 || SC == 3) {
-        	move.turnTo(270);
-        	move.driveDistance(tileSize, false);
-        	
-        }
-        else {
-        	move.turnTo(90);
-        	move.driveDistance(tileSize, false);
-        	
-        }
-    }
-
-    //TODO: this is setup for the beta demo, it should be changed after the demo for the actual project
-    // for the demo: it beeps 10 times then travels to the upper right of the search zone
     public void travelBackToStartingCorner() {
-        Beeper.foundCan();
-        travelToSearchZoneUR();
-        Beeper.arrivedAtSearchUR();
-        System.exit(0);
+        travelToTunnel(false);
+        travelThroughTunnel(false);
+        travelToStartingTile();
     }
 }

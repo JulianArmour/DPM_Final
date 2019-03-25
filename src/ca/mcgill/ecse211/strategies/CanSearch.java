@@ -43,6 +43,7 @@ public class CanSearch {
     private float                deltaX, deltaY;
     private float                SCAN_RADIUS;
     private static List<float[]> scanningPoints  = new LinkedList<float[]>();
+    private static List<float[]> dumpingPoints = new LinkedList<float[]>();
     private float[]              P_SZ_LL;
     private float[]              P_SZ_UR;
     private int                  currentPos;
@@ -196,7 +197,7 @@ public class CanSearch {
     /**
      * Scans for remaining cans
      * 
-     * @return <code>true</code> if it all the zones have been scanned
+     * @return <code>true</code> if it all the zones have been scanned or the time limit has been reached
      * 
      * @author Alice Kazarine, Julian Armour
      * @since March 18, 2019
@@ -206,8 +207,7 @@ public class CanSearch {
             // check to see if there isn't still enough time left to look for cans
             if (timeTracker.outOfTime()) {
                 System.out.println("RAN OUT OF TIME!");
-                navigator.travelToSearchZoneUR();
-                Beeper.arrivedAtSearchUR();
+                navigator.travelBackToStartingCorner();
                 return true;
             }
             movCon.travelTo(scanningPoints.get(currentPos)[0], scanningPoints.get(currentPos)[1], false);
@@ -221,57 +221,12 @@ public class CanSearch {
                     colourDetector.collectColourData(1);
                     CanColour canColour = colourDetector.getCanColour(colourDetector.getColourSamples());
                     claw.closeClaw();
-                    //TODO uncomment after demo
-//                    boolean canIsHeavy = weightDetector.canIsHeavy();
-//                    if (canIsHeavy) {
-//                        Sound.systemSound(true, 3);
-//                    }
-//                    claw.closeClaw();
-//                    claw.openClaw();
+                    boolean canIsHeavy = weightDetector.canIsHeavy();
+                    claw.closeClaw();
+                    
                     // beep depending on canColour and canIsHeavy
-//                    if (canIsHeavy) {
-//                        switch (canColour) {
-//                        case RED:
-//                            for (int i = 0; i < 4; i++) {
-//                                Sound.systemSound(true, 4);
-//                            }
-//                            break;
-//                        case YELLOW:
-//                            for (int i = 0; i < 3; i++) {
-//                                Sound.systemSound(true, 4);
-//                            }
-//                            break;
-//                        case GREEN:
-//                            for (int i = 0; i < 2; i++) {
-//                                Sound.systemSound(true, 4);
-//                            }
-//                            break;
-//                        case BLUE:
-//                            Sound.systemSound(true, 4);
-//                            break;
-//                        }
-//                    } else {
-//                        switch (canColour) {
-//                        case RED:
-//                            for (int i = 0; i < 4; i++) {
-//                                Sound.systemSound(true, 0);
-//                            }
-//                            break;
-//                        case YELLOW:
-//                            for (int i = 0; i < 3; i++) {
-//                                Sound.systemSound(true, 0);
-//                            }
-//                            break;
-//                        case GREEN:
-//                            for (int i = 0; i < 2; i++) {
-//                                Sound.systemSound(true, 0);
-//                            }
-//                            break;
-//                        case BLUE:
-//                            Sound.systemSound(true, 0);
-//                            break;
-//                        }
-//                    }
+                    Beeper.colourAndWeightBeep(canIsHeavy, canColour);
+                    
                     // if this is the can colour we're looking for
                     if (canColour == searchCanColour) {
                         navigator.travelBackToStartingCorner();
@@ -279,19 +234,10 @@ public class CanSearch {
                         // check to see if there is still enough time left to look for cans
                         if (timeTracker.outOfTime()) {
                             System.out.println("RAN OUT OF TIME!");
-                            navigator.travelToSearchZoneUR();
-                            Beeper.arrivedAtSearchUR();
+                            navigator.travelBackToStartingCorner();
                             return true;
                         }
-                        navigator.travelToSafeZone();
-                        navigator.goToDumpPoint();
-                        claw.openClaw();
-                        movCon.driveDistance(-TILE_LENGTH);
-                        claw.closeClaw();
-                        // TODO for demo only
-                        movCon.travelTo(P_SZ_LL[0], P_SZ_LL[1], false);
-                        localizer.completeQuickLocalization();
-                        claw.openClaw();
+                        dumpCan();
                         continue;
                     }
                 } else {
@@ -302,12 +248,16 @@ public class CanSearch {
             }
         }
         if (currentPos >= scanningPoints.size()) {
-            movCon.travelTo(P_SZ_UR[0], P_SZ_UR[1], false);
-            Beeper.arrivedAtSearchUR();
+            navigator.travelBackToStartingCorner();
             return true;
         } else {
             return false;
         }
+    }
+
+    private void dumpCan() {
+        // TODO Auto-generated method stub
+        
     }
 
     /**

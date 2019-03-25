@@ -207,7 +207,7 @@ public class Main {
         claw.closeClaw();
         navigator.travelToTunnel(true);
         // travel through the tunnel
-        navigator.throughTunnel(true);
+        navigator.travelThroughTunnel(true);
         // travel to search zone LL
         navigator.travelToSearchZoneLL();
         Beeper.arrivedAtSearchLL();

@@ -1,5 +1,6 @@
 package ca.mcgill.ecse211.strategies;
 
+import ca.mcgill.ecse211.detectors.CanColour;
 import lejos.hardware.Sound;
 
 /**
@@ -31,6 +32,11 @@ public class Beeper {
             Sound.beep();
             Sound.pause(100);
         }
+    }
+
+    public static void colourAndWeightBeep(boolean canIsHeavy, CanColour canColour) {
+        // TODO Auto-generated method stub
+        
     }
     
 }
