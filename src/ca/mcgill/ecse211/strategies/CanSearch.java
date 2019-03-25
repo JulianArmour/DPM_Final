@@ -48,7 +48,6 @@ public class CanSearch {
     private float[]              P_SZ_UR;
     private int                  currentPos;
     private CanColour            searchCanColour;
-    private int 				 NUMBER_OF_Y_ITERATIONS;
     
     
 
@@ -111,85 +110,34 @@ public class CanSearch {
      * @author Alice Kazarine
      */
     public void setScanPositions() {
-        // calculates the padded search area
-        //float[] paddedSearchZone_LL = { (SZ_LL[0] - 1)*TILE_LENGTH, (SZ_LL[1] - 1)*TILE_LENGTH };
-        //float[] paddedSearchZone_UR = { (SZ_UR[0] + 1)*TILE_LENGTH, (SZ_UR[1] + 1)*TILE_LENGTH };
-    	
-    	
         // calculates the width and the height of the padded search area
         deltaX = SZ_UR[0] - SZ_LL[0];
         deltaY = SZ_UR[1] - SZ_LL[1];
         
-        NUMBER_OF_Y_ITERATIONS =  (int) (deltaY/SCAN_RADIUS);
+        int nYPoints = (int) (deltaY/SCAN_RADIUS);
+        int nXPoints = (int) (deltaX/SCAN_RADIUS);
 
         // if starting from the RHP
         if (startCorner == 1 || startCorner == 2) {
-
-            for (int i = 0; i < 3; i++) {
-                for (int j = 0; j < NUMBER_OF_Y_ITERATIONS; j++) {
+            for (int i = 0; i <= nXPoints; i++) {
+                for (int j = 0; j <= nYPoints; j++) {
                     float[] nextPos = new float[2];
-
-                    if (i == 0 && j == 0) {
-
-                        nextPos[0] = SZ_UR[0] * TILE_LENGTH;
-                        nextPos[1] = SZ_LL[1] * TILE_LENGTH;
-                    }
-
-                    else if (i == 0) {
-
-                        nextPos[0] = SZ_UR[0] * TILE_LENGTH;
-                        nextPos[1] = (SZ_LL[1] + 2) * TILE_LENGTH;
-                    }
-
-                    else if (j == 0) {
-
-                        nextPos[1] = SZ_LL[1] * TILE_LENGTH;
-                        nextPos[0] = (SZ_UR[0] - 2) * TILE_LENGTH;
-
-                    }
-
-                    else {
-
-                        nextPos[0] = (SZ_UR[0] - 2) * TILE_LENGTH;
-                        nextPos[1] = (SZ_LL[1] + 2) * TILE_LENGTH;
-                    }
+                    nextPos[0] = SZ_LL[0] + (nXPoints-i)*SCAN_RADIUS;
+                    nextPos[1] = SZ_LL[1] + j*SCAN_RADIUS;
                     scanningPoints.add(nextPos);
                 }
             }
         }
-
         // if starting from the LHP
-        if (startCorner == 3 || startCorner == 0) {
-
-            for (int i = 0; i < 3; i++) {
-                for (int j = 0; j < NUMBER_OF_Y_ITERATIONS; j++) {
+        else if (startCorner == 3 || startCorner == 0) {
+            for (int i = 0; i <= nXPoints; i++) {
+                for (int j = 0; j <= nYPoints; j++) {
                     float[] nextPos = new float[2];
-
-                    if (i == 0 && j == 0) {
-
-                        nextPos[0] = SZ_LL[0] * TILE_LENGTH;
-                        nextPos[1] = SZ_LL[1] * TILE_LENGTH;
-                       
-                    }
-                    else if (i == 0) {
-
-                        nextPos[0] = SZ_LL[0];
-                        nextPos[1] = (SZ_LL[1] + 2) * TILE_LENGTH;
-                    }
-                    else if (j == 0) {
-
-                        nextPos[1] = SZ_LL[1];
-                        nextPos[0] = (SZ_LL[0] + 2) * TILE_LENGTH;
-                    } else {
-
-                        nextPos[0] = (SZ_LL[0] + 2) * TILE_LENGTH;
-                        nextPos[1] = (SZ_LL[1] + 2) * TILE_LENGTH;
-                    }
-
+                    nextPos[0] = SZ_LL[0] + i*SCAN_RADIUS;
+                    nextPos[1] = SZ_LL[1] + j*SCAN_RADIUS;
                     scanningPoints.add(nextPos);
                 }
             }
-
         }
     }
 
