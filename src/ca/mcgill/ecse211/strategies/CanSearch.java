@@ -47,6 +47,9 @@ public class CanSearch {
     private float[]              P_SZ_UR;
     private int                  currentPos;
     private CanColour            searchCanColour;
+    private int 				 NUMBER_OF_Y_ITERATIONS;
+    
+    
 
     
     /**
@@ -108,43 +111,46 @@ public class CanSearch {
      */
     public void setScanPositions() {
         // calculates the padded search area
-        float[] paddedSearchZone_LL = { (SZ_LL[0] - 1)*TILE_LENGTH, (SZ_LL[1] - 1)*TILE_LENGTH };
-        float[] paddedSearchZone_UR = { (SZ_UR[0] + 1)*TILE_LENGTH, (SZ_UR[1] + 1)*TILE_LENGTH };
-
+        //float[] paddedSearchZone_LL = { (SZ_LL[0] - 1)*TILE_LENGTH, (SZ_LL[1] - 1)*TILE_LENGTH };
+        //float[] paddedSearchZone_UR = { (SZ_UR[0] + 1)*TILE_LENGTH, (SZ_UR[1] + 1)*TILE_LENGTH };
+    	
+    	
         // calculates the width and the height of the padded search area
-        deltaX = paddedSearchZone_UR[0] - paddedSearchZone_LL[0];
-        deltaY = paddedSearchZone_UR[1] - paddedSearchZone_LL[1];
+        deltaX = SZ_UR[0] - SZ_LL[0];
+        deltaY = SZ_UR[1] - SZ_LL[1];
+        
+        NUMBER_OF_Y_ITERATIONS =  (int) (deltaY/SCAN_RADIUS);
 
         // if starting from the RHP
         if (startCorner == 1 || startCorner == 2) {
 
             for (int i = 0; i < 3; i++) {
-                for (int j = 0; j < 3; j++) {
+                for (int j = 0; j < NUMBER_OF_Y_ITERATIONS; j++) {
                     float[] nextPos = new float[2];
 
                     if (i == 0 && j == 0) {
 
-                        nextPos[0] = paddedSearchZone_UR[0] - TILE_LENGTH / 2;
-                        nextPos[1] = paddedSearchZone_LL[1] + TILE_LENGTH / 2;
+                        nextPos[0] = SZ_UR[0] * TILE_LENGTH;
+                        nextPos[1] = SZ_LL[1] * TILE_LENGTH;
                     }
 
                     else if (i == 0) {
 
-                        nextPos[0] = paddedSearchZone_UR[0] - TILE_LENGTH / 2;
-                        nextPos[1] = paddedSearchZone_LL[1] + j * (deltaY / SCAN_RADIUS) * TILE_LENGTH;
+                        nextPos[0] = SZ_UR[0] * TILE_LENGTH;
+                        nextPos[1] = (SZ_LL[1] + 2) * TILE_LENGTH;
                     }
 
                     else if (j == 0) {
 
-                        nextPos[1] = paddedSearchZone_LL[1] + TILE_LENGTH / 2;
-                        nextPos[0] = paddedSearchZone_UR[0] - i * (deltaX / SCAN_RADIUS) * TILE_LENGTH;
+                        nextPos[1] = SZ_LL[1] * TILE_LENGTH;
+                        nextPos[0] = (SZ_UR[0] - 2) * TILE_LENGTH;
 
                     }
 
                     else {
 
-                        nextPos[0] = paddedSearchZone_UR[0] - i * (deltaX / SCAN_RADIUS) * TILE_LENGTH;
-                        nextPos[1] = paddedSearchZone_LL[1] + j * (deltaY / SCAN_RADIUS) * TILE_LENGTH;
+                        nextPos[0] = (SZ_UR[0] - 2) * TILE_LENGTH;
+                        nextPos[1] = (SZ_LL[1] + 2) * TILE_LENGTH;
                     }
                     scanningPoints.add(nextPos);
                 }
@@ -155,37 +161,34 @@ public class CanSearch {
         if (startCorner == 3 || startCorner == 0) {
 
             for (int i = 0; i < 3; i++) {
-                for (int j = 0; j < 3; j++) {
+                for (int j = 0; j < NUMBER_OF_Y_ITERATIONS; j++) {
                     float[] nextPos = new float[2];
 
                     if (i == 0 && j == 0) {
 
-                        nextPos[0] = paddedSearchZone_LL[0] + TILE_LENGTH / 2;
-                        nextPos[1] = paddedSearchZone_LL[1] + TILE_LENGTH;
-                        System.out.println("Set safe point: " + nextPos[0] + " " + nextPos[1]);
+                        nextPos[0] = SZ_LL[0] * TILE_LENGTH;
+                        nextPos[1] = SZ_LL[1] * TILE_LENGTH;
+                       
                     }
                     else if (i == 0) {
 
-                        nextPos[0] = paddedSearchZone_LL[0] + TILE_LENGTH / 2;
-                        nextPos[1] = paddedSearchZone_LL[1] + j * (deltaY / SCAN_RADIUS) * TILE_LENGTH;
+                        nextPos[0] = SZ_LL[0];
+                        nextPos[1] = (SZ_LL[1] + 2) * TILE_LENGTH;
                     }
                     else if (j == 0) {
 
-                        nextPos[1] = paddedSearchZone_LL[1] + TILE_LENGTH / 2;
-                        nextPos[0] = paddedSearchZone_LL[0] + i * (deltaX / SCAN_RADIUS) * TILE_LENGTH;
+                        nextPos[1] = SZ_LL[1];
+                        nextPos[0] = (SZ_LL[0] + 2) * TILE_LENGTH;
                     } else {
 
-                        nextPos[0] = paddedSearchZone_LL[0] + i * (deltaX / SCAN_RADIUS) * TILE_LENGTH;
-                        nextPos[1] = paddedSearchZone_LL[1] + j * (deltaY / SCAN_RADIUS) * TILE_LENGTH;
+                        nextPos[0] = (SZ_LL[0] + 2) * TILE_LENGTH;
+                        nextPos[1] = (SZ_LL[1] + 2) * TILE_LENGTH;
                     }
 
                     scanningPoints.add(nextPos);
                 }
             }
 
-        }
-        for(int i = 0; i < scanningPoints.size(); i++) {
-        	System.out.println("Scan point " + i + ": " + scanningPoints.get(i)[0] + " " + scanningPoints.get(i)[1]);
         }
     }
 
