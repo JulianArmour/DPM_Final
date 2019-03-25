@@ -76,6 +76,8 @@ public class Navigator {
     }
 
     /**
+     * @deprecated was used for the demo
+     * 
      * Causes the robot to travel to the upper right corner of the search zone. This
      * method is meant to be called from within the search zone.
      * 
@@ -105,8 +107,34 @@ public class Navigator {
         move.turnTo(move.roundAngle());
         localizer.completeQuickLocalization();
     }
+    
+    /**
+     * @author Julian Armour
+     * @since March 25, 2019
+     */
+    public void travelToSearchZone() {
+        double[] curPos = odo.getXYT();
+        // travel to half a tile under searchZoneLL's y-coordinate
+        move.turnTo(move.calculateAngle(curPos[0], curPos[1], curPos[0], (searchZoneLL[1]) * tileSize));
+        localizer.quickLocalization();
+        move.travelTo(curPos[0], (searchZoneLL[1]) * tileSize, false);
+        localizer.quickLocalization();
+        move.driveDistance(-lightSensorToWheelbase, false);
+        curPos = odo.getXYT();
+        // move to first scan point
+        float[] firstScanPoint = CanSearch.getScanningPoints().get(0);
+        // fast localization to straighten
+        move.turnTo(move.calculateAngle(curPos[0], curPos[1], firstScanPoint[0], firstScanPoint[1]));
+        localizer.quickLocalization();
+        // now go
+        move.travelTo(firstScanPoint[0], firstScanPoint[1], false);
+        // completely localize before scanning.
+        localizer.completeQuickLocalization();
+    }
 
     /**
+     * @deprecated was used for the demo
+     * 
      * Causes the robot to travel to the lower left corner of the search zone. This
      * method should be called after the robot crosses the tunnel and localizes.
      * 
