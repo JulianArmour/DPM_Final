@@ -196,6 +196,7 @@ public class CanSearch {
         return scanningPoints;
     }
 
+    
     /**
      * Scans for remaining cans
      * 
