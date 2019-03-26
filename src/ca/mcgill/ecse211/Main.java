@@ -188,6 +188,9 @@ public class Main {
                 localizer, timeTracker, canColour, searchzone_LL, searchzone_UR, tunnel_LL, tunnel_UR, island_LL, island_UR,
                 startingCorner, (float) (2 * TILE_SIZE), TILE_SIZE
         );
+        // inject canSearch into Navigator through setter because of mutual dependency
+        navigator.setCanSearcher(canSearch);
+        
         weightDetector = new WeightDetector(clawMotor, movementController, TILE_SIZE);
         
         run();

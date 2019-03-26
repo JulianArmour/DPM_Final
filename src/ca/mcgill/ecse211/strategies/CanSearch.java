@@ -42,11 +42,11 @@ public class CanSearch {
     private float                TILE_LENGTH;
     private float                deltaX, deltaY;
     private float                SCAN_RADIUS;
-    private static List<float[]> scanningPoints  = new LinkedList<float[]>();
-    private static List<float[]> dumpingPoints = new LinkedList<float[]>();
+    private List<float[]>        scanningPoints  = new LinkedList<float[]>();
+    private List<float[]>        dumpingPoints = new LinkedList<float[]>();
     private float[]              P_SZ_LL;
     private float[]              P_SZ_UR;
-    private int                  currentPos;
+    private int                  currentScanPoint;
     private CanColour            searchCanColour;
     
     
@@ -100,7 +100,7 @@ public class CanSearch {
         this.searchCanColour = searchCanColour;
         this.TILE_LENGTH = (float) tileLength;
         this.SCAN_RADIUS = scanRadius;
-        this.currentPos = 0;
+        this.currentScanPoint = 0;
     }
 
     /**
@@ -140,11 +140,37 @@ public class CanSearch {
         }
     }
 
-    public static List<float[]> getScanningPoints() {
+    /**
+     * 
+     * @return all the scanning positions
+     * 
+     * @author Julian Armour
+     */
+    public List<float[]> getScanningPoints() {
         return scanningPoints;
+    }
+    
+    /**
+     * 
+     * @return all the possible dumping positions
+     * 
+     * @author Julian Armour
+     */
+    public List<float[]> getDumpingPoints() {
+        return dumpingPoints;
     }
 
     
+    /**
+     * @return the current scan point
+     * 
+     * @author Julian Armour
+     * @since March 26, 2019
+     */
+    public float[] getCurrentScanPoint() {
+        return scanningPoints.get(currentScanPoint);
+    }
+
     /**
      * Scans for remaining cans
      * 
@@ -154,14 +180,14 @@ public class CanSearch {
      * @since March 18, 2019
      */
     public boolean scanZones() {
-        while (currentPos < scanningPoints.size()) {
+        while (currentScanPoint < scanningPoints.size()) {
             // check to see if there isn't still enough time left to look for cans
             if (timeTracker.outOfTime()) {
                 System.out.println("RAN OUT OF TIME!");
                 navigator.travelBackToStartingCorner();
                 return true;
             }
-            movCon.travelTo(scanningPoints.get(currentPos)[0], scanningPoints.get(currentPos)[1], false);
+            movCon.travelTo(scanningPoints.get(currentScanPoint)[0], scanningPoints.get(currentScanPoint)[1], false);
             claw.openClaw();
             float[] canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 359, SCAN_RADIUS);
             if (canPos != null) {
@@ -195,10 +221,10 @@ public class CanSearch {
                     continue;
                 }
             } else {
-                currentPos += 1;
+                currentScanPoint += 1;
             }
         }
-        if (currentPos >= scanningPoints.size()) {
+        if (currentScanPoint >= scanningPoints.size()) {
             navigator.travelBackToStartingCorner();
             return true;
         } else {
@@ -207,8 +233,8 @@ public class CanSearch {
     }
 
     private void dumpCan() {
-        // TODO Auto-generated method stub
-        
+        navigator.travelToNearestDumpingPoint();
+        //TODO
     }
 
     /**

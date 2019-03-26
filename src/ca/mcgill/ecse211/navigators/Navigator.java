@@ -1,5 +1,6 @@
 package ca.mcgill.ecse211.navigators;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class Navigator {
     private MovementController move;
     private Odometer           odo;
     private Localization       localizer;
+    private CanSearch          canSearcher;
     // fields
     private float              tileSize;
     private int                TLLX, TLLY, TURX, TURY, STZLLX, STZLLY, STZURX, STZURY, ILLX, ILLY, IURX, IURY;
@@ -74,6 +76,16 @@ public class Navigator {
         this.tileSize = tileSize;
 
     }
+    
+    /**
+     * @param canSearch a {@link CanSearch} object
+     * 
+     * @author Julian Armour
+     * @since March 26, 2019
+     */
+    public void setCanSearcher(CanSearch canSearch) {
+        this.canSearcher = canSearch;
+    }
 
     /**
      * @deprecated was used for the demo
@@ -87,7 +99,7 @@ public class Navigator {
     public void travelToSearchZoneUR() {
         // travel to the first scan zone, which is outside the searchzone. This is a
         // safe movement since there shouldn't be any cans in the way
-        float[] safePoint = CanSearch.getScanningPoints().get(0);
+        float[] safePoint = canSearcher.getScanningPoints().get(0);
         move.travelTo(safePoint[0], safePoint[1], false);
         // face north and correct odometer
         move.turnTo(0);
@@ -122,7 +134,7 @@ public class Navigator {
         move.driveDistance(-lightSensorToWheelbase, false);
         curPos = odo.getXYT();
         // move to first scan point
-        float[] firstScanPoint = CanSearch.getScanningPoints().get(0);
+        float[] firstScanPoint = canSearcher.getScanningPoints().get(0);
         // fast localization to straighten
         move.turnTo(move.calculateAngle(curPos[0], curPos[1], firstScanPoint[0], firstScanPoint[1]));
         localizer.quickLocalization();
@@ -175,13 +187,72 @@ public class Navigator {
     }
 	
     /**
-     * Travels the robot to the first scanning point
+     * Travels the robot to the current scanning point.
      * 
      * @author Julian Armour
-     * @since March 18, 2019
+     * @since March 26, 2019
      */
-    public void travelToSafeZone() {
-        move.travelTo(CanSearch.getScanningPoints().get(0)[0], CanSearch.getScanningPoints().get(0)[1], false);
+    public void travelToCurrentScanPoint() {
+        float[] curScanPt = canSearcher.getCurrentScanPoint();
+        move.travelTo(curScanPt[0], curScanPt[1], false);
+    }
+    
+    /**
+     * determines if a point is intersecting the tunnel
+     * 
+     * @param p
+     *            the point that's checked
+     * @return true if a point is intersecting the tunnel
+     * 
+     * @author Julian Armour
+     * @since March 26, 2019
+     */
+    private boolean pointIsOnTunnel(float[] p) {
+        if (p[0] < TLLX * tileSize || p[0] > TURX * tileSize)
+            return false;
+        else if (p[1] < TLLY * tileSize || p[1] > TURY * tileSize)
+            return false;
+        else
+            return true;
+    }
+    
+    /**
+     * Finds the nearest dumping point and makes the robot travel to it.
+     * It checks if a dump point is on the tunnel, in which case it ignores it
+     * 
+     * @author Julian Armour
+     * @since March 26, 2019
+     */
+    public void travelToNearestDumpingPoint() {
+        // TODO find the closest dumping point that's not on the tunnel and move to it.
+        float[] closestPoint = null;
+        
+        List<float[]> dumpointPoints = canSearcher.getDumpingPoints();
+        Iterator<float[]> it = dumpointPoints.iterator();
+        while (it.hasNext()) {
+            if (closestPoint == null) {
+                closestPoint = it.next();
+            }
+            float[] p = (float[]) it.next();
+            if (!pointIsOnTunnel(p)) {// point p isn't on the tunnel
+                // compare distances current closest point with p
+                double[] curPos = odo.getXYT();
+                // no need for sqrt when simply checking which is larger 
+                double dCurSquared = Math.pow(closestPoint[0]-curPos[0], 2)+Math.pow(closestPoint[1]-curPos[1], 2);
+                double dPSquared = Math.pow(closestPoint[0]-p[0], 2)+Math.pow(closestPoint[1]-p[1], 2);
+                if (dPSquared < dCurSquared) {
+                    closestPoint = p;
+                }
+            }
+        }
+        // after finding closest point, travel to it
+        move.travelTo(closestPoint[0], closestPoint[1], false);
+        // face 270 or 90 depending on starting corner
+        if (SC == 0 || SC == 3) {
+            move.turnTo(270);//face West
+        } else {
+            move.turnTo(90);//face East
+        }
     }
     
     /**
