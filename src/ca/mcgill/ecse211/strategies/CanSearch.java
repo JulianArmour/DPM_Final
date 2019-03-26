@@ -120,12 +120,21 @@ public class CanSearch {
         for (int i = 0; i <= nXPoints; i++) {
             for (int j = 0; j <= nYPoints; j++) {
                 float[] nextPos = new float[2];
+                
+                nextPos[1] = SZ_LL[1] + j*SCAN_RADIUS;
                 if (startCorner == 1 || startCorner == 2) {
                     nextPos[0] = SZ_LL[0] + (nXPoints-i)*SCAN_RADIUS;
-                } else {
+                    // set the dumping points depending on searchpoints
+                    if (i == 0) {
+                        dumpingPoints.add(new float[] { nextPos[0]+TILE_LENGTH/2 , nextPos[1]});
+                    }
+                } else {//startCorner = 0 or 3
                     nextPos[0] = SZ_LL[0] + i*SCAN_RADIUS;
+                    // set the dumping points depending on searchpoints
+                    if (i == 0) {
+                        dumpingPoints.add(new float[] { nextPos[0]-TILE_LENGTH/2 , nextPos[1]});
+                    }
                 }
-                nextPos[1] = SZ_LL[1] + j*SCAN_RADIUS;
                 scanningPoints.add(nextPos);
             }
         }
