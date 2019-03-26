@@ -13,7 +13,6 @@ import ca.mcgill.ecse211.navigators.MovementController;
 import ca.mcgill.ecse211.navigators.Navigator;
 import ca.mcgill.ecse211.odometer.Odometer;
 import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
-import lejos.hardware.Sound;
 import lejos.utility.Delay;
 
 /**
@@ -305,12 +304,7 @@ public class CanSearch {
      */
     public float[] fastCanScan(float[] searchLL, float[] searchUR, double sweepAngle, float scanRadius) {
         // let other threads have some time before we start polling a lot
-        //TODO replace with Delay later
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            System.out.println("sleep interrupted");
-        }
+        Delay.msDelay(500);
         claw.openClaw();
         double[] robotPos = odo.getXYT();
         // start rotating clockwise
@@ -348,12 +342,7 @@ public class CanSearch {
                     double meanDist = 0;
                     for (int i = 0; i < 10; i++) {
                         meanDist += (double) USData.getFilteredDistance();
-                        //TODO replace with Delay later
-                        try {
-                            Thread.sleep(30);
-                        } catch (InterruptedException e) {
-                            System.out.println("sleep interrupted");
-                        }
+                        Delay.msDelay(30);
                     }
                     meanDist /= 10;
                     angle = odo.getXYT()[2];
@@ -361,12 +350,7 @@ public class CanSearch {
                     position[1] = (float) (meanDist * Math.cos(Math.toRadians(angle)) + robotPos[1]);
                     if (inSearchZone(position, searchLL, searchUR)) {
                         // let other threads have some time before the next movement
-                        //TODO replace with Delay later
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                            System.out.println("sleep interrupted");
-                        }
+                        Delay.msDelay(500);
                         // true positive, return
                         return position;
                     } else {
@@ -376,20 +360,10 @@ public class CanSearch {
                     }
                 }
             }
-
-            try {
-                Thread.sleep(CAN_SCAN_PERIOD);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            Delay.msDelay(CAN_SCAN_PERIOD);
         }
-
         // let other threads have some time before the next movement
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        Delay.msDelay(500);
         return null;
     }
 
@@ -419,12 +393,7 @@ public class CanSearch {
                     if (dist <= SCAN_RADIUS) {
                         angleDistData.add(new float[] { angle, dist });
                     }
-
-                    try {
-                        Thread.sleep(CAN_SCAN_PERIOD);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    Delay.msDelay(CAN_SCAN_PERIOD);
                 }
             }
 

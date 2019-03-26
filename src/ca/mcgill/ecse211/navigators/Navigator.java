@@ -121,27 +121,39 @@ public class Navigator {
     }
     
     /**
+     * Makes the robot travel to the current scan point in the search zone.
+     * 
+     * @see CanSearch#getCurrentScanPoint()
+     * 
      * @author Julian Armour
      * @since March 25, 2019
      */
     public void travelToSearchZone() {
+        float[] currentScanPoint = canSearcher.getCurrentScanPoint();
         double[] curPos = odo.getXYT();
-        // travel to half a tile under searchZoneLL's y-coordinate
-        move.turnTo(move.calculateAngle(curPos[0], curPos[1], curPos[0], (searchZoneLL[1]) * tileSize));
+        double[] dest = new double[2];
+        
+        // either approach from the right or left, depending on the starting corner
+        if (SC == 1 || SC == 2) {
+            dest[0] = currentScanPoint[0] + tileSize/2;
+        } else {
+            dest[0] = currentScanPoint[0] - tileSize/2;
+        }
+        dest[1] = curPos[1];//keep the y-pos the same
+        // travel w.r.t current scan point's x-pos
+        move.turnTo(move.calculateAngle(curPos[0], curPos[1], dest[0], dest[1]));
         localizer.quickLocalization();
-        move.travelTo(curPos[0], (searchZoneLL[1]) * tileSize, false);
-        localizer.quickLocalization();
-        move.driveDistance(-lightSensorToWheelbase, false);
+        move.travelTo(dest[0], dest[1], false);
+        // set dest w.r.t current scan point's y-pos
         curPos = odo.getXYT();
-        // move to first scan point
-        float[] firstScanPoint = canSearcher.getScanningPoints().get(0);
-        // fast localization to straighten
-        move.turnTo(move.calculateAngle(curPos[0], curPos[1], firstScanPoint[0], firstScanPoint[1]));
+        dest[0] = curPos[0];
+        dest[1] = currentScanPoint[1];
+        // travel w.r.t current scan point's y-pos
+        move.turnTo(move.calculateAngle(curPos[0], curPos[1], dest[0], dest[1]));
         localizer.quickLocalization();
-        // now go
-        move.travelTo(firstScanPoint[0], firstScanPoint[1], false);
-        // completely localize before scanning.
-        localizer.completeQuickLocalization();
+        move.travelTo(dest[0], dest[1], false);
+        // finally travel to the current scan point
+        move.travelTo(currentScanPoint[0], currentScanPoint[1], false);
     }
 
     /**
@@ -186,17 +198,6 @@ public class Navigator {
         localizer.completeQuickLocalization();
     }
 	
-    /**
-     * Travels the robot to the current scanning point.
-     * 
-     * @author Julian Armour
-     * @since March 26, 2019
-     */
-    public void travelToCurrentScanPoint() {
-        float[] curScanPt = canSearcher.getCurrentScanPoint();
-        move.travelTo(curScanPt[0], curScanPt[1], false);
-    }
-    
     /**
      * determines if a point is intersecting the tunnel
      * 
@@ -264,6 +265,9 @@ public class Navigator {
      *            Boolean, if true, robot is going to the tunnel from the starting
      *            zone, if false the robot is going to the tunnel from the search
      *            zone
+     *            
+     * @author Cedric Barre
+     * @since March 25, 2019
      */
 	public void travelToTunnel(boolean direction) {
 
@@ -429,6 +433,9 @@ public class Navigator {
 	/**
 	 * Travel across the tunnel from front to back or from back to front
 	 * @param direction Boolean: if true, the robot is going from starting zone to search zone, if false, the robot is going from search zone to starting zone
+	 * 
+	 * @author Cedric Barre
+	 * @since March 9, 2019
 	 */
 	public void travelThroughTunnel(boolean direction) {
 		int posCorX = 0, posCorY = 0;

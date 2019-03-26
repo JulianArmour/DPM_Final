@@ -1,6 +1,7 @@
 package ca.mcgill.ecse211.navigators;
 
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.utility.Delay;
 import ca.mcgill.ecse211.odometer.Odometer;
 
 /**
@@ -377,8 +378,8 @@ public class MovementController {
     /**
      * Travels the robot to a spefic position (x,y)
      * 
-     * @param x
-     * @param y
+     * @param x the physical x position
+     * @param y the physical y position
      */
     public void travelTo(double x, double y, boolean immediateReturn) {
 
@@ -387,14 +388,8 @@ public class MovementController {
         turnTo(angleToTurn);
 
         // give the robot some time to stop
-        try {
-            Thread.sleep(250);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
+        Delay.msDelay(250);
         driveDistance(calculateDistance(odometer.getXYT()[0], odometer.getXYT()[1], x, y), immediateReturn);
-
     }
 
     /**
