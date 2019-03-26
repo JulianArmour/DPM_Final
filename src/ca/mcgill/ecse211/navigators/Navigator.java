@@ -218,13 +218,14 @@ public class Navigator {
     
     /**
      * Finds the nearest dumping point and makes the robot travel to it.
-     * It checks if a dump point is on the tunnel, in which case it ignores it
+     * It checks if a dump point is on the tunnel, in which case it ignores it.
+     * <p>
+     * The robot will end with orientation of either 270 (SC = 0|3) or 90 (SC = 1|2) degrees.
      * 
      * @author Julian Armour
      * @since March 26, 2019
      */
     public void travelToNearestDumpingPoint() {
-        // TODO find the closest dumping point that's not on the tunnel and move to it.
         float[] closestPoint = null;
         
         List<float[]> dumpointPoints = canSearcher.getDumpingPoints();

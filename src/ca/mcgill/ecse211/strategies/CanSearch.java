@@ -188,6 +188,7 @@ public class CanSearch {
                 return true;
             }
             movCon.travelTo(scanningPoints.get(currentScanPoint)[0], scanningPoints.get(currentScanPoint)[1], false);
+            localizer.quickLocalization();
             claw.openClaw();
             float[] canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 359, SCAN_RADIUS);
             if (canPos != null) {
@@ -207,14 +208,15 @@ public class CanSearch {
                     // if this is the can colour we're looking for
                     if (canColour == searchCanColour) {
                         navigator.travelBackToStartingCorner();
-                    } else { // wrong colour, discard it outside the search zone
+                    } else { 
+                        // wrong colour, discard it outside the search zone
+                        dumpCan();
                         // check to see if there is still enough time left to look for cans
                         if (timeTracker.outOfTime()) {
                             System.out.println("RAN OUT OF TIME!");
                             navigator.travelBackToStartingCorner();
                             return true;
                         }
-                        dumpCan();
                         continue;
                     }
                 } else {
@@ -232,9 +234,19 @@ public class CanSearch {
         }
     }
 
+    /**
+     * Discards a can at the nearest dumping zone.
+     * 
+     * @author Julian Armour
+     * @since March 26, 2019
+     */
     private void dumpCan() {
         navigator.travelToNearestDumpingPoint();
-        //TODO
+        claw.openClaw();
+        movCon.driveDistance(-TILE_LENGTH/2, false);
+        claw.closeClaw();
+        movCon.rotateAngle(180, true);
+        localizer.quickLocalization();
     }
 
     /**
