@@ -176,8 +176,6 @@ public class ColourDetector implements TimerListener {
 		
 		return dataCanColor;
 		
-		
-		
 	}
 	
 }
