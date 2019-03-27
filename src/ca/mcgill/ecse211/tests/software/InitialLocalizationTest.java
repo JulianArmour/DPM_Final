@@ -169,8 +169,8 @@ public class InitialLocalizationTest {
         timeTracker = new TimeTracker(45, 300);
         canSearch = new CanSearch(
                 odometer, movementController, navigator, medianDistanceSensor, claw, weightDetector, colourDetector,
-                localizer, timeTracker, canColour, searchzone_LL, searchzone_UR, TLL, TUR, ILL, IUR, SC, (float) (2 * TILE_LENGTH),
-                TILE_LENGTH
+                localizer, timeTracker, canColour, searchzone_LL, searchzone_UR, TLL, TUR, ILL, IUR, SC,
+                2, TILE_LENGTH
         );
 
         localEV3 = (LocalEV3) LocalEV3.get();

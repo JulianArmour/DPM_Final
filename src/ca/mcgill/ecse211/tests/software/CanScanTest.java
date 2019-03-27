@@ -30,7 +30,7 @@ public class CanScanTest {
     public static final double             WHEEL_RAD     = Main.WHEEL_RAD;
     public static final double             TRACK         = Main.TRACK;
     public static final int                SC            = 3;
-    public static final float             TILE_LENGTH   = Main.TILE_SIZE;
+    public static final float              TILE_LENGTH   = Main.TILE_SIZE;
 
     private static Port                    USPort;
     private static EV3UltrasonicSensor     ultrasonicSensor;
@@ -169,8 +169,8 @@ public class CanScanTest {
         timeTracker = new TimeTracker(45, 300);
         canSearch = new CanSearch(
                 odometer, movementController, navigator, medianDistanceSensor, claw, weightDetector, colourDetector,
-                localizer, timeTracker, canColour, searchzone_LL, searchzone_UR, TLL, TUR, ILL, IUR, SC, (float) (2 * TILE_LENGTH),
-                TILE_LENGTH
+                localizer, timeTracker, canColour, searchzone_LL, searchzone_UR, TLL, TUR, ILL, IUR, SC,
+                2*TILE_LENGTH, TILE_LENGTH
         );
 
         localEV3 = (LocalEV3) LocalEV3.get();
@@ -193,7 +193,7 @@ public class CanScanTest {
         
         // single scan below
         
-        float[] possiblePos = canSearch.fastCanScan(P_SZ_LL, P_SZ_UR, (double)355, (float) (2*TILE_LENGTH));
+        float[] possiblePos = canSearch.fastCanScan(P_SZ_LL, P_SZ_UR, (double)359, 2*TILE_LENGTH);
         if(possiblePos == null) {
         	System.out.println("NOT FOUND");
         } else {

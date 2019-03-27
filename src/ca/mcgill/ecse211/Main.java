@@ -30,8 +30,8 @@ import lejos.hardware.sensor.SensorMode;
 import lejos.utility.Delay;
 
 public class Main {
-    private static final String            SERVER_IP               = "192.168.2.8"; // for beta and competition
-//    private static final String            SERVER_IP               = "192.168.43.112"; // for personal testing
+//    private static final String            SERVER_IP               = "192.168.2.8"; // for beta and competition
+    private static final String            SERVER_IP               = "192.168.43.112"; // for personal testing
 
     private static final int               TEAM_NUMBER             = 3;
 
@@ -161,16 +161,17 @@ public class Main {
         
         movementController = new MovementController(leftMotor, rightMotor, WHEEL_RAD, TRACK, odometer);
         
-        timeTracker = new TimeTracker(45, 300);// when 45 seconds are remaining, go to searchZone_UR
+        weightDetector = new WeightDetector(clawMotor, movementController, TILE_SIZE);
+        
+        timeTracker = new TimeTracker(0, 300);// when 45 seconds are remaining, go to searchZone_UR
+        
+        // At this point we need wifi data
+        getWifiData();//TODO put in while loop
         
         localizer = new Localization(
                 movementController, odometer, medianDistanceSensor, leftLightDifferentialFilter,
                 rightLightDifferentialFilter, startingCorner
         );
-        
-        
-        // At this point we need wifi data
-        getWifiData();
         
         // start the time tracker
         timeTracker.start();
@@ -186,13 +187,11 @@ public class Main {
         canSearch = new CanSearch(
                 odometer, movementController, navigator, medianDistanceSensor, claw, weightDetector, colourDetector,
                 localizer, timeTracker, canColour, searchzone_LL, searchzone_UR, tunnel_LL, tunnel_UR, island_LL, island_UR,
-                startingCorner, (float) (2 * TILE_SIZE), TILE_SIZE
+                startingCorner, 2*TILE_SIZE, TILE_SIZE
         );
         // inject canSearch into Navigator through setter because of mutual dependency
         navigator.setCanSearcher(canSearch);
-        
-        weightDetector = new WeightDetector(clawMotor, movementController, TILE_SIZE);
-        
+
         run();
     }
     
@@ -210,6 +209,7 @@ public class Main {
         Beeper.localized();
         // go to the tunnel
         claw.closeClaw();
+        System.out.println("STARTING CORNER IS "+ startingCorner);
         navigator.travelToTunnel(true);
         // travel through the tunnel
         navigator.travelThroughTunnel(true);
@@ -282,6 +282,7 @@ public class Main {
             int startzone_LL_x, startzone_LL_y, startzone_UR_x, startzone_UR_y;
 
             if (redTeam == TEAM_NUMBER) {
+                System.out.println("WE ARE RED TEAM");
                 startingCorner = ((Long) data.get("RedCorner")).intValue();
                 canColour = CanColour.RED;
                
@@ -305,6 +306,7 @@ public class Main {
                 startzone_UR_x = ((Long) data.get("Red_UR_x")).intValue();
                 startzone_UR_y = ((Long) data.get("Red_UR_y")).intValue();
             } else {
+                System.out.println("WE ARE GREEN TEAM");
                 startingCorner = ((Long) data.get("GreenCorner")).intValue();
                 canColour = CanColour.GREEN;
                 

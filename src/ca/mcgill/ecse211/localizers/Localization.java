@@ -193,6 +193,7 @@ public class Localization {
     public void initialLightLocalization() {
         quickThetaCorrection();
 
+        System.out.println("switch1 SC = " + startingCorner);
         // set the x-position
         switch (startingCorner) {
         case 0:
@@ -216,6 +217,7 @@ public class Localization {
         quickThetaCorrection();
 
         // set the y-position
+        System.out.println("switch2 SC = " + startingCorner);
         switch (startingCorner) {
         case 0:
             odo.setX(Main.TILE_SIZE + Main.LT_SENSOR_TO_WHEELBASE);
@@ -233,6 +235,7 @@ public class Localization {
             break;
         }
         movCon.driveDistance(-1 * Main.LT_SENSOR_TO_WHEELBASE, FAST_SPEED, 1000, false);
+        System.out.println("Set the odo to: "+odo.getXYT()[0]+odo.getXYT()[1]);
     }
 
     /**
