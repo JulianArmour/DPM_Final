@@ -278,25 +278,23 @@ public class CanSearch {
      */
     public boolean travelToCan(float[] canPos) {
         double[] robotPos = odo.getXYT();
-        // travel robot ~15 cm in front of can
+        // travel robot ~18 cm in front of can
         movCon.turnTo(movCon.calculateAngle(robotPos[0], robotPos[1], canPos[0], canPos[1]));
-        movCon.driveDistance(movCon.calculateDistance(robotPos[0], robotPos[1], canPos[0], canPos[1]) - 15, false);
+        movCon.driveDistance(movCon.calculateDistance(robotPos[0], robotPos[1], canPos[0], canPos[1]) - 18, false);
         claw.openClaw();
-        // rotate counter-clockwise 45 degrees
         movCon.rotateAngle(90, false, false);
-        canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 180, 20);
+        canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 180, TILE_LENGTH);
         if (canPos == null) {
             return false;
         } else {
             // move forward until to appropriate distance for gripping the can
             USData.flush();
             float dist = USData.getFilteredDistance();
-            if (dist < TILE_LENGTH) {
+            if (dist < TILE_LENGTH*1.5) {
                 movCon.driveDistance(dist - Main.US_SENSOR_TO_CLAW, false);
             }
             return true;
         }
-
     }
 
     /**
@@ -357,7 +355,7 @@ public class CanSearch {
                     for (int i = 0; i < 10; i++) {
                         meanDist += (double) USData.getFilteredDistance();
                         try {
-                            Thread.sleep(30);
+                            Thread.sleep(CAN_SCAN_PERIOD);
                         } catch (InterruptedException e) {
                             System.out.println(":(");
                         }
@@ -368,6 +366,7 @@ public class CanSearch {
                     position[1] = (float) (meanDist * Math.cos(Math.toRadians(angle)) + robotPos[1]);
                     if (inSearchZone(position, searchLL, searchUR)) {
                         // true positive, return
+                        Delay.msDelay(500);
                         return position;
                     } else {
                         // false positive, keep scanning
@@ -382,6 +381,7 @@ public class CanSearch {
                 e.printStackTrace();
             }
         }
+        Delay.msDelay(500);
         return null;
     }
 
