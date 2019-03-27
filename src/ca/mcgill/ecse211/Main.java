@@ -264,7 +264,6 @@ public class Main {
         
         System.exit(0);
     }
-
     
     @SuppressWarnings("rawtypes")
     private static void getWifiData() {
@@ -282,26 +281,10 @@ public class Main {
             int searchzone_LL_y, searchzone_LL_x, searchzone_UR_x, searchzone_UR_y;
             int startzone_LL_x, startzone_LL_y, startzone_UR_x, startzone_UR_y;
 
-            redTeam = 3;//TODO Set for demo, remove later!
             if (redTeam == TEAM_NUMBER) {
                 startingCorner = ((Long) data.get("RedCorner")).intValue();
-//                canColour = CanColour.RED;
-                //TODO this switch is to be changed after the beta demo
-                switch (((Long) data.get("GreenTeam")).intValue()) {
-                    case 1:
-                        canColour = CanColour.BLUE;
-                        break;
-                    case 2:
-                        canColour = CanColour.GREEN;
-                        break;
-                    case 3:
-                        canColour = CanColour.YELLOW;
-                        break;
-                    case 4:
-                        canColour = CanColour.RED;
-                        break;
-                }
-                canColour = CanColour.BLUE;
+                canColour = CanColour.RED;
+               
                 island_LL_x = ((Long) data.get("Island_LL_x")).intValue();
                 island_LL_y = ((Long) data.get("Island_LL_y")).intValue();
                 island_UR_x = ((Long) data.get("Island_UR_x")).intValue();
@@ -324,6 +307,7 @@ public class Main {
             } else {
                 startingCorner = ((Long) data.get("GreenCorner")).intValue();
                 canColour = CanColour.GREEN;
+                
                 island_LL_x = ((Long) data.get("Island_LL_x")).intValue();
                 island_LL_y = ((Long) data.get("Island_LL_y")).intValue();
                 island_UR_x = ((Long) data.get("Island_UR_x")).intValue();
@@ -358,9 +342,5 @@ public class Main {
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());
         }
-        
-        
-        
     }
-    
 }
