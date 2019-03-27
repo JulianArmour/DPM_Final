@@ -12,12 +12,10 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 public class Claw {
 
     private EV3LargeRegulatedMotor claw;
-    private static final int       CLAW_SPEED = 180;
+    private static final int       CLAW_SPEED     = 180;
     private static int             RELEASED_ANGLE = 0;
     private static int             GRABBED_ANGLE  = 176;
-    private static int             WEIGHTING_ANGLE = 175; //TODO
 
-    
     /**
      * @param clawMotor
      *            the motor used for the claw that grabs the cans
@@ -38,7 +36,7 @@ public class Claw {
         claw.setSpeed(CLAW_SPEED);
         claw.rotateTo(GRABBED_ANGLE, false);
     }
-    
+
     /**
      * Causes the claw to rest in front of a can for weight detection.
      * 
@@ -46,8 +44,7 @@ public class Claw {
      * @since March 16, 2019
      */
     public void closeClawForWeighing() {
-        claw.setSpeed(CLAW_SPEED);
-        claw.rotateTo(WEIGHTING_ANGLE, false);
+        closeClaw();
     }
 
     /**

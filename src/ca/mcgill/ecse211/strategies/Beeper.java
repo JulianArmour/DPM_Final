@@ -12,31 +12,67 @@ import lejos.hardware.Sound;
 public class Beeper {
     
     public static void arrivedAtSearchLL() {
-        nBeeps(5);
+        nShortBeeps(5);
     }
     
     public static void arrivedAtSearchUR() {
-        nBeeps(5);
+        nShortBeeps(5);
     }
     
     public static void localized() {
-        nBeeps(1);
+        nShortBeeps(1);
     }
     
     public static void foundCan() {
-        nBeeps(10);
+        nShortBeeps(10);
     }
     
-    private static void nBeeps(int n) {
+    private static void nShortBeeps(int n) {
         for (int i = 0; i < n; i++) {
             Sound.beep();
             Sound.pause(100);
         }
     }
+    
+    private static void nLongBeeps(int n) {
+        for (int i = 0; i < n; i++) {
+            Sound.buzz();
+            Sound.pause(100);
+        }
+    }
 
     public static void colourAndWeightBeep(boolean canIsHeavy, CanColour canColour) {
-        // TODO Auto-generated method stub
-        
+        if (canIsHeavy) {
+            switch (canColour) {
+            case RED:
+                nLongBeeps(4);
+                break;
+            case YELLOW:
+                nLongBeeps(3);
+                break;
+            case GREEN:
+                nLongBeeps(2);
+                break;
+            case BLUE:
+                nLongBeeps(1);
+                break;
+            }
+        } else {
+            switch (canColour) {
+            case RED:
+                nShortBeeps(4);
+                break;
+            case YELLOW:
+                nShortBeeps(3);
+                break;
+            case GREEN:
+                nShortBeeps(2);
+                break;
+            case BLUE:
+                nShortBeeps(1);
+                break;
+            }
+        }
     }
     
 }
