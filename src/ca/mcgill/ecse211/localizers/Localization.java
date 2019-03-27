@@ -1,6 +1,7 @@
 package ca.mcgill.ecse211.localizers;
 
 import ca.mcgill.ecse211.Main;
+import ca.mcgill.ecse211.WiFiClient.WifiConnection;
 import ca.mcgill.ecse211.navigators.MovementController;
 import ca.mcgill.ecse211.odometer.Odometer;
 import ca.mcgill.ecse211.sensors.LightDifferentialFilter;
@@ -31,6 +32,15 @@ public class Localization {
     private LightDifferentialFilter dLTright;
     private int                     startingCorner;
 
+    /**
+     * 
+     * @param movementController the {@link MovementController}
+     * @param odometer the {@link Odometer}
+     * @param medianDistanceSensor the {@link MedianDistanceSensor}
+     * @param leftLightDiff the left hind {@link LightDifferentialFilter}
+     * @param rightLightDiff the right hind {@link LightDifferentialFilter}
+     * @param startingCorner the starting corner id given passed through the {@link WifiConnection}
+     */
     public Localization(MovementController movementController, Odometer odometer,
             MedianDistanceSensor medianDistanceSensor, LightDifferentialFilter leftLightDiff,
             LightDifferentialFilter rightLightDiff, int startingCorner) {
@@ -170,7 +180,6 @@ public class Localization {
     public void completeQuickLocalization() {
         quickLocalization();
         movCon.driveDistance(-Main.LT_SENSOR_TO_WHEELBASE);
-
         movCon.rotateAngle(90, false, false);
         quickLocalization();
         movCon.driveDistance(-Main.LT_SENSOR_TO_WHEELBASE);

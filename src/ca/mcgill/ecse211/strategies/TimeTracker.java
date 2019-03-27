@@ -2,7 +2,8 @@ package ca.mcgill.ecse211.strategies;
 
 /**
  * Provides a means to track how many seconds have elapsed since the robot
- * started the competition run.
+ * started the competition run and if the robot still has enough time to look
+ * for cans.
  * 
  * @author Julian Armour
  * @version 1
@@ -41,8 +42,8 @@ public class TimeTracker {
     }
 
     /**
-     * 
-     * @return how many seconds have elapsed since start() was called.
+     * How many seconds have elapsed since {@link #start()} was called.
+     * @return how many seconds have elapsed since {@link #start()} was called.
      * 
      * @author Julian Armour
      */
@@ -50,6 +51,11 @@ public class TimeTracker {
         return (int) ((System.currentTimeMillis() - startTime) / 1000);
     }
 
+    /**
+     * Determins if the robot is out of time to look for another can.
+     * @return true if the robot is out of time to look for another can.
+     * @author Julian Armour
+     */
     public boolean outOfTime() {
         if (timeLimit - elapsedSeconds() < outOfTimeThreshold) {
             return true;

@@ -54,29 +54,46 @@ public class CanSearch {
     /**
      * 
      * @param odometer
+     *            the {@link Odometer}
      * @param movementController
+     *            the {@link MovementController}
      * @param navigator
+     *            the {@link Navigator}
      * @param USData
+     *            the {@link MedianDistanceSensor}
      * @param claw
+     *            the {@link Claw}
      * @param weightDetector
+     *            the {@link WeightDetector}
      * @param colourDetector
+     *            the {@link ColourDetector}
      * @param searchCanColour
+     *            the {@link CanColour} to search for
      * @param searchzone_LL
+     *            the coordinate position of the searchzone's lower left
      * @param searchzone_UR
+     *            the coordinate position of the searchzone's upper right
      * @param tunnel_LL
+     *            the coordinate position of the tunnel's lower left
      * @param tunnel_UR
+     *            the coordinate position of the tunnel's upper right
      * @param ISLAND_LL
+     *            the coordinate position of the island's lower left
      * @param ISLAND_UR
+     *            the coordinate position of the island's upper right
      * @param startingCorner
-     * @param scanRadius the maximum distance (in cm) for detecting a can when scanning
-     * @param tileLength the length of a tile (in cm)
+     *            the starting corner ID
+     * @param scanRadius
+     *            the maximum distance (in cm) for detecting a can when scanning
+     * @param tileLength
+     *            the length of a tile (in cm)
      */
     public CanSearch(
             Odometer odometer, MovementController movementController, Navigator navigator, MedianDistanceSensor USData,
-            Claw claw, WeightDetector weightDetector, ColourDetector colourDetector, Localization localizer, 
-            TimeTracker timeTracker, CanColour searchCanColour,
-            int[] searchzone_LL, int[] searchzone_UR, int[] tunnel_LL, int[] tunnel_UR, int[] ISLAND_LL,
-            int[] ISLAND_UR, int startingCorner, float scanRadius, double tileLength
+            Claw claw, WeightDetector weightDetector, ColourDetector colourDetector, Localization localizer,
+            TimeTracker timeTracker, CanColour searchCanColour, int[] searchzone_LL, int[] searchzone_UR,
+            int[] tunnel_LL, int[] tunnel_UR, int[] ISLAND_LL, int[] ISLAND_UR, int startingCorner, float scanRadius,
+            double tileLength
     ) {
         this.odo = odometer;
         this.movCon = movementController;
@@ -104,34 +121,36 @@ public class CanSearch {
 
     /**
      * Sets the scan locations depending on the starting corner, the tunnel
-     * position, the LL and the UR
+     * position, the LL and the UR. It also sets all the dumping points used for
+     * discarding cans
      * 
      * @author Alice Kazarine
+     * @since March 26, 2019
      */
     public void setScanPositions() {
         // calculates the width and the height of the padded search area
         deltaX = SZ_UR[0] - SZ_LL[0];
         deltaY = SZ_UR[1] - SZ_LL[1];
-        
-        int nYPoints = (int) (deltaY/SCAN_RADIUS);
-        int nXPoints = (int) (deltaX/SCAN_RADIUS);
-        
+
+        int nYPoints = (int) (deltaY / SCAN_RADIUS);
+        int nXPoints = (int) (deltaX / SCAN_RADIUS);
+
         for (int i = 0; i <= nXPoints; i++) {
             for (int j = 0; j <= nYPoints; j++) {
                 float[] nextPos = new float[2];
-                
-                nextPos[1] = SZ_LL[1] + j*SCAN_RADIUS;
+
+                nextPos[1] = SZ_LL[1] + j * SCAN_RADIUS;
                 if (startCorner == 1 || startCorner == 2) {
-                    nextPos[0] = SZ_LL[0] + (nXPoints-i)*SCAN_RADIUS;
+                    nextPos[0] = SZ_LL[0] + (nXPoints - i) * SCAN_RADIUS;
                     // set the dumping points depending on searchpoints
                     if (i == 0) {
-                        dumpingPoints.add(new float[] { nextPos[0]+TILE_LENGTH/2 , nextPos[1]});
+                        dumpingPoints.add(new float[] { nextPos[0] + TILE_LENGTH / 2, nextPos[1] });
                     }
-                } else {//startCorner = 0 or 3
-                    nextPos[0] = SZ_LL[0] + i*SCAN_RADIUS;
+                } else {// startCorner = 0 or 3
+                    nextPos[0] = SZ_LL[0] + i * SCAN_RADIUS;
                     // set the dumping points depending on searchpoints
                     if (i == 0) {
-                        dumpingPoints.add(new float[] { nextPos[0]-TILE_LENGTH/2 , nextPos[1]});
+                        dumpingPoints.add(new float[] { nextPos[0] - TILE_LENGTH / 2, nextPos[1] });
                     }
                 }
                 scanningPoints.add(nextPos);
@@ -176,7 +195,7 @@ public class CanSearch {
      * @return <code>true</code> if it all the zones have been scanned or the time limit has been reached
      * 
      * @author Alice Kazarine, Julian Armour
-     * @since March 18, 2019
+     * @since March 26, 2019
      */
     public boolean scanZones() {
         while (currentScanPoint < scanningPoints.size()) {
@@ -206,6 +225,9 @@ public class CanSearch {
                     
                     // if this is the can colour we're looking for
                     if (canColour == searchCanColour) {
+                        // go back to current scanning point
+                        float[] currentScanPoint = getCurrentScanPoint();
+                        movCon.travelTo(currentScanPoint[0], currentScanPoint[1], false);
                         navigator.travelBackToStartingCorner();
                     } else { 
                         // wrong colour, discard it outside the search zone
@@ -368,9 +390,9 @@ public class CanSearch {
     }
 
     /**
+     * @deprecated use {@link #fastCanScan(float[], float[], double, float)} instead.
      * Scans for cans by rotating 360-degrees and returns all potential locations of
      * cans.
-     * @deprecated
      * 
      * @param searchLL
      * @param searchUR

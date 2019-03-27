@@ -196,11 +196,13 @@ public class Main {
         run();
     }
     
+    /**
+     * Extending {@link Main} and overriding {@link #run()} is useful for streamlining the test creation process.
+     */
     public static void run() {
-
         // clear the screen
         lcd.clear();
-        // set the scan positions for the search zone
+        // set the scan positions and dumping positions for the search zone
         canSearch.setScanPositions();
         // next, localize
         localizer.initialUSLocalization();
@@ -211,12 +213,55 @@ public class Main {
         navigator.travelToTunnel(true);
         // travel through the tunnel
         navigator.travelThroughTunnel(true);
-        // travel to search zone LL
-        navigator.travelToSearchZoneLL();
+        // travel to search zone
+        navigator.travelToSearchZone();
         Beeper.arrivedAtSearchLL();
         // start scanning for cans
-        canSearch.scanZones();
-        // FYI: travel to searchzone_UR is incorporated in scanZones() !
+        while (!canSearch.scanZones()) {
+            // still more cans to scan. This also means the robot is currently holding a can.
+            // drop off current can:
+            double[] curPos;
+            claw.openClaw();
+            switch (startingCorner) {
+            case 0:
+                movementController.travelTo(TILE_SIZE / 2, TILE_SIZE / 2, false);
+                curPos = odometer.getXYT();
+                movementController.driveDistance(
+                        -movementController.calculateDistance(curPos[0], curPos[1], TILE_SIZE, TILE_SIZE));
+                movementController.turnTo(0);
+                break;
+            case 1:
+                movementController.travelTo(TILE_SIZE*14.5, TILE_SIZE/2, false);
+                curPos = odometer.getXYT();
+                movementController.driveDistance(
+                        -movementController.calculateDistance(curPos[0], curPos[1], TILE_SIZE*14, TILE_SIZE));
+                movementController.turnTo(270);
+                break;
+            case 2:
+                movementController.travelTo(TILE_SIZE*14.5, TILE_SIZE*8.5, false);
+                curPos = odometer.getXYT();
+                movementController.driveDistance(
+                        -movementController.calculateDistance(curPos[0], curPos[1], TILE_SIZE*14, TILE_SIZE*8));
+                movementController.turnTo(180);
+                break;
+            case 3:
+                movementController.travelTo(TILE_SIZE/2, TILE_SIZE*8.5, false);
+                curPos = odometer.getXYT();
+                movementController.driveDistance(
+                        -movementController.calculateDistance(curPos[0], curPos[1], TILE_SIZE, TILE_SIZE*8));
+                movementController.turnTo(90);
+                break;
+            }
+            claw.closeClaw();
+            localizer.quickLocalization();
+            // go to the tunnel
+            navigator.travelToTunnel(true);
+            // travel through the tunnel
+            navigator.travelThroughTunnel(true);
+            // travel to search zone
+            navigator.travelToSearchZone();
+        }
+        
         System.exit(0);
     }
 

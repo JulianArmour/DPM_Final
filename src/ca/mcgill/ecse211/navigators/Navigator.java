@@ -152,8 +152,7 @@ public class Navigator {
         move.turnTo(move.calculateAngle(curPos[0], curPos[1], dest[0], dest[1]));
         localizer.quickLocalization();
         move.travelTo(dest[0], dest[1], false);
-        // finally travel to the current scan point
-        move.travelTo(currentScanPoint[0], currentScanPoint[1], false);
+        // at this point the robot is right beside the scan point and CanSearch#scanZones() can be called.
     }
 
     /**
@@ -408,7 +407,7 @@ public class Navigator {
 			move.turnTo(turnToTunnel);
 			localizer.quickLocalization(); //Make sure we are well facing the tunnel
 		}
-		else { 
+		else {
 		    //Path 2 to tunnel depending on position: if tunnel is on the north or south side of the starting zone
 			// move to y position on the grid line before the tunnel
 		    move.travelTo(odo.getXYT()[0], tunnelTilePosYOP2*tileSize, false);
@@ -655,24 +654,25 @@ public class Navigator {
 		
 	}
 	
+	/**
+	 * Makes the robot travel to the gridpoint intersection of it's starting tile
+	 * @author Cedric Barre
+	 * @since March 27, 2019
+	 */
     public void travelToStartingTile() {
-
-        // if sc is 0, we want to go to (1,1)
-        if (SC == 0) {
+        switch (SC) {
+        case 0:
             move.travelTo(tileSize, tileSize, false);
-
-        }
-        // if SC is 1, we want to go to (14,1)
-        else if (SC == 1) {
+            break;
+        case 1:
             move.travelTo(14 * tileSize, tileSize, false);
-        }
-        // if SC =, we want to go to (14,8)
-        else if (SC == 2) {
+            break;
+        case 2:
             move.travelTo(14 * tileSize, 8 * tileSize, false);
-        }
-        // if SC = 3, we want to go to (1,8)
-        else {
+            break;
+        case 3:
             move.travelTo(tileSize, 8 * tileSize, false);
+            break;
         }
     }
 
@@ -684,6 +684,14 @@ public class Navigator {
      * @since March 25, 2019
      */
     public void travelBackToStartingCorner() {
+        if (SC == 0 || SC == 3) {
+            move.turnTo(270);
+        } else {
+            move.turnTo(90);
+        }
+        localizer.quickLocalization();
+        move.driveDistance(tileSize/2);
+        
         travelToTunnel(false);
         travelThroughTunnel(false);
         travelToStartingTile();
