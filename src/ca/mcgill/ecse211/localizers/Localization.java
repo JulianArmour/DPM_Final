@@ -6,6 +6,7 @@ import ca.mcgill.ecse211.navigators.MovementController;
 import ca.mcgill.ecse211.odometer.Odometer;
 import ca.mcgill.ecse211.sensors.LightDifferentialFilter;
 import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
+import lejos.utility.Delay;
 
 /**
  * Provides the methods for the initial localization and localizing on the fly.
@@ -60,7 +61,7 @@ public class Localization {
      * correction. The second is much slower and much more accurate.
      */
     public void quickThetaCorrection() {
-    	
+    	Delay.msDelay(500);
         for (int i = 0; i < 2; i++) {
             boolean RLineDetected = false;
             boolean LLineDetected = false;

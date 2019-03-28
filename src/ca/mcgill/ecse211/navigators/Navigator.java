@@ -656,7 +656,8 @@ public class Navigator {
 		localizer.quickThetaCorrection(); //Correct angle and x position 
 		move.driveDistance(-lightSensorToWheelbase); 
 		move.rotateAngle(90, turnLoc);
-
+		
+		move.driveDistance(5);
 		localizer.quickThetaCorrection(); //Correct y position
 		move.driveDistance(-lightSensorToWheelbase);
 		

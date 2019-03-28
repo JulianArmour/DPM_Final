@@ -132,8 +132,8 @@ public class CanSearch {
         int nYPoints = Math.round(deltaY / SCAN_RADIUS);
         int nXPoints = Math.round(deltaX / SCAN_RADIUS);
 
-        for (int i = 0; i <= nXPoints; i++) {
-            for (int j = 0; j <= nYPoints; j++) {
+        for (int i = 0; i < nXPoints; i++) {
+            for (int j = 0; j < nYPoints; j++) {
                 float[] nextPos = new float[2];
 
                 nextPos[1] = SZ_LL[1] * TILE_LENGTH + j * SCAN_RADIUS;
@@ -203,6 +203,7 @@ public class CanSearch {
             movCon.driveDistance(-Main.LT_SENSOR_TO_WHEELBASE);
             float[] canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 359, SCAN_RADIUS);
             if (canPos != null) {
+            	System.out.println("Found a can");
                 boolean foundTheCan = travelToCan(canPos);
                 if (foundTheCan) {
                     claw.closeClawForWeighing();
@@ -324,6 +325,8 @@ public class CanSearch {
         Runnable rotater = new Runnable() {
             @Override
             public void run() {
+//            	System.out.println("Odometer reading before spinning: " + odo.getXYT()[2]);
+//            	System.out.println("Final heading: " + finalHeading);
                 movCon.turnClockwiseTo(finalHeading, false);
                 // the robot is only at the final heading if it wasn't interrupted by detecting
                 // a can
@@ -334,8 +337,10 @@ public class CanSearch {
         };
 
         USData.flush();
+        Delay.msDelay(2000);
         Thread rotT = new Thread(rotater);
         rotT.start(); // start rotating
+        System.out.println("Starting rotation");
         float[] position = new float[2];
         while (!atFinalHeading[0]) {
             float dist = USData.getFilteredDistance();
@@ -367,6 +372,7 @@ public class CanSearch {
                     } else {
                         // false positive, keep scanning
                         rotT = new Thread(rotater);
+                        Delay.msDelay(2000);
                         rotT.start(); // start rotating again
                     }
                 }
