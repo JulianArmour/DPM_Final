@@ -286,6 +286,7 @@ public class CanSearch {
         if (canPos == null) {
             return false;
         } else {
+            movCon.rotateAngle(5, true);
             // move forward until to appropriate distance for gripping the can
             USData.flush();
             float dist = USData.getFilteredDistance();
