@@ -277,12 +277,12 @@ public class CanSearch {
      */
     public boolean travelToCan(float[] canPos) {
         double[] robotPos = odo.getXYT();
-        // travel robot ~12 cm in front of can
+        // travel robot ~17 cm in front of can
         movCon.turnTo(movCon.calculateAngle(robotPos[0], robotPos[1], canPos[0], canPos[1]));
-        movCon.driveDistance(movCon.calculateDistance(robotPos[0], robotPos[1], canPos[0], canPos[1]) - 12, false);
+        movCon.driveDistance(movCon.calculateDistance(robotPos[0], robotPos[1], canPos[0], canPos[1]) - 17, false);
         claw.openClaw();
         movCon.rotateAngle(90, false, false);
-        canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 180, 20);
+        canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 180, 25);
         if (canPos == null) {
             return false;
         } else {
