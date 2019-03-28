@@ -138,7 +138,7 @@ public class CanSearch {
 
                 nextPos[1] = SZ_LL[1] * TILE_LENGTH + j * SCAN_RADIUS;
                 if (startCorner == 1 || startCorner == 2) {
-                    nextPos[0] = SZ_LL[0] * TILE_LENGTH + (nXPoints - i) * SCAN_RADIUS;
+                    nextPos[0] = SZ_UR[0] * TILE_LENGTH - i*SCAN_RADIUS;
                     // set the dumping points depending on searchpoints
                     if (i == 0) {
                         dumpingPoints.add(new float[] { nextPos[0] + TILE_LENGTH / 2, nextPos[1] });
