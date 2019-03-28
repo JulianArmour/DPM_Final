@@ -24,7 +24,7 @@ public class Localization {
     private static float            FIRST_DIFFERENCE_THRESHOLD  = 4.0f;
     private static float            SECOND_DIFFERENCE_THRESHOLD = 1.5f;
     private static final int 		SLOW_SPEED					= 45;
-    private static final int 		FAST_SPEED					= 140;
+    private static final int 		FAST_SPEED					= 200;
 
     private MovementController      movCon;
     private Odometer                odo;
@@ -98,8 +98,8 @@ public class Localization {
 
                 if (Math.abs(deltaR) > threshold) {
                     RLineDetected = true;
-                    // System.out.println("right sensor detected line");
-                    // System.out.println(RLineDetected);
+                     System.out.println("right sensor detected line");
+                     System.out.println(RLineDetected);
                     // System.out.println(LLineDetected);
                     movCon.stopMotor(true, true);
                     // System.out.println(deltaR);
@@ -107,9 +107,9 @@ public class Localization {
 
                 if (Math.abs(deltaL) > threshold) {
                     LLineDetected = true;
-                    // System.out.println("left sensor detected line");
+                     System.out.println("left sensor detected line");
                     // System.out.println(RLineDetected);
-                    // System.out.println(LLineDetected);
+                     System.out.println(LLineDetected);
                     movCon.stopMotor(false, true);
                     // System.out.println(deltaL);
                 }

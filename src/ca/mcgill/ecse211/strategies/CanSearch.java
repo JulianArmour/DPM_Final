@@ -247,6 +247,7 @@ public class CanSearch {
         } else {
             return false;
         }
+        
     }
 
     /**
@@ -338,7 +339,7 @@ public class CanSearch {
         };
 
         USData.flush();
-        Delay.msDelay(2000);
+        Delay.msDelay(5000);
         Thread rotT = new Thread(rotater);
         rotT.start(); // start rotating
         System.out.println("Starting rotation");
@@ -373,7 +374,7 @@ public class CanSearch {
                     } else {
                         // false positive, keep scanning
                         rotT = new Thread(rotater);
-                        Delay.msDelay(2000);
+                        Delay.msDelay(5000);
                         rotT.start(); // start rotating again
                     }
                 }
