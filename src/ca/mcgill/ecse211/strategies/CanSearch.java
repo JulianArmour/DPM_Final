@@ -247,6 +247,7 @@ public class CanSearch {
         } else {
             return false;
         }
+        
     }
 
     /**
