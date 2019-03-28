@@ -31,7 +31,7 @@ import lejos.utility.Delay;
 
 public class Main {
 //    private static final String            SERVER_IP               = "192.168.2.8"; // for beta and competition
-    private static final String            SERVER_IP               = "192.168.43.112"; // for personal testing
+    private static final String            SERVER_IP               = "192.168.2.16"; // for personal testing
 
     private static final int               TEAM_NUMBER             = 3;
 
@@ -166,7 +166,10 @@ public class Main {
         timeTracker = new TimeTracker(0, 300);// when 45 seconds are remaining, go to searchZone_UR
         
         // At this point we need wifi data
-        getWifiData();//TODO put in while loop
+//        while (tunnel_LL == null) {
+        	getWifiData();
+//        }
+        
         
         localizer = new Localization(
                 movementController, odometer, medianDistanceSensor, leftLightDifferentialFilter,

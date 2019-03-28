@@ -203,8 +203,11 @@ public class CanSearch {
             movCon.travelTo(scanningPoints.get(currentScanPoint)[0], scanningPoints.get(currentScanPoint)[1], false);
             localizer.quickLocalization();
             movCon.driveDistance(-Main.LT_SENSOR_TO_WHEELBASE);
-            float[] canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 359, SCAN_RADIUS);
+            System.out.println("About to scan");
+            float[] canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 355, SCAN_RADIUS);
+            System.out.println("Done scanning");
             if (canPos != null) {
+            	System.out.println("Found can at position " + canPos[0] + " " + canPos[1]);
                 boolean foundTheCan = travelToCan(canPos);
                 if (foundTheCan) {
                     claw.closeClawForWeighing();
@@ -327,7 +330,9 @@ public class CanSearch {
         Runnable rotater = new Runnable() {
             @Override
             public void run() {
+            	System.out.println("Are we turning?");
                 movCon.turnClockwiseTo(finalHeading, false);
+                System.out.println("Yes we have turned");
                 // the robot is only at the final heading if it wasn't interrupted by detecting
                 // a can
                 if (!Thread.interrupted()) {
@@ -346,7 +351,9 @@ public class CanSearch {
                 double angle = odo.getXYT()[2];
                 position[0] = (float) (dist * Math.sin(Math.toRadians(angle)) + robotPos[0]);
                 position[1] = (float) (dist * Math.cos(Math.toRadians(angle)) + robotPos[1]);
+                System.out.println("Saw something");
                 if (inSearchZone(position, searchLL, searchUR)) {
+                	System.out.println("Found can! Distance in SZ: " + dist);
                     rotT.interrupt();
                     movCon.stopMotors();
 
@@ -354,7 +361,11 @@ public class CanSearch {
                     double meanDist = 0;
                     for (int i = 0; i < 10; i++) {
                         meanDist += (double) USData.getFilteredDistance();
-                        Delay.msDelay(CAN_SCAN_PERIOD);
+                        try {
+							Thread.sleep(CAN_SCAN_PERIOD);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
                     }
                     meanDist /= 10;
                     angle = odo.getXYT()[2];
