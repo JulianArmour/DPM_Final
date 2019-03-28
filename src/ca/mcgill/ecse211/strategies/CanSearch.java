@@ -278,19 +278,19 @@ public class CanSearch {
      */
     public boolean travelToCan(float[] canPos) {
         double[] robotPos = odo.getXYT();
-        // travel robot ~18 cm in front of can
+        // travel robot ~12 cm in front of can
         movCon.turnTo(movCon.calculateAngle(robotPos[0], robotPos[1], canPos[0], canPos[1]));
-        movCon.driveDistance(movCon.calculateDistance(robotPos[0], robotPos[1], canPos[0], canPos[1]) - 18, false);
+        movCon.driveDistance(movCon.calculateDistance(robotPos[0], robotPos[1], canPos[0], canPos[1]) - 12, false);
         claw.openClaw();
         movCon.rotateAngle(90, false, false);
-        canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 180, TILE_LENGTH);
+        canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 180, 20);
         if (canPos == null) {
             return false;
         } else {
             // move forward until to appropriate distance for gripping the can
             USData.flush();
             float dist = USData.getFilteredDistance();
-            if (dist < TILE_LENGTH*1.5) {
+            if (dist < TILE_LENGTH) {
                 movCon.driveDistance(dist - Main.US_SENSOR_TO_CLAW, false);
             }
             return true;
@@ -354,11 +354,7 @@ public class CanSearch {
                     double meanDist = 0;
                     for (int i = 0; i < 10; i++) {
                         meanDist += (double) USData.getFilteredDistance();
-                        try {
-                            Thread.sleep(CAN_SCAN_PERIOD);
-                        } catch (InterruptedException e) {
-                            System.out.println(":(");
-                        }
+                        Delay.msDelay(CAN_SCAN_PERIOD);
                     }
                     meanDist /= 10;
                     angle = odo.getXYT()[2];
