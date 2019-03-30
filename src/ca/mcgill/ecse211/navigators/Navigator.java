@@ -230,11 +230,14 @@ public class Navigator {
         
         List<float[]> dumpointPoints = canSearcher.getDumpingPoints();
         Iterator<float[]> it = dumpointPoints.iterator();
+        float[] p;
         while (it.hasNext()) {
             if (closestPoint == null) {
                 closestPoint = it.next();
+                p = closestPoint;
+            } else { 
+            	p = (float[]) it.next();
             }
-            float[] p = (float[]) it.next();
             if (!pointIsOnTunnel(p)) {// point p isn't on the tunnel
                 // compare distances current closest point with p
                 double[] curPos = odo.getXYT();

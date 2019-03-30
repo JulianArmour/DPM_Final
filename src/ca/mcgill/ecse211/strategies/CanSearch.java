@@ -198,6 +198,8 @@ public class CanSearch {
     public boolean scanZones() {
         System.out.println("SCAN RADIUS: " + SCAN_RADIUS);
         while (currentScanPoint < scanningPoints.size()) {
+        	movCon.turnTo(movCon.calculateAngle(odo.getXYT()[0], odo.getXYT()[1], scanningPoints.get(currentScanPoint)[0], scanningPoints.get(currentScanPoint)[1]));
+            localizer.quickLocalization();
             movCon.travelTo(scanningPoints.get(currentScanPoint)[0], scanningPoints.get(currentScanPoint)[1], false);
             localizer.quickLocalization();
             movCon.driveDistance(-Main.LT_SENSOR_TO_WHEELBASE);
@@ -287,7 +289,9 @@ public class CanSearch {
         if (canPos == null) {
             return false;
         } else {
-            movCon.rotateAngle(10, true);
+        	if(movCon.calculateDistance(odo.getXYT()[0], odo.getXYT()[1], canPos[0], canPos[1]) > 13) {
+        		movCon.rotateAngle(10, true);
+        	}
             // move forward until to appropriate distance for gripping the can
             USData.flush();
             float dist = USData.getFilteredDistance();
@@ -349,8 +353,7 @@ public class CanSearch {
         while (!atFinalHeading[0]) {
             float dist = USData.getFilteredDistance();
             if (dist <= scanRadius) {
-            	System.out.println(2);
-                double angle = odo.getXYT()[2];
+            	double angle = odo.getXYT()[2];
                 position[0] = (float) (dist * Math.sin(Math.toRadians(angle)) + robotPos[0]);
                 position[1] = (float) (dist * Math.cos(Math.toRadians(angle)) + robotPos[1]);
                 if (inSearchZone(position, searchLL, searchUR)) {

@@ -31,7 +31,7 @@ import lejos.utility.Delay;
 
 public class Main {
 //    private static final String            SERVER_IP               = "192.168.2.8"; // for beta and competition
-    private static final String            SERVER_IP               = "192.168.2.16"; // for personal testing
+    private static final String            SERVER_IP               = "192.168.2.18"; // for personal testing
 
     private static final int               TEAM_NUMBER             = 3;
 
