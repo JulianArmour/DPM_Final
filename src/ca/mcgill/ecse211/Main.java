@@ -203,7 +203,7 @@ public class Main {
         lcd.clear();
         // set the scan positions and dumping positions for the search zone
         canSearch.setScanPositions();
-        // next, localize
+        // next, loca lize
         localizer.initialUSLocalization();
         localizer.initialLightLocalization();
         Beeper.localized();

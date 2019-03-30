@@ -201,7 +201,7 @@ public class CanSearch {
             movCon.travelTo(scanningPoints.get(currentScanPoint)[0], scanningPoints.get(currentScanPoint)[1], false);
             localizer.quickLocalization();
             movCon.driveDistance(-Main.LT_SENSOR_TO_WHEELBASE);
-            float[] canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 359, SCAN_RADIUS);
+            float[] canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 355, SCAN_RADIUS);
             if (canPos != null) {
             	System.out.println("Found a can");
                 boolean foundTheCan = travelToCan(canPos);
@@ -280,18 +280,18 @@ public class CanSearch {
         double[] robotPos = odo.getXYT();
         // travel robot ~17 cm in front of can
         movCon.turnTo(movCon.calculateAngle(robotPos[0], robotPos[1], canPos[0], canPos[1]));
-        movCon.driveDistance(movCon.calculateDistance(robotPos[0], robotPos[1], canPos[0], canPos[1]) - 17, false);
+        movCon.driveDistance(movCon.calculateDistance(robotPos[0], robotPos[1], canPos[0], canPos[1]) - 20, false);
         claw.openClaw();
         movCon.rotateAngle(90, false, false);
-        canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 180, 25);
+        canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 180, 30);
         if (canPos == null) {
             return false;
         } else {
-            movCon.rotateAngle(5, true);
+            movCon.rotateAngle(10, true);
             // move forward until to appropriate distance for gripping the can
             USData.flush();
             float dist = USData.getFilteredDistance();
-            if (dist < TILE_LENGTH) {
+            if (dist < TILE_LENGTH*1.5) {
                 movCon.driveDistance(dist - Main.US_SENSOR_TO_CLAW, false);
             }
             return true;
@@ -333,26 +333,31 @@ public class CanSearch {
                 // the robot is only at the final heading if it wasn't interrupted by detecting
                 // a can
                 if (!Thread.interrupted()) {
+                	System.out.println(10);
                     atFinalHeading[0] = true;
                 }
             }
         };
 
         USData.flush();
-        Delay.msDelay(5000);
+        Delay.msDelay(2000);
         Thread rotT = new Thread(rotater);
+        System.out.println(1);
         rotT.start(); // start rotating
         System.out.println("Starting rotation");
         float[] position = new float[2];
         while (!atFinalHeading[0]) {
             float dist = USData.getFilteredDistance();
             if (dist <= scanRadius) {
+            	System.out.println(2);
                 double angle = odo.getXYT()[2];
                 position[0] = (float) (dist * Math.sin(Math.toRadians(angle)) + robotPos[0]);
                 position[1] = (float) (dist * Math.cos(Math.toRadians(angle)) + robotPos[1]);
                 if (inSearchZone(position, searchLL, searchUR)) {
+                	System.out.println(3);
                     rotT.interrupt();
                     movCon.stopMotors();
+                    System.out.println(4);
 
                     // more checks to see if it is really a can
                     double meanDist = 0;
@@ -369,13 +374,16 @@ public class CanSearch {
                     position[0] = (float) (meanDist * Math.sin(Math.toRadians(angle)) + robotPos[0]);
                     position[1] = (float) (meanDist * Math.cos(Math.toRadians(angle)) + robotPos[1]);
                     if (inSearchZone(position, searchLL, searchUR)) {
+                    	System.out.println(5);
                         // true positive, return
                         return position;
                     } else {
                         // false positive, keep scanning
                         rotT = new Thread(rotater);
-                        Delay.msDelay(5000);
+                        Delay.msDelay(2000);
+                        System.out.println(6);
                         rotT.start(); // start rotating again
+                        System.out.println(7);
                     }
                 }
             }
@@ -386,7 +394,7 @@ public class CanSearch {
                 e.printStackTrace();
             }
         }
-
+        System.out.println(8);
         return null;
     }
 
