@@ -7,7 +7,9 @@ import java.util.List;
 import ca.mcgill.ecse211.Main;
 import ca.mcgill.ecse211.localizers.Localization;
 import ca.mcgill.ecse211.odometer.*;
+import ca.mcgill.ecse211.strategies.Beeper;
 import ca.mcgill.ecse211.strategies.CanSearch;
+import lejos.utility.Delay;
 
 /**
  * Provides the methods for navigation tasks
@@ -152,6 +154,10 @@ public class Navigator {
         move.turnTo(move.calculateAngle(curPos[0], curPos[1], dest[0], dest[1]));
         localizer.quickLocalization();
         move.travelTo(dest[0], dest[1], false);
+        move.travelTo(currentScanPoint[0], currentScanPoint[1], false);
+        if (currentScanPoint == canSearcher.getScanningPoints().get(0)) {
+            Beeper.arrivedAtSearchZone();
+        }
         // at this point the robot is right beside the scan point and CanSearch#scanZones() can be called.
     }
 
@@ -416,6 +422,7 @@ public class Navigator {
             // finally face the tunnel entrance
 			move.turnTo(turnToTunnel);
 			localizer.quickLocalization(); //Make sure we are well facing the tunnel
+			Delay.msDelay(500);
 		}
 		else {
 		    //Path 2 to tunnel depending on position: if tunnel is on the north or south side of the starting zone
@@ -439,6 +446,7 @@ public class Navigator {
 			// finally face the tunnel entrance
 			move.turnTo(turnToTunnel);
 			localizer.quickLocalization(); //Make sure we are well facing the tunnel
+			Delay.msDelay(500);
 		}
 	}
 	

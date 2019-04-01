@@ -110,9 +110,12 @@ public class Main {
     private static Claw                    claw;
     private static ColourArm               colourArm;
     private static ColourDetector          colourDetector;
-    private static TimeTracker timeTracker;
+    private static TimeTracker             timeTracker;
+
+    public static boolean                  broughtBackACan;
 
     public static void main(String[] args) {
+        broughtBackACan = false;
         // init motors
         leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
         rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
@@ -215,7 +218,6 @@ public class Main {
         navigator.travelThroughTunnel(true);
         // travel to search zone
         navigator.travelToSearchZone();
-        Beeper.arrivedAtSearchLL();
         // start scanning for cans
         while (!canSearch.scanZones()) {
             // still more cans to scan. This also means the robot is currently holding a can.
@@ -253,6 +255,8 @@ public class Main {
                 break;
             }
             claw.closeClaw();
+            Beeper.droppedOffCans();
+            broughtBackACan = true;
             localizer.quickLocalization();
             // go to the tunnel
             navigator.travelToTunnel(true);

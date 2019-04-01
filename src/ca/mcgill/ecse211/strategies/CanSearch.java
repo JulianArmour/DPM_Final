@@ -198,8 +198,8 @@ public class CanSearch {
     public boolean scanZones() {
         System.out.println("SCAN RADIUS: " + SCAN_RADIUS);
         while (currentScanPoint < scanningPoints.size()) {
-        	movCon.turnTo(movCon.calculateAngle(odo.getXYT()[0], odo.getXYT()[1], scanningPoints.get(currentScanPoint)[0], scanningPoints.get(currentScanPoint)[1]));
-            localizer.quickLocalization();
+//        	movCon.turnTo(movCon.calculateAngle(odo.getXYT()[0], odo.getXYT()[1], scanningPoints.get(currentScanPoint)[0], scanningPoints.get(currentScanPoint)[1]));
+//            localizer.quickLocalization();
             movCon.travelTo(scanningPoints.get(currentScanPoint)[0], scanningPoints.get(currentScanPoint)[1], false);
             localizer.quickLocalization();
             movCon.driveDistance(-Main.LT_SENSOR_TO_WHEELBASE);
@@ -220,11 +220,10 @@ public class CanSearch {
                     Beeper.colourAndWeightBeep(canIsHeavy, canColour);
 
                     // if this is the can colour we're looking for
-                    if (canColour == searchCanColour) {
+                    if (canColour == searchCanColour && !Main.broughtBackACan) {
                         // go back to current scanning point
                         float[] currentScanPoint = getCurrentScanPoint();
                         movCon.travelTo(currentScanPoint[0], currentScanPoint[1], false);
-                        claw.closeClaw();
                         System.out.println("Found can, returning home");
                         navigator.travelBackToStartingCorner();
                         return false;
@@ -239,6 +238,10 @@ public class CanSearch {
                 }
             } else {
                 currentScanPoint += 1;
+                claw.closeClaw();
+                float[] nextScanPt = getCurrentScanPoint();
+                movCon.turnTo(nextScanPt[0], nextScanPt[1]);
+                localizer.quickLocalization();
             }
         }
         if (currentScanPoint >= scanningPoints.size()) {
