@@ -14,7 +14,7 @@ import lejos.hardware.motor.EV3MediumRegulatedMotor;
 public class ColourArm {
     private static final int        INIT_SCAN_POS = 0;
     private static final int        FIN_SCAN_POS  = -228;
-    private static final int SCAN_SPEED = 90;
+    private static final int        SCAN_SPEED    = 90;
 
     private EV3MediumRegulatedMotor colourMotor;
 

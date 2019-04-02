@@ -69,6 +69,7 @@ public class MedianDistanceSensor {
     }
 
     /**
+     * Gets the current filtered fistance
      * 
      * @return The current filtered distance
      */
@@ -90,6 +91,7 @@ public class MedianDistanceSensor {
     }
 
     /**
+     * Gets the size of the median filter's buffer
      * 
      * @return the size of the median buffer.
      */

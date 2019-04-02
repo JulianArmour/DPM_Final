@@ -160,6 +160,7 @@ public class CanSearch {
     }
 
     /**
+     * Gets a list of all the possible dumpoint positions.
      * 
      * @return all the possible dumping positions
      * 
@@ -170,6 +171,8 @@ public class CanSearch {
     }
 
     /**
+     * Gets the current scan point
+     * 
      * @return the current scan point
      * 
      * @author Julian Armour

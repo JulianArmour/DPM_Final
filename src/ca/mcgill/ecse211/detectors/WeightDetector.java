@@ -12,7 +12,7 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
  */
 public class WeightDetector {
     // constants
-    private static final int       HEAVY_CAN_THRESHOLD = 25;   
+    private static final int       HEAVY_CAN_THRESHOLD = 25;
     private static final int       DETECT_SPEED        = 500;
     private static final int       DETECT_ACC          = 8000;
     // dependencies
@@ -26,6 +26,7 @@ public class WeightDetector {
      * @param clawMotor
      *            The motor used for the mechanical claw in front of the robot
      * @param movementController
+     *            the robot's {@link MovementController}
      * @param tileSize
      *            The length of the tiles
      */
@@ -49,12 +50,12 @@ public class WeightDetector {
         int initTacho = clawMotor.getTachoCount();
         System.out.println(initTacho);
         clawMotor.flt();
-        movementController.driveDistance(-tileLength/2 , DETECT_SPEED, DETECT_ACC, false);
+        movementController.driveDistance(-tileLength / 2, DETECT_SPEED, DETECT_ACC, false);
         int dTacho = Math.abs(clawMotor.getTachoCount() - initTacho);
-        movementController.driveDistance(tileLength/2 , false);
+        movementController.driveDistance(tileLength / 2, false);
         System.out.println(dTacho);
-        
-        return (dTacho >=  HEAVY_CAN_THRESHOLD);
+
+        return (dTacho >= HEAVY_CAN_THRESHOLD);
     }
 
 }

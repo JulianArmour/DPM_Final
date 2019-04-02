@@ -40,6 +40,7 @@ public class LightDifferentialFilter extends Thread {
     }
 
     /**
+     * Calculates the difference between two sequential light sensor sample polls.
      * 
      * @return the difference between two sequential light sensor sample polls.
      */
