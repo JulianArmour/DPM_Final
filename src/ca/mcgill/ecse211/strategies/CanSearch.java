@@ -205,7 +205,7 @@ public class CanSearch {
             movCon.driveDistance(-Main.LT_SENSOR_TO_WHEELBASE);
             float[] canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 355, SCAN_RADIUS);
             if (canPos != null) {
-            	System.out.println("Found a can");
+            	  System.out.println("Found a can");
                 boolean foundTheCan = travelToCan(canPos);
                 if (foundTheCan) {
                     claw.closeClawForWeighing();
@@ -334,9 +334,8 @@ public class CanSearch {
         Runnable rotater = new Runnable() {
             @Override
             public void run() {
-//            	System.out.println("Odometer reading before spinning: " + odo.getXYT()[2]);
-//            	System.out.println("Final heading: " + finalHeading);
                 movCon.turnClockwiseTo(finalHeading, false);
+                System.out.println("Yes we have turned");
                 // the robot is only at the final heading if it wasn't interrupted by detecting
                 // a can
                 if (!Thread.interrupted()) {
@@ -359,8 +358,9 @@ public class CanSearch {
             	double angle = odo.getXYT()[2];
                 position[0] = (float) (dist * Math.sin(Math.toRadians(angle)) + robotPos[0]);
                 position[1] = (float) (dist * Math.cos(Math.toRadians(angle)) + robotPos[1]);
+                System.out.println("Saw something");
                 if (inSearchZone(position, searchLL, searchUR)) {
-                	System.out.println(3);
+                	  System.out.println(3);
                     rotT.interrupt();
                     movCon.stopMotors();
                     System.out.println(4);

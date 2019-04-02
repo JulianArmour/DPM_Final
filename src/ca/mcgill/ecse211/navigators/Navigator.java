@@ -316,7 +316,6 @@ public class Navigator {
 					tunnelTilePosXOP1 = TURX + 1;
 					tunnelTilePosYOP1 = TURY - 0.5;
 					turnToTunnel = 270;
-					System.out.println("I AM HERE :)");
 				} else {
 					OP1 = false;
 					tunnelTilePosYOP2 = TURY + 1;
@@ -401,8 +400,6 @@ public class Navigator {
 		if(OP1) { 
 		    //Path 1 to tunnel depending on tunnel position: if the tunnel is on the east or west side of the starting zone
 		    //Move to the x position on the grid line before the tunnel
-		    System.out.println("Current Position: "+odo.getXYT()[0]/tileSize+", "+odo.getXYT()[1]/tileSize);
-		    System.out.println("Moving to: "+tunnelTilePosXOP1+", "+odo.getXYT()[1]/tileSize);
 			move.travelTo(tunnelTilePosXOP1*tileSize, odo.getXYT()[1], false); 
 		    localizer.quickLocalization();
 			move.driveDistance(-lightSensorToWheelbase);
@@ -410,11 +407,7 @@ public class Navigator {
 			move.turnTo(move.calculateAngle(odo.getXYT()[0], odo.getXYT()[1], odo.getXYT()[0], tunnelTilePosYOP1 * tileSize));
 			localizer.quickLocalization();
 			//Move the to y position on the grid line in front of the tunnel
-			if (move.roundAngle() == 180) {
-			    move.travelTo(odo.getXYT()[0], (tunnelTilePosYOP1 + 0.5)*tileSize, false);
-            } else {
-                move.travelTo(odo.getXYT()[0], (tunnelTilePosYOP1 - 0.5)*tileSize, false);
-            }
+			move.travelTo(odo.getXYT()[0], (tunnelTilePosYOP1 - 0.5)*tileSize, false);
 			// correct odometer
 			localizer.quickLocalization();
 			//Move the to y position on the grid line in the middle of the tile in front of the tunnel
@@ -434,11 +427,7 @@ public class Navigator {
 			move.turnTo(move.calculateAngle(odo.getXYT()[0], odo.getXYT()[1], tunnelTilePosXOP2*tileSize, odo.getXYT()[1]));
             localizer.quickLocalization();
             //Move the to x position on the grid line in front of the tunnel
-            if (move.roundAngle() == 270) {
-                move.travelTo((tunnelTilePosXOP2 + 0.5)*tileSize, odo.getXYT()[1], false);
-            } else {
-                move.travelTo((tunnelTilePosXOP2 - 0.5)*tileSize, odo.getXYT()[1], false);
-            }
+			move.travelTo((tunnelTilePosXOP2 - 0.5)*tileSize, odo.getXYT()[1], false);
 			// correct odometer
             localizer.quickLocalization();
             //Move the to x position on the grid line in the middle of the tile in front of the tunnel

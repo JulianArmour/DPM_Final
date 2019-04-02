@@ -169,7 +169,10 @@ public class Main {
         timeTracker = new TimeTracker(0, 300);// when 45 seconds are remaining, go to searchZone_UR
         
         // At this point we need wifi data
-        getWifiData();//TODO put in while loop
+//        while (tunnel_LL == null) {
+        	getWifiData();
+//        }
+        
         
         localizer = new Localization(
                 movementController, odometer, medianDistanceSensor, leftLightDifferentialFilter,
