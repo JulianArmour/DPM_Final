@@ -18,7 +18,6 @@ import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
 import ca.mcgill.ecse211.strategies.Beeper;
 import ca.mcgill.ecse211.strategies.CanSearch;
 import ca.mcgill.ecse211.strategies.TimeTracker;
-import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
@@ -27,7 +26,6 @@ import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.hardware.sensor.SensorMode;
-import lejos.utility.Delay;
 
 public class Main {
 //    private static final String            SERVER_IP               = "192.168.2.8"; // for beta and competition
@@ -79,7 +77,7 @@ public class Main {
 
     private static final TextLCD           lcd                     = LocalEV3.get().getTextLCD();
 
-    // needed to set up the sensors
+    // Sensor setup
     private static Port                    USPort;
     private static EV3UltrasonicSensor     UltrasonicSensor;
     private static SensorMode              DistanceProvider;
@@ -95,8 +93,6 @@ public class Main {
     private static Port                    sideLSPort;
     private static EV3ColorSensor          canColourSensor;
     private static SensorMode              canRGBProvider;
-    private static float[]                 canRGBBuffer;
-
     // class instances
     private static MovementController      movementController;
     private static Odometer                odometer;
@@ -144,7 +140,6 @@ public class Main {
         sideLSPort = LocalEV3.get().getPort("S1");
         canColourSensor = new EV3ColorSensor(sideLSPort);
         canRGBProvider = canColourSensor.getMode("RGB");
-        canRGBBuffer = new float[canRGBProvider.sampleSize()];
 
         // starts odometer
         try {
@@ -192,8 +187,8 @@ public class Main {
         
         canSearch = new CanSearch(
                 odometer, movementController, navigator, medianDistanceSensor, claw, weightDetector, colourDetector,
-                localizer, timeTracker, canColour, searchzone_LL, searchzone_UR, tunnel_LL, tunnel_UR, island_LL, island_UR,
-                startingCorner, 2*TILE_SIZE, TILE_SIZE
+                localizer, canColour, searchzone_LL, searchzone_UR, tunnel_LL, tunnel_UR, island_LL, island_UR,
+                startingCorner, 2 * TILE_SIZE, TILE_SIZE
         );
         // inject canSearch into Navigator through setter because of mutual dependency
         navigator.setCanSearcher(canSearch);

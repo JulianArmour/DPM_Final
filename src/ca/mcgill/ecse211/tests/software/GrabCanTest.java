@@ -5,11 +5,9 @@ import ca.mcgill.ecse211.detectors.WeightDetector;
 import ca.mcgill.ecse211.navigators.MovementController;
 import ca.mcgill.ecse211.odometer.Odometer;
 import ca.mcgill.ecse211.odometer.OdometerExceptions;
-import lejos.hardware.Button;
 import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import lejos.hardware.motor.NXTRegulatedMotor;
 
 public class GrabCanTest {
 
@@ -23,7 +21,6 @@ public class GrabCanTest {
     private static EV3LargeRegulatedMotor rightMotor;
     private static MovementController     movementController;
     private static LocalEV3               localEV3;
-    private static NXTRegulatedMotor      elbowMotor;
     private static EV3LargeRegulatedMotor clawMotor;
     private static WeightDetector         weightDetector;
     private static Claw					  claw;

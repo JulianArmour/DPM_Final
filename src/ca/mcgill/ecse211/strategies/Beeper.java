@@ -9,7 +9,7 @@ import lejos.hardware.Sound;
  * 
  * @author Julian Armour
  * @version 2
- *
+ * @since April 1, 2019
  */
 public class Beeper {
 
@@ -17,7 +17,7 @@ public class Beeper {
      * Performs a beep sequence for when the initial localizatin is completed.
      * 
      * @author Julian Armour
-     * @since 1
+     * @since April 1, 2019
      */
     public static void localized() {
         nShortBeeps(3);
@@ -60,6 +60,8 @@ public class Beeper {
      *            <code>true</code> if the can is heavy.
      * @param canColour
      *            the colour of the can
+     * @author Julian Armour
+     * @since April 1, 2019
      */
     public static void colourAndWeightBeep(boolean canIsHeavy, CanColour canColour) {
         if (canIsHeavy) {
@@ -96,14 +98,22 @@ public class Beeper {
     }
 
     /**
-     * Performs a beeping sequence for when the robot arrives at the search zone for the first time.
+     * Performs a beeping sequence for when the robot arrives at the search zone for
+     * the first time.
+     * 
+     * @since April 1, 2019
+     * @author Julian Armour
      */
     public static void arrivedAtSearchZone() {
         nShortBeeps(3);
     }
 
     /**
-     * Performs a beeping sequence for when the robot drops off cans at the starting tile.
+     * Performs a beeping sequence for when the robot drops off cans at the starting
+     * tile.
+     * 
+     * @since April 1, 2019
+     * @author Julian Armour
      */
     public static void droppedOffCans() {
         nShortBeeps(5);

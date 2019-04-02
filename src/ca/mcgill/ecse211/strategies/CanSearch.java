@@ -34,9 +34,7 @@ public class CanSearch {
     private WeightDetector       weightDetector;
     private ColourDetector       colourDetector;
     private Localization         localizer;
-    private TimeTracker          timeTracker;
     private int[]                SZ_LL, SZ_UR;
-    private float[]              P_TUN_LL, P_TUN_UR, P_ISL_LL, P_ISL_UR;
     private int                  startCorner;
     private float                TILE_LENGTH;
     private float                SCAN_RADIUS;
@@ -88,7 +86,7 @@ public class CanSearch {
     public CanSearch(
             Odometer odometer, MovementController movementController, Navigator navigator, MedianDistanceSensor USData,
             Claw claw, WeightDetector weightDetector, ColourDetector colourDetector, Localization localizer,
-            TimeTracker timeTracker, CanColour searchCanColour, int[] searchzone_LL, int[] searchzone_UR,
+            CanColour searchCanColour, int[] searchzone_LL, int[] searchzone_UR,
             int[] tunnel_LL, int[] tunnel_UR, int[] ISLAND_LL, int[] ISLAND_UR, int startingCorner, float scanRadius,
             double tileLength
     ) {
@@ -100,15 +98,10 @@ public class CanSearch {
         this.weightDetector = weightDetector;
         this.colourDetector = colourDetector;
         this.localizer = localizer;
-        this.timeTracker = timeTracker;
         this.SZ_LL = searchzone_LL;
         this.SZ_UR = searchzone_UR;
         this.P_SZ_LL = new float[] { (float) (SZ_LL[0] * tileLength), (float) (SZ_LL[1] * tileLength) };
         this.P_SZ_UR = new float[] { (float) (SZ_UR[0] * tileLength), (float) (SZ_UR[1] * tileLength) };
-        this.P_TUN_LL = new float[] { (float) (tunnel_LL[0] * tileLength), (float) (tunnel_LL[1] * tileLength) };
-        this.P_TUN_UR = new float[] { (float) (tunnel_UR[0] * tileLength), (float) (tunnel_UR[1] * tileLength) };
-        this.P_ISL_LL = new float[] { (float) (ISLAND_LL[0] * tileLength), (float) (ISLAND_LL[1] * tileLength) };
-        this.P_ISL_UR = new float[] { (float) (ISLAND_UR[0] * tileLength), (float) (ISLAND_UR[1] * tileLength) };
         this.startCorner = startingCorner;
         this.searchCanColour = searchCanColour;
         this.TILE_LENGTH = (float) tileLength;

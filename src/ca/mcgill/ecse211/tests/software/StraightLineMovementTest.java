@@ -1,21 +1,11 @@
 package ca.mcgill.ecse211.tests.software;
 
 import ca.mcgill.ecse211.Main;
-import ca.mcgill.ecse211.localizers.Localization;
 import ca.mcgill.ecse211.navigators.MovementController;
-import ca.mcgill.ecse211.navigators.Navigator;
 import ca.mcgill.ecse211.odometer.Odometer;
 import ca.mcgill.ecse211.odometer.OdometerExceptions;
-import ca.mcgill.ecse211.sensors.LightDifferentialFilter;
-import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
-import lejos.hardware.Button;
-import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import lejos.hardware.port.Port;
-import lejos.hardware.sensor.EV3ColorSensor;
-import lejos.hardware.sensor.EV3UltrasonicSensor;
-import lejos.hardware.sensor.SensorMode;
 
 public class StraightLineMovementTest {
 

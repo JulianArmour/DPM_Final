@@ -1,7 +1,6 @@
 package ca.mcgill.ecse211.navigators;
 
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import ca.mcgill.ecse211.Main;

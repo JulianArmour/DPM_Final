@@ -1,7 +1,5 @@
 package ca.mcgill.ecse211.tests.software;
 
-import java.util.List;
-
 import ca.mcgill.ecse211.arms.ColourArm;
 import ca.mcgill.ecse211.detectors.ColourDetector;
 import lejos.hardware.Button;

@@ -27,8 +27,6 @@ public class setWaypointsTest {
 
 	private static LinkedList<float[]> scanningPoints = new LinkedList<float[]>();
 
-	private static int STATE_OF_TEST = 1;
-	
 	public static void main(String[] args) {
 		
 		pointsForCornerZeroAndThree();

@@ -14,8 +14,6 @@ import ca.mcgill.ecse211.odometer.OdometerExceptions;
 import ca.mcgill.ecse211.sensors.LightDifferentialFilter;
 import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
 import ca.mcgill.ecse211.strategies.CanSearch;
-import ca.mcgill.ecse211.strategies.TimeTracker;
-import lejos.hardware.Button;
 import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
@@ -107,9 +105,7 @@ public class InitialLocalizationTest {
     private static Port                    sideLSPort;
     private static EV3ColorSensor          canColourSensor;
     private static SensorMode              canRGBProvider;
-    private static float[]                 canRGBBuffer;
     private static CanSearch               canSearch;
-    private static TimeTracker timeTracker;
 
     public static void main(String[] args) {
         // set up side ultrasonic sensor
@@ -134,7 +130,6 @@ public class InitialLocalizationTest {
         sideLSPort = LocalEV3.get().getPort("S1");
         canColourSensor = new EV3ColorSensor(sideLSPort);
         canRGBProvider = canColourSensor.getMode("RGB");
-        canRGBBuffer = new float[canRGBProvider.sampleSize()];
 
         // set up wheel motors
         leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
@@ -166,10 +161,9 @@ public class InitialLocalizationTest {
         colourArm = new ColourArm(colourMotor);
         weightDetector = new WeightDetector(clawMotor, movementController, TILE_LENGTH);
         colourDetector = new ColourDetector(colourArm, canRGBProvider);
-        timeTracker = new TimeTracker(45, 300);
         canSearch = new CanSearch(
                 odometer, movementController, navigator, medianDistanceSensor, claw, weightDetector, colourDetector,
-                localizer, timeTracker, canColour, searchzone_LL, searchzone_UR, TLL, TUR, ILL, IUR, SC,
+                localizer, canColour, searchzone_LL, searchzone_UR, TLL, TUR, ILL, IUR, SC,
                 2, TILE_LENGTH
         );
 
@@ -193,29 +187,6 @@ public class InitialLocalizationTest {
                 );
 
                 Sound.beep();
-        // System.exit(0);
-//        Button.waitForAnyPress();
-        claw.closeClaw();
-        navigator.travelToTunnel(true);
-        navigator.travelThroughTunnel(true);
-        System.out.println("ODO:\t"+"X:"+odometer.getXYT()[0]/TILE_LENGTH+" Y:"+odometer.getXYT()[1]/TILE_LENGTH);
-        navigator.travelToSearchZoneLL();
-        //odometer.setXYT(SZR_LL_x*TILE_LENGTH, SZR_LL_y*TILE_LENGTH, movementController.roundAngle());
-        System.out.println("LL: " + 
-                odometer.getXYT()[0] / TILE_LENGTH + "," + odometer.getXYT()[1] / TILE_LENGTH + ","
-                        + odometer.getXYT()[2]
-                );
-        for (int i = 0; i < 10; i++) {
-            Sound.systemSound(true, 0);
-        }
-        navigator.travelToSearchZoneUR();
-
-        System.out.println("UR: " + 
-                odometer.getXYT()[0] / TILE_LENGTH + "," + odometer.getXYT()[1] / TILE_LENGTH + ","
-                        + odometer.getXYT()[2]
-                );
-                System.exit(0);
-		
         System.exit(0);
     }
 }

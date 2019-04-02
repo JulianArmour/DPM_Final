@@ -19,29 +19,29 @@ import lejos.utility.TimerListener;
  * @since March 8 2019
  */
 public class ColourDetector implements TimerListener {
-	
-	private static final float RCAN_RMEAN = 0.9702f;
-	private static final float RCAN_GMEAN = 0.1848f;
-	private static final float RCAN_BMEAN = 0.1569f;
-	
-	private static final float BCAN_RMEAN = 0.4144f;
-	private static final float BCAN_GMEAN = 0.6289f;
-	private static final float BCAN_BMEAN = 0.6579f;
-	
-	private static final float YCAN_RMEAN = 0.8594f;
-	private static final float YCAN_GMEAN = 0.4627f;
-	private static final float YCAN_BMEAN = 0.2172f;
-	
-	private static final float GCAN_RMEAN = 0.4958f;
-	private static final float GCAN_GMEAN = 0.7284f; 
-	private static final float GCAN_BMEAN = 0.4729f;
 
-    private static final int COLOUR_POLL_PERIOD = 50;
-    private ColourArm    colourArm;
-    private SampleProvider   colourSampler;
+    private static final float RCAN_RMEAN         = 0.9702f;
+    private static final float RCAN_GMEAN         = 0.1848f;
+    private static final float RCAN_BMEAN         = 0.1569f;
 
-    private List<float[]>    colourSamples;
-    private Timer            colourPoller;
+    private static final float BCAN_RMEAN         = 0.4144f;
+    private static final float BCAN_GMEAN         = 0.6289f;
+    private static final float BCAN_BMEAN         = 0.6579f;
+
+    private static final float YCAN_RMEAN         = 0.8594f;
+    private static final float YCAN_GMEAN         = 0.4627f;
+    private static final float YCAN_BMEAN         = 0.2172f;
+
+    private static final float GCAN_RMEAN         = 0.4958f;
+    private static final float GCAN_GMEAN         = 0.7284f;
+    private static final float GCAN_BMEAN         = 0.4729f;
+
+    private static final int   COLOUR_POLL_PERIOD = 50;
+    private ColourArm          colourArm;
+    private SampleProvider     colourSampler;
+
+    private List<float[]>      colourSamples;
+    private Timer              colourPoller;
 
     /**
      * 
@@ -112,70 +112,88 @@ public class ColourDetector implements TimerListener {
      * @since March 8, 2019
      */
     public CanColour getCanColour(List<float[]> colourSamples) {
-    	float RMean = 0.0f;
-		float GMean = 0.0f;
-		float BMean = 0.0f;
-		float NRMean, NGMean, NBMean;
-		float[] data = new float[3];
-	
-		for(int i = 0; i < colourSamples.size(); i++) {
-			data = (float[]) colourSamples.get(i);
-			RMean += data[0];
-			GMean += data[1];
-			BMean += data[2];
-		}
-		RMean /= data.length;
-		GMean /= data.length;
-		BMean /= data.length;
-		
-		NRMean = (float) (RMean / Math.sqrt(Math.pow(RMean, 2) + Math.pow(GMean, 2) + Math.pow(BMean, 2)));
-		NGMean = (float) (GMean / Math.sqrt(Math.pow(RMean, 2) + Math.pow(GMean, 2) + Math.pow(BMean, 2)));
-		NBMean = (float) (BMean / Math.sqrt(Math.pow(RMean, 2) + Math.pow(GMean, 2) + Math.pow(BMean, 2)));
-		
-		System.out.println("NR: " + NRMean);
-		System.out.println("NG: " + NGMean);
-		System.out.println("NB: " + NBMean);
-		
-		return colorMatch(NRMean, NGMean, NBMean);
-		
-		
+        float RMean = 0.0f;
+        float GMean = 0.0f;
+        float BMean = 0.0f;
+        float NRMean, NGMean, NBMean;
+        float[] data = new float[3];
+
+        for (int i = 0; i < colourSamples.size(); i++) {
+            data = (float[]) colourSamples.get(i);
+            RMean += data[0];
+            GMean += data[1];
+            BMean += data[2];
+        }
+        RMean /= data.length;
+        GMean /= data.length;
+        BMean /= data.length;
+
+        NRMean = (float) (RMean / Math.sqrt(Math.pow(RMean, 2) + Math.pow(GMean, 2) + Math.pow(BMean, 2)));
+        NGMean = (float) (GMean / Math.sqrt(Math.pow(RMean, 2) + Math.pow(GMean, 2) + Math.pow(BMean, 2)));
+        NBMean = (float) (BMean / Math.sqrt(Math.pow(RMean, 2) + Math.pow(GMean, 2) + Math.pow(BMean, 2)));
+
+        System.out.println("NR: " + NRMean);
+        System.out.println("NG: " + NGMean);
+        System.out.println("NB: " + NBMean);
+
+        return colorMatch(NRMean, NGMean, NBMean);
+
     }
+
     /**
-	 * Method to calculate the distance of the normalized experimental RGB data to the characterized data for each can color in order to find which color 
-	 * the experimental data is closer to   
-	 * @param RMean Normalized R values of the experimental data
-	 * @param GMean Normalized G values of the experimental data
-	 * @param BMean Normalized B values of the experimental data
-	 * @return The integer corresponding to the numerical representation of the can color
-	 */
-    
-	private static CanColour colorMatch(float RMean, float GMean, float BMean) {
-		Float dRCan, dBCan, dYCan, dGCan;
-		float min;
-		CanColour dataCanColor;
-		ArrayList<Float> dArray = new ArrayList<Float>();
-		
-		dRCan = (float) Math.sqrt(Math.pow((RMean - RCAN_RMEAN), 2) + Math.pow((GMean - RCAN_GMEAN), 2) + Math.pow((BMean - RCAN_BMEAN), 2));
-		dBCan = (float) Math.sqrt(Math.pow((RMean - BCAN_RMEAN), 2) + Math.pow((GMean - BCAN_GMEAN), 2) + Math.pow((BMean - BCAN_BMEAN), 2));
-		dYCan = (float) Math.sqrt(Math.pow((RMean - YCAN_RMEAN), 2) + Math.pow((GMean - YCAN_GMEAN), 2) + Math.pow((BMean - YCAN_BMEAN), 2));
-		dGCan = (float) Math.sqrt(Math.pow((RMean - GCAN_RMEAN), 2) + Math.pow((GMean - GCAN_GMEAN), 2) + Math.pow((BMean - GCAN_BMEAN), 2));
-		
-		dArray.add(dRCan);
-		dArray.add(dBCan);
-		dArray.add(dYCan);
-		dArray.add(dGCan);
-		
-		min = Collections.min(dArray);
-		
-		System.out.println("min: " + min);
-		
-		if(min == dRCan) dataCanColor = CanColour.RED;
-		else if(min == dYCan) dataCanColor = CanColour.YELLOW;
-		else if(min == dGCan) dataCanColor = CanColour.GREEN;
-		else dataCanColor = CanColour.BLUE;
-		
-		return dataCanColor;
-		
-	}
-	
+     * Method to calculate the distance of the normalized experimental RGB data to
+     * the characterized data for each can color in order to find which color the
+     * experimental data is closer to
+     * 
+     * @param RMean
+     *            Normalized R values of the experimental data
+     * @param GMean
+     *            Normalized G values of the experimental data
+     * @param BMean
+     *            Normalized B values of the experimental data
+     * @return The integer corresponding to the numerical representation of the can
+     *         color
+     */
+
+    private static CanColour colorMatch(float RMean, float GMean, float BMean) {
+        Float dRCan, dBCan, dYCan, dGCan;
+        float min;
+        CanColour dataCanColor;
+        ArrayList<Float> dArray = new ArrayList<Float>();
+
+        dRCan = (float) Math.sqrt(
+                Math.pow((RMean - RCAN_RMEAN), 2) + Math.pow((GMean - RCAN_GMEAN), 2) + Math.pow((BMean - RCAN_BMEAN), 2)
+        );
+        dBCan = (float) Math.sqrt(
+                Math.pow((RMean - BCAN_RMEAN), 2) + Math.pow((GMean - BCAN_GMEAN), 2) + Math.pow((BMean - BCAN_BMEAN), 2)
+        );
+        dYCan = (float) Math.sqrt(
+                Math.pow((RMean - YCAN_RMEAN), 2) + Math.pow((GMean - YCAN_GMEAN), 2) + Math.pow((BMean - YCAN_BMEAN), 2)
+        );
+        dGCan = (float) Math.sqrt(
+                Math.pow((RMean - GCAN_RMEAN), 2) + Math.pow((GMean - GCAN_GMEAN), 2) + Math.pow((BMean - GCAN_BMEAN), 2)
+        );
+
+        dArray.add(dRCan);
+        dArray.add(dBCan);
+        dArray.add(dYCan);
+        dArray.add(dGCan);
+
+        min = Collections.min(dArray);
+
+        System.out.println("min: " + min);
+
+        if (min == dRCan)
+            dataCanColor = CanColour.RED;
+        else if (min == dYCan)
+            dataCanColor = CanColour.YELLOW;
+        else if (min == dGCan)
+            dataCanColor = CanColour.GREEN;
+        else
+            dataCanColor = CanColour.BLUE;
+
+        return dataCanColor;
+
+    }
+
 }

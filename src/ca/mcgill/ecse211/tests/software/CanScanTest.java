@@ -14,9 +14,6 @@ import ca.mcgill.ecse211.odometer.OdometerExceptions;
 import ca.mcgill.ecse211.sensors.LightDifferentialFilter;
 import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
 import ca.mcgill.ecse211.strategies.CanSearch;
-import ca.mcgill.ecse211.strategies.TimeTracker;
-import lejos.hardware.Button;
-import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.EV3MediumRegulatedMotor;
@@ -107,9 +104,7 @@ public class CanScanTest {
     private static Port                    sideLSPort;
     private static EV3ColorSensor          canColourSensor;
     private static SensorMode              canRGBProvider;
-    private static float[]                 canRGBBuffer;
     private static CanSearch               canSearch;
-    private static TimeTracker timeTracker;
 
     public static void main(String[] args) {
         // set up side ultrasonic sensor
@@ -134,7 +129,6 @@ public class CanScanTest {
         sideLSPort = LocalEV3.get().getPort("S1");
         canColourSensor = new EV3ColorSensor(sideLSPort);
         canRGBProvider = canColourSensor.getMode("RGB");
-        canRGBBuffer = new float[canRGBProvider.sampleSize()];
 
         // set up wheel motors
         leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
@@ -166,10 +160,9 @@ public class CanScanTest {
         colourArm = new ColourArm(colourMotor);
         weightDetector = new WeightDetector(clawMotor, movementController, TILE_LENGTH);
         colourDetector = new ColourDetector(colourArm, canRGBProvider);
-        timeTracker = new TimeTracker(45, 300);
         canSearch = new CanSearch(
                 odometer, movementController, navigator, medianDistanceSensor, claw, weightDetector, colourDetector,
-                localizer, timeTracker, canColour, searchzone_LL, searchzone_UR, TLL, TUR, ILL, IUR, SC,
+                localizer, canColour, searchzone_LL, searchzone_UR, TLL, TUR, ILL, IUR, SC,
                 2*TILE_LENGTH, TILE_LENGTH
         );
 
