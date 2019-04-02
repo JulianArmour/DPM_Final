@@ -70,6 +70,17 @@ public class MovementController {
             rotateAngle(360 - dT, false);
         }
     }
+    
+    /**
+     * Turns the robot to face the position (x,y)
+     * 
+     * @param x the x component of the position to face
+     * @param y the y component of the position to face
+     */
+    public void turnTo(float x, float y) {
+        double[] curPos = odometer.getXYT();
+        turnTo(calculateAngle(curPos[0], curPos[1], x, y));
+    }
 
     /**
      * Turns the robot towards an absolute (i.e. not relative) angle on the
@@ -352,6 +363,7 @@ public class MovementController {
     }
 
     /**
+     * @deprecated
      * travels the robot to position (-5,-5)
      * 
      * @param odo
@@ -412,5 +424,4 @@ public class MovementController {
     public static double roundDistance(double distance, double gridDistance) {
         return (Math.round(distance / gridDistance) * gridDistance);
     }
-
 }

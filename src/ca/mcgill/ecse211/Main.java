@@ -31,7 +31,7 @@ import lejos.utility.Delay;
 
 public class Main {
 //    private static final String            SERVER_IP               = "192.168.2.8"; // for beta and competition
-    private static final String            SERVER_IP               = "192.168.2.16"; // for personal testing
+    private static final String            SERVER_IP               = "192.168.2.18"; // for personal testing
 
     private static final int               TEAM_NUMBER             = 3;
 
@@ -110,9 +110,12 @@ public class Main {
     private static Claw                    claw;
     private static ColourArm               colourArm;
     private static ColourDetector          colourDetector;
-    private static TimeTracker timeTracker;
+    private static TimeTracker             timeTracker;
+
+    public static boolean                  broughtBackACan;
 
     public static void main(String[] args) {
+        broughtBackACan = false;
         // init motors
         leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
         rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
@@ -206,7 +209,7 @@ public class Main {
         lcd.clear();
         // set the scan positions and dumping positions for the search zone
         canSearch.setScanPositions();
-        // next, localize
+        // next, loca lize
         localizer.initialUSLocalization();
         localizer.initialLightLocalization();
         Beeper.localized();
@@ -218,7 +221,6 @@ public class Main {
         navigator.travelThroughTunnel(true);
         // travel to search zone
         navigator.travelToSearchZone();
-        Beeper.arrivedAtSearchLL();
         // start scanning for cans
         while (!canSearch.scanZones()) {
             // still more cans to scan. This also means the robot is currently holding a can.
@@ -256,6 +258,8 @@ public class Main {
                 break;
             }
             claw.closeClaw();
+            Beeper.droppedOffCans();
+            broughtBackACan = true;
             localizer.quickLocalization();
             // go to the tunnel
             navigator.travelToTunnel(true);

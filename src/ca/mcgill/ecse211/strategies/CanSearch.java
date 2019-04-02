@@ -41,15 +41,12 @@ public class CanSearch {
     private float                TILE_LENGTH;
     private float                SCAN_RADIUS;
     private List<float[]>        scanningPoints  = new LinkedList<float[]>();
-    private List<float[]>        dumpingPoints = new LinkedList<float[]>();
+    private List<float[]>        dumpingPoints   = new LinkedList<float[]>();
     private float[]              P_SZ_LL;
     private float[]              P_SZ_UR;
     private int                  currentScanPoint;
     private CanColour            searchCanColour;
-    
-    
 
-    
     /**
      * 
      * @param odometer
@@ -83,7 +80,8 @@ public class CanSearch {
      * @param startingCorner
      *            the starting corner ID
      * @param scanRadius
-     *            the maximum distance (in # of tiles) for detecting a can when scanning
+     *            the maximum distance (in # of tiles) for detecting a can when
+     *            scanning
      * @param tileLength
      *            the length of a tile (in cm)
      */
@@ -128,25 +126,25 @@ public class CanSearch {
      */
     public void setScanPositions() {
         // calculates the width and the height of the padded search area
-        float deltaX = (SZ_UR[0] - SZ_LL[0])*TILE_LENGTH;
-        float deltaY = (SZ_UR[1] - SZ_LL[1])*TILE_LENGTH;
+        float deltaX = (SZ_UR[0] - SZ_LL[0]) * TILE_LENGTH;
+        float deltaY = (SZ_UR[1] - SZ_LL[1]) * TILE_LENGTH;
 
         int nYPoints = Math.round(deltaY / SCAN_RADIUS);
         int nXPoints = Math.round(deltaX / SCAN_RADIUS);
 
-        for (int i = 0; i <= nXPoints; i++) {
-            for (int j = 0; j <= nYPoints; j++) {
+        for (int i = 0; i < nXPoints; i++) {
+            for (int j = 0; j < nYPoints; j++) {
                 float[] nextPos = new float[2];
 
-                nextPos[1] = SZ_LL[1]*TILE_LENGTH + j * SCAN_RADIUS;
+                nextPos[1] = SZ_LL[1] * TILE_LENGTH + j * SCAN_RADIUS;
                 if (startCorner == 1 || startCorner == 2) {
-                    nextPos[0] = SZ_LL[0]*TILE_LENGTH + (nXPoints - i)*SCAN_RADIUS;
+                    nextPos[0] = SZ_UR[0] * TILE_LENGTH - i*SCAN_RADIUS;
                     // set the dumping points depending on searchpoints
                     if (i == 0) {
                         dumpingPoints.add(new float[] { nextPos[0] + TILE_LENGTH / 2, nextPos[1] });
                     }
                 } else {// startCorner = 0 or 3
-                    nextPos[0] = SZ_LL[0]*TILE_LENGTH + i*SCAN_RADIUS;
+                    nextPos[0] = SZ_LL[0] * TILE_LENGTH + i * SCAN_RADIUS;
                     // set the dumping points depending on searchpoints
                     if (i == 0) {
                         dumpingPoints.add(new float[] { nextPos[0] - TILE_LENGTH / 2, nextPos[1] });
@@ -155,7 +153,7 @@ public class CanSearch {
                 scanningPoints.add(nextPos);
             }
         }
-        System.out.println("Created "+scanningPoints.size()+" scan points.");
+        System.out.println("Created " + scanningPoints.size() + " scan points.");
     }
 
     /**
@@ -167,7 +165,7 @@ public class CanSearch {
     public List<float[]> getScanningPoints() {
         return scanningPoints;
     }
-    
+
     /**
      * 
      * @return all the possible dumping positions
@@ -178,7 +176,6 @@ public class CanSearch {
         return dumpingPoints;
     }
 
-    
     /**
      * @return the current scan point
      * 
@@ -192,22 +189,23 @@ public class CanSearch {
     /**
      * Scans for remaining cans
      * 
-     * @return <code>true</code> if it all the zones have been scanned or the time limit has been reached
+     * @return <code>true</code> if it all the zones have been scanned or the time
+     *         limit has been reached
      * 
      * @author Alice Kazarine, Julian Armour
      * @since March 26, 2019
      */
     public boolean scanZones() {
-        System.out.println("SCAN RADIUS: "+SCAN_RADIUS);
+        System.out.println("SCAN RADIUS: " + SCAN_RADIUS);
         while (currentScanPoint < scanningPoints.size()) {
+//        	movCon.turnTo(movCon.calculateAngle(odo.getXYT()[0], odo.getXYT()[1], scanningPoints.get(currentScanPoint)[0], scanningPoints.get(currentScanPoint)[1]));
+//            localizer.quickLocalization();
             movCon.travelTo(scanningPoints.get(currentScanPoint)[0], scanningPoints.get(currentScanPoint)[1], false);
             localizer.quickLocalization();
             movCon.driveDistance(-Main.LT_SENSOR_TO_WHEELBASE);
-            System.out.println("About to scan");
             float[] canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 355, SCAN_RADIUS);
-            System.out.println("Done scanning");
             if (canPos != null) {
-            	System.out.println("Found can at position " + canPos[0] + " " + canPos[1]);
+            	  System.out.println("Found a can");
                 boolean foundTheCan = travelToCan(canPos);
                 if (foundTheCan) {
                     claw.closeClawForWeighing();
@@ -217,20 +215,19 @@ public class CanSearch {
                     claw.closeClaw();
                     boolean canIsHeavy = weightDetector.canIsHeavy();
                     claw.closeClaw();
-                    
+
                     // beep depending on canColour and canIsHeavy
                     Beeper.colourAndWeightBeep(canIsHeavy, canColour);
-                    
+
                     // if this is the can colour we're looking for
-                    if (canColour == searchCanColour) {
+                    if (canColour == searchCanColour && !Main.broughtBackACan) {
                         // go back to current scanning point
                         float[] currentScanPoint = getCurrentScanPoint();
                         movCon.travelTo(currentScanPoint[0], currentScanPoint[1], false);
-                        claw.closeClaw();
                         System.out.println("Found can, returning home");
                         navigator.travelBackToStartingCorner();
                         return false;
-                    } else { 
+                    } else {
                         // wrong colour, discard it outside the search zone
                         System.out.println("Dumping can");
                         dumpCan();
@@ -241,6 +238,10 @@ public class CanSearch {
                 }
             } else {
                 currentScanPoint += 1;
+                claw.closeClaw();
+                float[] nextScanPt = getCurrentScanPoint();
+                movCon.turnTo(nextScanPt[0], nextScanPt[1]);
+                localizer.quickLocalization();
             }
         }
         if (currentScanPoint >= scanningPoints.size()) {
@@ -251,6 +252,7 @@ public class CanSearch {
         } else {
             return false;
         }
+        
     }
 
     /**
@@ -262,7 +264,7 @@ public class CanSearch {
     private void dumpCan() {
         navigator.travelToNearestDumpingPoint();
         claw.openClaw();
-        movCon.driveDistance(-TILE_LENGTH/2, false);
+        movCon.driveDistance(-TILE_LENGTH / 2, false);
         claw.closeClaw();
         movCon.rotateAngle(180, true);
         localizer.quickLocalization();
@@ -281,19 +283,22 @@ public class CanSearch {
      */
     public boolean travelToCan(float[] canPos) {
         double[] robotPos = odo.getXYT();
-        // travel robot ~12 cm in front of can
+        // travel robot ~17 cm in front of can
         movCon.turnTo(movCon.calculateAngle(robotPos[0], robotPos[1], canPos[0], canPos[1]));
-        movCon.driveDistance(movCon.calculateDistance(robotPos[0], robotPos[1], canPos[0], canPos[1]) - 12, false);
+        movCon.driveDistance(movCon.calculateDistance(robotPos[0], robotPos[1], canPos[0], canPos[1]) - 20, false);
         claw.openClaw();
         movCon.rotateAngle(90, false, false);
-        canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 180, 20);
+        canPos = fastCanScan(P_SZ_LL, P_SZ_UR, 180, 30);
         if (canPos == null) {
             return false;
         } else {
+        	if(movCon.calculateDistance(odo.getXYT()[0], odo.getXYT()[1], canPos[0], canPos[1]) > 13) {
+        		movCon.rotateAngle(10, true);
+        	}
             // move forward until to appropriate distance for gripping the can
             USData.flush();
             float dist = USData.getFilteredDistance();
-            if (dist < TILE_LENGTH) {
+            if (dist < TILE_LENGTH*1.5) {
                 movCon.driveDistance(dist - Main.US_SENSOR_TO_CLAW, false);
             }
             return true;
@@ -319,7 +324,6 @@ public class CanSearch {
      * @since March 19, 2019
      */
     public float[] fastCanScan(float[] searchLL, float[] searchUR, double sweepAngle, float scanRadius) {
-        Delay.msDelay(500);
         claw.openClaw();
         double[] robotPos = odo.getXYT();
         // start rotating clockwise
@@ -330,72 +334,80 @@ public class CanSearch {
         Runnable rotater = new Runnable() {
             @Override
             public void run() {
-            	System.out.println("Are we turning?");
                 movCon.turnClockwiseTo(finalHeading, false);
                 System.out.println("Yes we have turned");
                 // the robot is only at the final heading if it wasn't interrupted by detecting
                 // a can
                 if (!Thread.interrupted()) {
+                	System.out.println(10);
                     atFinalHeading[0] = true;
                 }
             }
         };
 
         USData.flush();
+        Delay.msDelay(2000);
         Thread rotT = new Thread(rotater);
+        System.out.println(1);
         rotT.start(); // start rotating
+        System.out.println("Starting rotation");
         float[] position = new float[2];
         while (!atFinalHeading[0]) {
             float dist = USData.getFilteredDistance();
             if (dist <= scanRadius) {
-                double angle = odo.getXYT()[2];
+            	double angle = odo.getXYT()[2];
                 position[0] = (float) (dist * Math.sin(Math.toRadians(angle)) + robotPos[0]);
                 position[1] = (float) (dist * Math.cos(Math.toRadians(angle)) + robotPos[1]);
                 System.out.println("Saw something");
                 if (inSearchZone(position, searchLL, searchUR)) {
-                	System.out.println("Found can! Distance in SZ: " + dist);
+                	  System.out.println(3);
                     rotT.interrupt();
                     movCon.stopMotors();
+                    System.out.println(4);
 
                     // more checks to see if it is really a can
                     double meanDist = 0;
                     for (int i = 0; i < 10; i++) {
                         meanDist += (double) USData.getFilteredDistance();
                         try {
-							Thread.sleep(CAN_SCAN_PERIOD);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
+                            Thread.sleep(30);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
                     meanDist /= 10;
                     angle = odo.getXYT()[2];
                     position[0] = (float) (meanDist * Math.sin(Math.toRadians(angle)) + robotPos[0]);
                     position[1] = (float) (meanDist * Math.cos(Math.toRadians(angle)) + robotPos[1]);
                     if (inSearchZone(position, searchLL, searchUR)) {
+                    	System.out.println(5);
                         // true positive, return
-                        Delay.msDelay(500);
                         return position;
                     } else {
                         // false positive, keep scanning
                         rotT = new Thread(rotater);
+                        Delay.msDelay(2000);
+                        System.out.println(6);
                         rotT.start(); // start rotating again
+                        System.out.println(7);
                     }
                 }
             }
+
             try {
                 Thread.sleep(CAN_SCAN_PERIOD);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        Delay.msDelay(500);
+        System.out.println(8);
         return null;
     }
 
     /**
-     * @deprecated use {@link #fastCanScan(float[], float[], double, float)} instead.
-     * Scans for cans by rotating 360-degrees and returns all potential locations of
-     * cans.
+     * @deprecated use {@link #fastCanScan(float[], float[], double, float)}
+     *             instead. Scans for cans by rotating 360-degrees and returns all
+     *             potential locations of cans.
      * 
      * @param searchLL
      * @param searchUR
@@ -404,7 +416,7 @@ public class CanSearch {
      */
     public List<float[]> canScan(float[] searchLL, float[] searchUR) {
         claw.openClaw();
-        
+
         double[] robotPos = odo.getXYT();
 
         final List<float[]> angleDistData = new LinkedList<float[]>();
