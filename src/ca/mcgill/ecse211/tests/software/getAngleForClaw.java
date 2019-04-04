@@ -13,7 +13,7 @@ public class getAngleForClaw {
 
 
     public static final double            WHEEL_RAD   = 2.2;
-    public static final double            TRACK       = Main.TRACK;
+    public static final double            TRACK       = Main.TRACK_CW;
     public static final int               SC          = 2;
 
     private static Odometer               odometer;

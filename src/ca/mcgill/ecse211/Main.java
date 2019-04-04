@@ -38,7 +38,8 @@ public class Main {
 
     public static final float              TILE_SIZE               = 30.48f;
     public static final double             WHEEL_RAD               = 2.07;
-    public static final double             TRACK                   = 8.98;
+    public static final double             TRACK_CW                = 8.815;
+    public static final double             TRACK_CCW               = 8.89;
     // distance from the light back light sensors to the wheel-base
     public static double                   LT_SENSOR_TO_WHEELBASE  = 9.2;
     // distance from the ultrasonic sensor to the "thumb" of the claw
@@ -143,7 +144,7 @@ public class Main {
 
         // starts odometer
         try {
-            odometer = Odometer.getOdometer(leftMotor, rightMotor, TRACK, WHEEL_RAD);
+            odometer = Odometer.getOdometer(leftMotor, rightMotor, TRACK_CW, WHEEL_RAD);
         } catch (OdometerExceptions e) {
             System.out.println("Could not setup odometer.");
         }
@@ -157,7 +158,7 @@ public class Main {
         
         medianDistanceSensor = new MedianDistanceSensor(DistanceProvider, USSample, odometer, MEDIAN_FILTER_WINDOW);
         
-        movementController = new MovementController(leftMotor, rightMotor, WHEEL_RAD, TRACK, odometer);
+        movementController = new MovementController(leftMotor, rightMotor, WHEEL_RAD, TRACK_CW, TRACK_CCW, odometer);
         
         weightDetector = new WeightDetector(clawMotor, movementController, TILE_SIZE);
         
@@ -197,9 +198,9 @@ public class Main {
     }
     
     /**
-     * Extending {@link Main} and overriding {@link #run()} is useful for streamlining the test creation process.
+     * Top-level driver for the competition.
      */
-    public static void run() {
+    private static void run() {
         // clear the screen
         lcd.clear();
         // set the scan positions and dumping positions for the search zone

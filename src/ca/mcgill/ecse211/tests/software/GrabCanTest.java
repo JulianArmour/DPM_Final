@@ -1,5 +1,6 @@
 package ca.mcgill.ecse211.tests.software;
 
+import ca.mcgill.ecse211.Main;
 import ca.mcgill.ecse211.arms.Claw;
 import ca.mcgill.ecse211.detectors.WeightDetector;
 import ca.mcgill.ecse211.navigators.MovementController;
@@ -12,7 +13,8 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 public class GrabCanTest {
 
     public static final double            WHEEL_RAD   = 2.2;
-    public static final double            TRACK       = 17.3;
+    public static final double            TRACK_CW       = Main.TRACK_CW;
+    public static final double            TRACK_CCW       = Main.TRACK_CCW;
     public static final int               SC          = 2;
     private static final float            TILE_LENGTH = 30.48f;
 
@@ -37,14 +39,14 @@ public class GrabCanTest {
         clawMotor.resetTachoCount();
         // starts odometer
         try {
-            odometer = Odometer.getOdometer(leftMotor, rightMotor, TRACK, WHEEL_RAD);
+            odometer = Odometer.getOdometer(leftMotor, rightMotor, TRACK_CW, WHEEL_RAD);
         } catch (OdometerExceptions e) {
             System.out.println("Could not get odometer.");
         }
         Thread odoThread = new Thread(odometer);
         odoThread.start();
         // initialize instances
-        movementController = new MovementController(leftMotor, rightMotor, WHEEL_RAD, TRACK, odometer);
+        movementController = new MovementController(leftMotor, rightMotor, WHEEL_RAD, TRACK_CW, TRACK_CCW, odometer);
         localEV3 = (LocalEV3) LocalEV3.get();
         weightDetector = new WeightDetector(clawMotor, movementController, TILE_LENGTH);
         claw = new Claw(clawMotor);

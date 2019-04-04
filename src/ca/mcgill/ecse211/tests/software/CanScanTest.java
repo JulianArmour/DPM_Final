@@ -25,7 +25,8 @@ import lejos.hardware.sensor.SensorMode;
 public class CanScanTest {
 
     public static final double             WHEEL_RAD     = Main.WHEEL_RAD;
-    public static final double             TRACK         = Main.TRACK;
+    public static final double             TRACK_CW      = Main.TRACK_CW;
+    public static final double             TRACK_CCW     = Main.TRACK_CCW;
     public static final int                SC            = 3;
     public static final float              TILE_LENGTH   = Main.TILE_SIZE;
 
@@ -137,14 +138,14 @@ public class CanScanTest {
         colourMotor = new EV3MediumRegulatedMotor(LocalEV3.get().getPort("B"));
         // starts odometer
         try {
-            odometer = Odometer.getOdometer(leftMotor, rightMotor, TRACK, WHEEL_RAD);
+            odometer = Odometer.getOdometer(leftMotor, rightMotor, TRACK_CW, WHEEL_RAD);
         } catch (OdometerExceptions e) {
             System.out.println("Could not get odometer.");
         }
         Thread odoThread = new Thread(odometer);
         odoThread.start();
         // initialize instances
-        movementController = new MovementController(leftMotor, rightMotor, WHEEL_RAD, TRACK, odometer);
+        movementController = new MovementController(leftMotor, rightMotor, WHEEL_RAD, TRACK_CW, TRACK_CCW, odometer);
         medianDistanceSensor = new MedianDistanceSensor(distanceProvider, USSample, odometer, 5);
         leftLightDiff = new LightDifferentialFilter(leftLSProvider, leftLSSample);
         rightLightDiff = new LightDifferentialFilter(rightLSProvider, rightLSSample);
@@ -162,36 +163,35 @@ public class CanScanTest {
         colourDetector = new ColourDetector(colourArm, canRGBProvider);
         canSearch = new CanSearch(
                 odometer, movementController, navigator, medianDistanceSensor, claw, weightDetector, colourDetector,
-                localizer, canColour, searchzone_LL, searchzone_UR, TLL, TUR, ILL, IUR, SC,
-                2*TILE_LENGTH, TILE_LENGTH
+                localizer, canColour, searchzone_LL, searchzone_UR, TLL, TUR, ILL, IUR, SC, 2 * TILE_LENGTH, TILE_LENGTH
         );
 
         localEV3 = (LocalEV3) LocalEV3.get();
 
         // start test
         localEV3.getTextLCD().clear();
-        
+
         canSearch.setScanPositions();
-        
+
         odometer.setXYT(searchzone_LL[0] * TILE_LENGTH, searchzone_LL[1] * TILE_LENGTH, 270);
-        
+
         float[] P_SZ_LL = new float[] { (float) (searchzone_LL[0] * TILE_LENGTH),
                 (float) (searchzone_LL[1] * TILE_LENGTH) };
         float[] P_SZ_UR = new float[] { (float) (searchzone_UR[0] * TILE_LENGTH),
                 (float) (searchzone_UR[1] * TILE_LENGTH) };
-        
+
         canSearch.scanZones();
-        
+
         System.exit(0);
-        
+
         // single scan below
-        
-        float[] possiblePos = canSearch.fastCanScan(P_SZ_LL, P_SZ_UR, (double)359, 2*TILE_LENGTH);
-        if(possiblePos == null) {
-        	System.out.println("NOT FOUND");
+
+        float[] possiblePos = canSearch.fastCanScan(P_SZ_LL, P_SZ_UR, (double) 359, 2 * TILE_LENGTH);
+        if (possiblePos == null) {
+            System.out.println("NOT FOUND");
         } else {
-        	boolean foundCan = canSearch.travelToCan(possiblePos);
-    		if (foundCan) {
+            boolean foundCan = canSearch.travelToCan(possiblePos);
+            if (foundCan) {
                 System.out.println("Found the can!");
                 claw.closeClaw();
                 claw.openClaw();
@@ -199,9 +199,9 @@ public class CanScanTest {
                 CanColour canColour = colourDetector.getCanColour(colourDetector.getColourSamples());
                 System.out.println(canColour);
             }
-    		
+
         }
-        
+
         System.exit(0);
     }
 }

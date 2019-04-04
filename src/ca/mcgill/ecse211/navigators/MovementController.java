@@ -19,7 +19,8 @@ public class MovementController {
     private EV3LargeRegulatedMotor rightMotor;
     private Odometer               odometer;
     private double                 wheelRadius;
-    private double                 track;
+    private double                 track_turnCW;
+    private double                 track_turnCCW;
 
     /**
      * Creates a MovementController object.
@@ -30,18 +31,23 @@ public class MovementController {
      *            The motor for the right wheel
      * @param wheelRadius
      *            The radius of the wheels
-     * @param track
-     *            The track length for the wheels
+     * @param track_turnCW
+     *            The track length for turning clockwise
+     * @param track_turnCCW
+     *            The track length for turning counter-clockwise
      * @param odometer
      *            The odometer used
      */
-    public MovementController(EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, double wheelRadius,
-            double track, Odometer odometer) {
+    public MovementController(
+            EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, double wheelRadius,
+            double track_turnCW, double track_turnCCW, Odometer odometer
+    ) {
         this.leftMotor = leftMotor;
         this.rightMotor = rightMotor;
         this.odometer = odometer;
         this.wheelRadius = wheelRadius;
-        this.track = track;
+        this.track_turnCW = track_turnCW;
+        this.track_turnCCW = track_turnCCW;
         this.leftMotor.setAcceleration(1000);
         this.rightMotor.setAcceleration(1000);
         this.leftMotor.setSpeed(FORWARD_SPEED);
@@ -70,12 +76,14 @@ public class MovementController {
             rotateAngle(360 - dT, false);
         }
     }
-    
+
     /**
      * Turns the robot to face the position (x,y)
      * 
-     * @param x the x component of the position to face
-     * @param y the y component of the position to face
+     * @param x
+     *            the x component of the position to face
+     * @param y
+     *            the y component of the position to face
      */
     public void turnTo(float x, float y) {
         double[] curPos = odometer.getXYT();
@@ -113,11 +121,13 @@ public class MovementController {
         leftMotor.setSpeed(ROTATE_SPEED);
         rightMotor.setSpeed(ROTATE_SPEED);
         if (turnClockwise) {
-            leftMotor.rotate(convertAngle(wheelRadius, track, theta), true);
-            rightMotor.rotate(-convertAngle(wheelRadius, track, theta), false);
+            odometer.setTrack(track_turnCW);
+            leftMotor.rotate(convertAngle(wheelRadius, track_turnCW, theta), true);
+            rightMotor.rotate(-convertAngle(wheelRadius, track_turnCW, theta), false);
         } else {
-            leftMotor.rotate(-convertAngle(wheelRadius, track, theta), true);
-            rightMotor.rotate(convertAngle(wheelRadius, track, theta), false);
+            odometer.setTrack(track_turnCCW);
+            leftMotor.rotate(-convertAngle(wheelRadius, track_turnCCW, theta), true);
+            rightMotor.rotate(convertAngle(wheelRadius, track_turnCCW, theta), false);
         }
     }
 
@@ -137,11 +147,13 @@ public class MovementController {
         leftMotor.setSpeed(ROTATE_SPEED);
         rightMotor.setSpeed(ROTATE_SPEED);
         if (turnClockwise) {
-            leftMotor.rotate(convertAngle(wheelRadius, track, theta), true);
-            rightMotor.rotate(-convertAngle(wheelRadius, track, theta), immediateReturn);
+            odometer.setTrack(track_turnCW);
+            leftMotor.rotate(convertAngle(wheelRadius, track_turnCW, theta), true);
+            rightMotor.rotate(-convertAngle(wheelRadius, track_turnCW, theta), immediateReturn);
         } else {
-            leftMotor.rotate(-convertAngle(wheelRadius, track, theta), true);
-            rightMotor.rotate(convertAngle(wheelRadius, track, theta), immediateReturn);
+            odometer.setTrack(track_turnCCW);
+            leftMotor.rotate(-convertAngle(wheelRadius, track_turnCCW, theta), true);
+            rightMotor.rotate(convertAngle(wheelRadius, track_turnCCW, theta), immediateReturn);
         }
     }
 
@@ -157,7 +169,7 @@ public class MovementController {
         leftMotor.rotate(convertDistance(wheelRadius, distance), true);
         rightMotor.rotate(convertDistance(wheelRadius, distance), false);
     }
-    
+
     /**
      * Causes the robot to move forward a distance
      * 
@@ -363,8 +375,7 @@ public class MovementController {
     }
 
     /**
-     * @deprecated
-     * travels the robot to position (-5,-5)
+     * @deprecated travels the robot to position (-5,-5)
      * 
      * @param odo
      * @author Alice Kazarine
@@ -390,8 +401,10 @@ public class MovementController {
     /**
      * Travels the robot to a spefic position (x,y)
      * 
-     * @param x the physical x position
-     * @param y the physical y position
+     * @param x
+     *            the physical x position
+     * @param y
+     *            the physical y position
      */
     public void travelTo(double x, double y, boolean immediateReturn) {
 

@@ -1,23 +1,16 @@
 package ca.mcgill.ecse211.tests.software;
 
 import ca.mcgill.ecse211.Main;
-import ca.mcgill.ecse211.arms.Claw;
-import ca.mcgill.ecse211.arms.ColourArm;
-import ca.mcgill.ecse211.detectors.CanColour;
-import ca.mcgill.ecse211.detectors.ColourDetector;
-import ca.mcgill.ecse211.detectors.WeightDetector;
 import ca.mcgill.ecse211.localizers.Localization;
 import ca.mcgill.ecse211.navigators.MovementController;
-import ca.mcgill.ecse211.navigators.Navigator;
 import ca.mcgill.ecse211.odometer.Odometer;
 import ca.mcgill.ecse211.odometer.OdometerExceptions;
 import ca.mcgill.ecse211.sensors.LightDifferentialFilter;
 import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
-import ca.mcgill.ecse211.strategies.CanSearch;
+import lejos.hardware.Button;
 import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
@@ -26,9 +19,10 @@ import lejos.hardware.sensor.SensorMode;
 public class InitialLocalizationTest {
 
     public static final double             WHEEL_RAD     = Main.WHEEL_RAD;
-    public static final double             TRACK         = Main.TRACK;
+    public static final double             TRACK_CW      = Main.TRACK_CW;
+    public static final double             TRACK_CCW     = Main.TRACK_CCW;
     public static final int                SC            = 3;
-    public static final float             TILE_LENGTH   = Main.TILE_SIZE;
+    public static final float              TILE_LENGTH   = Main.TILE_SIZE;
 
     private static Port                    USPort;
     private static EV3UltrasonicSensor     ultrasonicSensor;
@@ -51,9 +45,6 @@ public class InitialLocalizationTest {
     private static SensorMode              rightLSProvider;
     private static float[]                 rightLSSample;
     private static LightDifferentialFilter rightLightDiff;
-    private static Navigator               navigator;
-
-    private static CanColour               canColour     = CanColour.RED;
 
     public static int                      Red_LL_x      = 0;
     public static int                      Red_LL_y      = 0;
@@ -96,16 +87,6 @@ public class InitialLocalizationTest {
     public static int                      SZG_LL_y;
     public static int                      SZG_UR_x;
     public static int                      SZG_UR_y;
-    private static Claw                    claw;
-    private static EV3LargeRegulatedMotor  clawMotor;
-    private static EV3MediumRegulatedMotor colourMotor;
-    private static WeightDetector          weightDetector;
-    private static ColourArm               colourArm;
-    private static ColourDetector          colourDetector;
-    private static Port                    sideLSPort;
-    private static EV3ColorSensor          canColourSensor;
-    private static SensorMode              canRGBProvider;
-    private static CanSearch               canSearch;
 
     public static void main(String[] args) {
         // set up side ultrasonic sensor
@@ -126,26 +107,20 @@ public class InitialLocalizationTest {
         rightLSProvider = rightLightSensor.getMode("Red");
         rightLSSample = new float[rightLSProvider.sampleSize()];
 
-        // set up colour light sensor
-        sideLSPort = LocalEV3.get().getPort("S1");
-        canColourSensor = new EV3ColorSensor(sideLSPort);
-        canRGBProvider = canColourSensor.getMode("RGB");
-
         // set up wheel motors
         leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
         rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
-        clawMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("C"));
-        colourMotor = new EV3MediumRegulatedMotor(LocalEV3.get().getPort("B"));
         // starts odometer
         try {
-            odometer = Odometer.getOdometer(leftMotor, rightMotor, TRACK, WHEEL_RAD);
+            odometer = Odometer.getOdometer(leftMotor, rightMotor, TRACK_CW, WHEEL_RAD);
         } catch (OdometerExceptions e) {
             System.out.println("Could not get odometer.");
         }
         Thread odoThread = new Thread(odometer);
         odoThread.start();
+
         // initialize instances
-        movementController = new MovementController(leftMotor, rightMotor, WHEEL_RAD, TRACK, odometer);
+        movementController = new MovementController(leftMotor, rightMotor, WHEEL_RAD, TRACK_CW, TRACK_CCW, odometer);
         medianDistanceSensor = new MedianDistanceSensor(distanceProvider, USSample, odometer, 5);
         leftLightDiff = new LightDifferentialFilter(leftLSProvider, leftLSSample);
         rightLightDiff = new LightDifferentialFilter(rightLSProvider, rightLSSample);
@@ -153,40 +128,16 @@ public class InitialLocalizationTest {
                 movementController, odometer, medianDistanceSensor, leftLightDiff, rightLightDiff, SC
         );
 
-        navigator = new Navigator(
-                movementController, odometer, localizer, TLL, TUR, startzone_LL, startzone_UR, SC, ILL, IUR,
-                searchzone_LL, searchzone_UR, TILE_LENGTH
-        );
-        claw = new Claw(clawMotor);
-        colourArm = new ColourArm(colourMotor);
-        weightDetector = new WeightDetector(clawMotor, movementController, TILE_LENGTH);
-        colourDetector = new ColourDetector(colourArm, canRGBProvider);
-        canSearch = new CanSearch(
-                odometer, movementController, navigator, medianDistanceSensor, claw, weightDetector, colourDetector,
-                localizer, canColour, searchzone_LL, searchzone_UR, TLL, TUR, ILL, IUR, SC,
-                2, TILE_LENGTH
-        );
-
         localEV3 = (LocalEV3) LocalEV3.get();
 
         // start test
         localEV3.getTextLCD().clear();
-        // System.out.println("Press any button to start.");
-        // Button.waitForAnyPress();
-        // movementController.rotateAngle(360, true, false);
 
-        // movementController.rotateAngle(360, true);
-        // System.exit(0);
-        
-        canSearch.setScanPositions();
         localizer.initialUSLocalization();
         localizer.initialLightLocalization();
-        System.out.println(
-                odometer.getXYT()[0] / TILE_LENGTH + "," + odometer.getXYT()[1] / TILE_LENGTH + ","
-                        + odometer.getXYT()[2]
-                );
 
-                Sound.beep();
+        Sound.beep();
+        Button.waitForAnyPress();
         System.exit(0);
     }
 }

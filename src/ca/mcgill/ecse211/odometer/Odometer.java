@@ -12,26 +12,26 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
  */
 public class Odometer extends OdometerData implements Runnable {
 
-    public static final double RAD_TO_DEG = 57.2958; // conversion constant for conversions
+    public static final double     RAD_TO_DEG      = 57.2958; // conversion constant for conversions
 
-    private OdometerData odoData;
-    private static Odometer odo = null; // Returned as singleton
+    private OdometerData           odoData;
+    private static Odometer        odo             = null;    // Returned as singleton
 
     // Motors and related variables
     // to keep track of the previous tachometer count
-    private int leftMotorTachoCount;
-    private int rightMotorTachoCount;
+    private int                    leftMotorTachoCount;
+    private int                    rightMotorTachoCount;
 
     private EV3LargeRegulatedMotor leftMotor;
     private EV3LargeRegulatedMotor rightMotor;
 
-    private final double TRACK;
-    private final double WHEEL_RAD;
+    private double                 track;
+    private final double           wheelRadius;
 
-    private double[] position;
+    private double[]               position;
 
     // odometer update period in ms
-    private static final long ODOMETER_PERIOD = 25;
+    private static final long      ODOMETER_PERIOD = 25;
 
     /**
      * This is the default constructor of this class. It initiates all motors and
@@ -41,7 +41,8 @@ public class Odometer extends OdometerData implements Runnable {
      * @param rightMotor
      * @throws OdometerExceptions
      */
-    private Odometer(EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, final double TRACK,
+    private Odometer(
+            EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, final double TRACK,
             final double WHEEL_RAD) throws OdometerExceptions {
         odoData = OdometerData.getOdometerData(); // Allows access to x,y,z
                                                   // manipulation methods
@@ -55,8 +56,8 @@ public class Odometer extends OdometerData implements Runnable {
         this.leftMotorTachoCount = leftMotor.getTachoCount();
         this.rightMotorTachoCount = rightMotor.getTachoCount();
 
-        this.TRACK = TRACK;
-        this.WHEEL_RAD = WHEEL_RAD;
+        this.track = TRACK;
+        this.wheelRadius = WHEEL_RAD;
 
     }
 
@@ -69,8 +70,9 @@ public class Odometer extends OdometerData implements Runnable {
      * @return new or existing Odometer Object
      * @throws OdometerExceptions
      */
-    public synchronized static Odometer getOdometer(EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor,
-            final double TRACK, final double WHEEL_RAD) throws OdometerExceptions {
+    public synchronized static Odometer getOdometer(
+            EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, final double TRACK,
+            final double WHEEL_RAD) throws OdometerExceptions {
         if (odo != null) { // Return existing object
             return odo;
         } else { // create object and return it
@@ -92,6 +94,15 @@ public class Odometer extends OdometerData implements Runnable {
 
         }
         return odo;
+    }
+    
+    /**
+     * Sets the value of the track
+     * 
+     * @param track the track to set
+     */
+    public void setTrack(double track) {
+        this.track = track;
     }
 
     /**
@@ -117,8 +128,8 @@ public class Odometer extends OdometerData implements Runnable {
             nowTachoR = rightMotor.getTachoCount();
 
             // the displacement of the wheels from their rotations
-            disL = Math.PI * WHEEL_RAD * (nowTachoL - leftMotorTachoCount) / 180;
-            disR = Math.PI * WHEEL_RAD * (nowTachoR - rightMotorTachoCount) / 180;
+            disL = Math.PI * wheelRadius * (nowTachoL - leftMotorTachoCount) / 180;
+            disR = Math.PI * wheelRadius * (nowTachoR - rightMotorTachoCount) / 180;
 
             // save the tachometer count of both wheels for later
             leftMotorTachoCount = nowTachoL;
@@ -132,7 +143,7 @@ public class Odometer extends OdometerData implements Runnable {
              * ~=~ x for small x, this is a good approximation because the tachometer count
              * is polled very often, relative to the speed of the robot
              */
-            deltaT = ((disL - disR) / TRACK) * RAD_TO_DEG;
+            deltaT = ((disL - disR) / track) * RAD_TO_DEG;
 
             /*
              * from the change in angle and displacement, the change in X and Y components

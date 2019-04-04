@@ -296,10 +296,10 @@ public class Localization {
         double dTheta;
 
         if (alpha <= beta) {
-            dTheta = 255 - (alpha + beta) / 2;
+            dTheta = 246 - (alpha + beta) / 2;
             System.out.println("alpha <= beta");
         } else {
-            dTheta = 85 - (alpha + beta) / 2; // increase in ccw direction
+            dTheta = 65 - (alpha + beta) / 2; // increase in ccw direction
             System.out.println("alpha > beta");
         }
 
