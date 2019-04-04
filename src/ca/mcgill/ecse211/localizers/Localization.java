@@ -98,8 +98,8 @@ public class Localization {
 
                 if (Math.abs(deltaR) > threshold) {
                     RLineDetected = true;
-                     System.out.println("right sensor detected line");
-                     System.out.println(RLineDetected);
+//                     System.out.println("right sensor detected line");
+//                     System.out.println(RLineDetected);
                     // System.out.println(LLineDetected);
                     movCon.stopMotor(true, true);
                     // System.out.println(deltaR);
@@ -107,9 +107,9 @@ public class Localization {
 
                 if (Math.abs(deltaL) > threshold) {
                     LLineDetected = true;
-                     System.out.println("left sensor detected line");
+//                     System.out.println("left sensor detected line");
                     // System.out.println(RLineDetected);
-                     System.out.println(LLineDetected);
+//                     System.out.println(LLineDetected);
                     movCon.stopMotor(false, true);
                     // System.out.println(deltaL);
                 }

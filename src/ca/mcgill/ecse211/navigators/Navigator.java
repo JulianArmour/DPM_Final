@@ -405,9 +405,13 @@ public class Navigator {
 			//turn to to the y position between gridlines before the tunnel
 			move.turnTo(move.calculateAngle(odo.getXYT()[0], odo.getXYT()[1], odo.getXYT()[0], tunnelTilePosYOP1 * tileSize));
 			localizer.quickLocalization();
-			//Move the to y position on the grid line in front of the tunnel
-			move.travelTo(odo.getXYT()[0], (tunnelTilePosYOP1 - 0.5)*tileSize, false);
-			// correct odometer
+			if (move.roundAngle() == 0) {
+                //Move the to y position on the grid line in front of the tunnel
+                move.travelTo(odo.getXYT()[0], (tunnelTilePosYOP1 - 0.5) * tileSize, false);
+            } else {
+                move.travelTo(odo.getXYT()[0], (tunnelTilePosYOP1 + 0.5) * tileSize, false);
+            }
+            // correct odometer
 			localizer.quickLocalization();
 			//Move the to y position on the grid line in the middle of the tile in front of the tunnel
             move.travelTo(odo.getXYT()[0], tunnelTilePosYOP1*tileSize, false);
@@ -426,7 +430,11 @@ public class Navigator {
 			move.turnTo(move.calculateAngle(odo.getXYT()[0], odo.getXYT()[1], tunnelTilePosXOP2*tileSize, odo.getXYT()[1]));
             localizer.quickLocalization();
             //Move the to x position on the grid line in front of the tunnel
-			move.travelTo((tunnelTilePosXOP2 - 0.5)*tileSize, odo.getXYT()[1], false);
+            if (move.roundAngle() == 90) {
+                move.travelTo((tunnelTilePosXOP2 - 0.5)*tileSize, odo.getXYT()[1], false);
+            } else {
+                move.travelTo((tunnelTilePosXOP2 + 0.5)*tileSize, odo.getXYT()[1], false);
+            }
 			// correct odometer
             localizer.quickLocalization();
             //Move the to x position on the grid line in the middle of the tile in front of the tunnel

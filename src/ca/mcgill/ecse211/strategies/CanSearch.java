@@ -233,11 +233,13 @@ public class CanSearch {
                     continue;
                 }
             } else {
-                currentScanPoint += 1;
+                currentScanPoint++;
                 claw.closeClaw();
-                float[] nextScanPt = getCurrentScanPoint();
-                movCon.turnTo(nextScanPt[0], nextScanPt[1]);
-                localizer.quickLocalization();
+                if (currentScanPoint < getScanningPoints().size()) {
+                    float[] nextScanPt = getCurrentScanPoint();
+                    movCon.turnTo(nextScanPt[0], nextScanPt[1]);
+                    localizer.quickLocalization();
+                }
             }
         }
         if (currentScanPoint >= scanningPoints.size()) {

@@ -29,7 +29,7 @@ import lejos.hardware.sensor.SensorMode;
 
 public class Main {
 //    private static final String            SERVER_IP               = "192.168.2.8"; // for beta and competition
-    private static final String            SERVER_IP               = "192.168.2.18"; // for personal testing
+    private static final String            SERVER_IP               = "192.168.43.112"; // for personal testing
 
     private static final int               TEAM_NUMBER             = 3;
 
