@@ -43,7 +43,6 @@ public class CanSearch {
     private float[]              P_SZ_LL;
     private float[]              P_SZ_UR;
     private int                  currentScanPoint;
-    private CanColour            searchCanColour;
 
     /**
      * 
@@ -103,7 +102,6 @@ public class CanSearch {
         this.P_SZ_LL = new float[] { (float) (SZ_LL[0] * tileLength), (float) (SZ_LL[1] * tileLength) };
         this.P_SZ_UR = new float[] { (float) (SZ_UR[0] * tileLength), (float) (SZ_UR[1] * tileLength) };
         this.startCorner = startingCorner;
-        this.searchCanColour = searchCanColour;
         this.TILE_LENGTH = (float) tileLength;
         this.SCAN_RADIUS = scanRadius;
         this.currentScanPoint = 0;
@@ -216,7 +214,8 @@ public class CanSearch {
                     Beeper.colourAndWeightBeep(canIsHeavy, canColour);
 
                     // if this is the can colour we're looking for
-                    if (canColour == searchCanColour && !Main.broughtBackACan) {
+                    if (canColour == CanColour.RED || canColour == CanColour.YELLOW || Main.bringBackFirstCan) {
+                        Main.bringBackFirstCan = false;
                         // go back to current scanning point
                         float[] currentScanPoint = getCurrentScanPoint();
                         movCon.travelTo(currentScanPoint[0], currentScanPoint[1], false);

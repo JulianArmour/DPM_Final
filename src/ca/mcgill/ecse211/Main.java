@@ -18,6 +18,7 @@ import ca.mcgill.ecse211.sensors.MedianDistanceSensor;
 import ca.mcgill.ecse211.strategies.Beeper;
 import ca.mcgill.ecse211.strategies.CanSearch;
 import ca.mcgill.ecse211.strategies.TimeTracker;
+import lejos.hardware.Button;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
@@ -109,17 +110,16 @@ public class Main {
     private static ColourDetector          colourDetector;
     private static TimeTracker             timeTracker;
 
-    public static boolean                  broughtBackACan;
+    public static boolean                  bringBackFirstCan = true;
 
     public static void main(String[] args) {
-        broughtBackACan = false;
         // init motors
         leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
         rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
         colourMotor = new EV3MediumRegulatedMotor(LocalEV3.get().getPort("B"));
         clawMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("C"));
 
-        // set up side ultrasonic sensor
+        // set up ultrasonic sensor
         USPort = LocalEV3.get().getPort("S2");
         UltrasonicSensor = new EV3UltrasonicSensor(USPort);
         DistanceProvider = UltrasonicSensor.getMode("Distance");
@@ -163,6 +163,10 @@ public class Main {
         weightDetector = new WeightDetector(clawMotor, movementController, TILE_SIZE);
         
         timeTracker = new TimeTracker(0, 300);// when 45 seconds are remaining, go to searchZone_UR
+        
+        lcd.clear();
+        System.out.println("Ready to start.");
+        Button.waitForAnyPress();
         
         // At this point we need wifi data
 //        while (tunnel_LL == null) {
@@ -255,7 +259,6 @@ public class Main {
             }
             claw.closeClaw();
             Beeper.droppedOffCans();
-            broughtBackACan = true;
             localizer.quickLocalization();
             // go to the tunnel
             navigator.travelToTunnel(true);
