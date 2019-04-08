@@ -333,7 +333,7 @@ public class CanSearch {
             @Override
             public void run() {
                 movCon.turnClockwiseTo(finalHeading, false);
-                System.out.println("Yes we have turned");
+//                System.out.println("Yes we have turned");
                 // the robot is only at the final heading if it wasn't interrupted by detecting
                 // a can
                 if (!Thread.interrupted()) {
@@ -344,7 +344,7 @@ public class CanSearch {
         };
 
         USData.flush();
-        Delay.msDelay(2000);
+        Delay.msDelay(1000);
         Thread rotT = new Thread(rotater);
         System.out.println(1);
         rotT.start(); // start rotating
@@ -356,7 +356,7 @@ public class CanSearch {
             	double angle = odo.getXYT()[2];
                 position[0] = (float) (dist * Math.sin(Math.toRadians(angle)) + robotPos[0]);
                 position[1] = (float) (dist * Math.cos(Math.toRadians(angle)) + robotPos[1]);
-                System.out.println("Saw something");
+//                System.out.println("Saw something");
                 if (inSearchZone(position, searchLL, searchUR)) {
                 	  System.out.println(3);
                     rotT.interrupt();
