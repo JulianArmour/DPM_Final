@@ -343,7 +343,7 @@ public class CanSearch {
         };
 
         USData.flush();
-        Delay.msDelay(1000);
+        Delay.msDelay(2000);
         Thread rotT = new Thread(rotater);
         System.out.println(1);
         rotT.start(); // start rotating
