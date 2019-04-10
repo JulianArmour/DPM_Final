@@ -213,7 +213,7 @@ public class CanSearch {
                     // beep depending on canColour and canIsHeavy
                     Beeper.colourAndWeightBeep(canIsHeavy, canColour);
 
-                    // if this is the can colour we're looking for
+                    // if this is one the can colours we're looking for (most valuable)
                     if (canColour == CanColour.RED || canColour == CanColour.YELLOW || Main.bringBackFirstCan) {
                         Main.bringBackFirstCan = false;
                         // go back to current scanning point

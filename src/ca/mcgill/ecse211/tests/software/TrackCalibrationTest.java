@@ -11,8 +11,8 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 public class TrackCalibrationTest {
     public static final float             TILE_SIZE              = 30.48f;
     public static final double            WHEEL_RAD              = 2.07;
-    public static double                  TRACK_CW               = 8.815;
-    public static double                  TRACK_CCW              = 8.89;
+    public static double                  TRACK_CW               = 8.9049;
+    public static double                  TRACK_CCW              = 9.059;
     // distance from the light back light sensors to the wheel-base
     public static double                  LT_SENSOR_TO_WHEELBASE = 9.2;
     // distance from the ultrasonic sensor to the "thumb" of the claw

@@ -29,8 +29,8 @@ import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.hardware.sensor.SensorMode;
 
 public class Main {
-//    private static final String            SERVER_IP               = "192.168.2.8"; // for beta and competition
-    private static final String            SERVER_IP               = "192.168.2.9"; // for personal testing
+    private static final String            SERVER_IP               = "192.168.2.8"; // for beta and competition
+//    private static final String            SERVER_IP               = "192.168.2.14"; // for personal testing
 
     private static final int               TEAM_NUMBER             = 3;
 
@@ -168,9 +168,14 @@ public class Main {
         System.out.println("Ready to start.");
         Button.waitForAnyPress();
         
-        // At this point we need wifi data
-//        while (tunnel_LL == null) {
+//         At this point we need wifi data
+//        while (true) {
         	getWifiData();
+//        	if (searchzone_LL != null) {
+//                break;
+//            } else {
+//                continue;
+//            }
 //        }
         
         
