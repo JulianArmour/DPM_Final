@@ -23,8 +23,8 @@ public class Localization {
     private static int              LIGHT_POLLING_PERIOD        = 20;
     private static float            FIRST_DIFFERENCE_THRESHOLD  = 4.0f;
     private static float            SECOND_DIFFERENCE_THRESHOLD = 1.5f;
-    private static final int 		SLOW_SPEED					= 45;
-    private static final int 		FAST_SPEED					= 200;
+    private static final int        SLOW_SPEED                  = 45;
+    private static final int        FAST_SPEED                  = 200;
 
     private MovementController      movCon;
     private Odometer                odo;
@@ -35,12 +35,19 @@ public class Localization {
 
     /**
      * 
-     * @param movementController the {@link MovementController}
-     * @param odometer the {@link Odometer}
-     * @param medianDistanceSensor the {@link MedianDistanceSensor}
-     * @param leftLightDiff the left hind {@link LightDifferentialFilter}
-     * @param rightLightDiff the right hind {@link LightDifferentialFilter}
-     * @param startingCorner the starting corner id given passed through the {@link WifiConnection}
+     * @param movementController
+     *            the {@link MovementController}
+     * @param odometer
+     *            the {@link Odometer}
+     * @param medianDistanceSensor
+     *            the {@link MedianDistanceSensor}
+     * @param leftLightDiff
+     *            the left hind {@link LightDifferentialFilter}
+     * @param rightLightDiff
+     *            the right hind {@link LightDifferentialFilter}
+     * @param startingCorner
+     *            the starting corner id given passed through the
+     *            {@link WifiConnection}
      */
     public Localization(MovementController movementController, Odometer odometer,
             MedianDistanceSensor medianDistanceSensor, LightDifferentialFilter leftLightDiff,
@@ -61,7 +68,7 @@ public class Localization {
      * correction. The second is much slower and much more accurate.
      */
     public void quickThetaCorrection() {
-    	Delay.msDelay(500);
+        Delay.msDelay(500);
         for (int i = 0; i < 2; i++) {
             boolean RLineDetected = false;
             boolean LLineDetected = false;
@@ -98,8 +105,8 @@ public class Localization {
 
                 if (Math.abs(deltaR) > threshold) {
                     RLineDetected = true;
-//                     System.out.println("right sensor detected line");
-//                     System.out.println(RLineDetected);
+                    // System.out.println("right sensor detected line");
+                    // System.out.println(RLineDetected);
                     // System.out.println(LLineDetected);
                     movCon.stopMotor(true, true);
                     // System.out.println(deltaR);
@@ -107,9 +114,9 @@ public class Localization {
 
                 if (Math.abs(deltaL) > threshold) {
                     LLineDetected = true;
-//                     System.out.println("left sensor detected line");
+                    // System.out.println("left sensor detected line");
                     // System.out.println(RLineDetected);
-//                     System.out.println(LLineDetected);
+                    // System.out.println(LLineDetected);
                     movCon.stopMotor(false, true);
                     // System.out.println(deltaL);
                 }
@@ -130,7 +137,7 @@ public class Localization {
 
         odo.setTheta(movCon.roundAngle());
     }
-    
+
     /**
      * performs a {@link #quickThetaCorrection()}, but will also correct either the
      * x or y position for the {@link Odometer}.
@@ -146,28 +153,20 @@ public class Localization {
         // update the x or y position of the odometer (depending on orientation)
         switch (movCon.roundAngle()) {
         case 0:
-            odo.setY(
-                    MovementController.roundDistance(
-                        odo.getXYT()[1] - Main.LT_SENSOR_TO_WHEELBASE, Main.TILE_SIZE) + Main.LT_SENSOR_TO_WHEELBASE
-            );
+            odo.setY(MovementController.roundDistance(odo.getXYT()[1] - Main.LT_SENSOR_TO_WHEELBASE, Main.TILE_SIZE)
+                    + Main.LT_SENSOR_TO_WHEELBASE);
             break;
         case 90:
-            odo.setX(
-                    MovementController.roundDistance(
-                        odo.getXYT()[0] - Main.LT_SENSOR_TO_WHEELBASE, Main.TILE_SIZE) + Main.LT_SENSOR_TO_WHEELBASE
-            );
+            odo.setX(MovementController.roundDistance(odo.getXYT()[0] - Main.LT_SENSOR_TO_WHEELBASE, Main.TILE_SIZE)
+                    + Main.LT_SENSOR_TO_WHEELBASE);
             break;
         case 180:
-            odo.setY(
-                    MovementController.roundDistance(
-                        odo.getXYT()[1] + Main.LT_SENSOR_TO_WHEELBASE, Main.TILE_SIZE) - Main.LT_SENSOR_TO_WHEELBASE
-            );
+            odo.setY(MovementController.roundDistance(odo.getXYT()[1] + Main.LT_SENSOR_TO_WHEELBASE, Main.TILE_SIZE)
+                    - Main.LT_SENSOR_TO_WHEELBASE);
             break;
         case 270:
-            odo.setX(
-                    MovementController.roundDistance(
-                        odo.getXYT()[0] + Main.LT_SENSOR_TO_WHEELBASE, Main.TILE_SIZE) - Main.LT_SENSOR_TO_WHEELBASE
-            );
+            odo.setX(MovementController.roundDistance(odo.getXYT()[0] + Main.LT_SENSOR_TO_WHEELBASE, Main.TILE_SIZE)
+                    - Main.LT_SENSOR_TO_WHEELBASE);
             break;
         default:
             break;
@@ -177,6 +176,8 @@ public class Localization {
     /**
      * performs two {@link #quickLocalization()} routines to completely update the
      * odometer's position and angle.
+     * 
+     * @author Julian Armour
      */
     public void completeQuickLocalization() {
         quickLocalization();
@@ -184,12 +185,13 @@ public class Localization {
         movCon.rotateAngle(90, false, false);
         quickLocalization();
         movCon.driveDistance(-Main.LT_SENSOR_TO_WHEELBASE);
-
     }
 
     /**
      * light localization routine to be called after
      * {@link #initialUSLocalization()}.
+     * 
+     * @author Julian Armour
      */
     public void initialLightLocalization() {
         quickThetaCorrection();
@@ -236,15 +238,15 @@ public class Localization {
             break;
         }
         movCon.driveDistance(-1 * Main.LT_SENSOR_TO_WHEELBASE, FAST_SPEED, 1000, false);
-        System.out.println("Set the odo to: "+odo.getXYT()[0]+odo.getXYT()[1]);
+        System.out.println("Set the odo to: " + odo.getXYT()[0] + odo.getXYT()[1]);
     }
 
     /**
      * The subroutine for correcting the odometer's angle. If the robot is placed at
      * a corner tile with walls on each side of the corner, then the robot will
      * "scan" while rotating. It is looking for a large drop in distance measured by
-     * the {@link MedianDistanceSensor}. It will record at what angles these
-     * large differences in distance occured at and use them to calculate the
+     * the {@link MedianDistanceSensor}. It will record at what angles these large
+     * differences in distance occured at and use them to calculate the
      * {@link Odometer}'s angle error.
      */
     public void initialUSLocalization() {
@@ -328,5 +330,4 @@ public class Localization {
             break;
         }
     }
-
 }

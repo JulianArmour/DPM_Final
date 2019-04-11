@@ -1,4 +1,4 @@
-package ca.mcgill.ecse211.tests.software;
+package ca.mcgill.ecse211.tests.hardware;
 
 import ca.mcgill.ecse211.Main;
 import ca.mcgill.ecse211.navigators.MovementController;
